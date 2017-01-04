@@ -363,7 +363,6 @@ static int probe(struct platform_device *pdev)
 
 #ifdef DEBUG_FS
 	spdm_init_debugfs(&pdev->dev);
-#endif
 	spdm_ipc_log_ctxt = ipc_log_context_create(SPDM_IPC_LOG_PAGES,
 							"devfreq_spdm", 0);
 
@@ -371,7 +370,7 @@ static int probe(struct platform_device *pdev)
 		pr_err("%s: Failed to create IPC log context\n", __func__);
 		spdm_ipc_log_ctxt = NULL;
 	}
-
+#endif
 
 	return 0;
 
