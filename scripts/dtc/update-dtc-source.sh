@@ -60,4 +60,13 @@ sed -i -- 's/#include <libfdt_env.h>/#include "libfdt_env.h"/g' ./libfdt/libfdt.
 sed -i -- 's/#include <fdt.h>/#include "fdt.h"/g' ./libfdt/libfdt.h
 git add ./libfdt/libfdt.h
 
-git commit -e -v -m "scripts/dtc: Update to upstream version [CHANGEME]"
+commit_msg=$(cat << EOF
+scripts/dtc: Update to upstream version ${dtc_version}
+
+This adds the following commits from upstream:
+
+${dtc_log}
+EOF
+)
+
+git commit -e -v -s -m "${commit_msg}"
