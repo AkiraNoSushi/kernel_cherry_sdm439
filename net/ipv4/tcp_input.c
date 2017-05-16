@@ -2982,7 +2982,7 @@ static void tcp_update_rtt_min(struct sock *sk, u32 rtt_us, const int flag)
 		 */
 		return;
 	}
-	minmax_running_min(&tp->rtt_min, wlen, tcp_time_stamp,
+	minmax_running_min(&tp->rtt_min, wlen, tcp_jiffies32,
 			   rtt_us ? : jiffies_to_usecs(1));
 }
 
