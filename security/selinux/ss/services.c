@@ -754,7 +754,7 @@ out:
 	kfree(n);
 	kfree(t);
 
-	if (!is_enforcing(state))
+	if (!enforcing_enabled(state))
 		return 0;
 	return -EPERM;
 }
@@ -1598,7 +1598,7 @@ out:
 	kfree(s);
 	kfree(t);
 	kfree(n);
-	if (!is_enforcing(state))
+	if (!enforcing_enabled(state))
 		return 0;
 	return -EACCES;
 }
@@ -1909,7 +1909,7 @@ static inline int convert_context_handle_invalid_context(
 	char *s;
 	u32 len;
 
-	if (is_enforcing(state))
+	if (enforcing_enabled(state))
 		return -EINVAL;
 
 	if (!context_struct_to_string(policydb, context, &s, &len)) {
