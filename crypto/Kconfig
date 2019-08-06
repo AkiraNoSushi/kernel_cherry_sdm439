@@ -1614,6 +1614,7 @@ comment "Compression"
 config CRYPTO_DEFLATE
 	tristate "Deflate compression algorithm"
 	select CRYPTO_ALGAPI
+	select CRYPTO_ACOMP2
 	select ZLIB_INFLATE
 	select ZLIB_DEFLATE
 	help
@@ -1634,6 +1635,7 @@ config CRYPTO_LZO
 config CRYPTO_842
 	tristate "842 compression algorithm"
 	select CRYPTO_ALGAPI
+	select CRYPTO_ACOMP2
 	select 842_COMPRESS
 	select 842_DECOMPRESS
 	help

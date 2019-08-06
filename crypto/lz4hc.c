@@ -87,9 +87,14 @@ static int lz4hc_compress_crypto(struct crypto_tfm *tfm, const u8 *src,
 				 unsigned int *dlen)
 {
 	struct lz4hc_ctx *ctx = crypto_tfm_ctx(tfm);
+	int out_len = LZ4_compress_HC(src, dst, slen,
+		*dlen, LZ4HC_DEFAULT_CLEVEL, ctx->lz4hc_comp_mem);
 
-	return __lz4hc_compress_crypto(src, slen, dst, dlen,
-					ctx->lz4hc_comp_mem);
+	if (!out_len)
+                return -EINVAL;
+
+        *dlen = out_len;
+        return 0;
 }
 
 static int __lz4hc_decompress_crypto(const u8 *src, unsigned int slen,
@@ -108,7 +113,13 @@ static int lz4hc_sdecompress(struct crypto_scomp *tfm, const u8 *src,
 			     unsigned int slen, u8 *dst, unsigned int *dlen,
 			     void *ctx)
 {
-	return __lz4hc_decompress_crypto(src, slen, dst, dlen, NULL);
+	int out_len = LZ4_decompress_safe(src, dst, slen, *dlen);
+
+	if (out_len < 0)
+		return -EINVAL;
+
+	*dlen = out_len;
+	return 0;
 }
 
 static int lz4hc_decompress_crypto(struct crypto_tfm *tfm, const u8 *src,
