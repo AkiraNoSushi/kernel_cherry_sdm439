@@ -810,7 +810,10 @@ EXPORT_SYMBOL(release_pages);
  */
 void __pagevec_release(struct pagevec *pvec)
 {
-	lru_add_drain();
+	if (!pvec->drained) {
+		lru_add_drain();
+		pvec->drained = true;
+	}
 	release_pages(pvec->pages, pagevec_count(pvec), pvec->cold);
 	pagevec_reinit(pvec);
 }
@@ -981,13 +984,13 @@ EXPORT_SYMBOL(pagevec_lookup_range_nr_tag);
  */
 void __init swap_setup(void)
 {
-#ifdef CONFIG_SWAP
-	int i;
+	unsigned long megs = totalram_pages() >> (20 - PAGE_SHIFT);
 
-	for (i = 0; i < MAX_SWAPFILES; i++)
-		spin_lock_init(&swapper_spaces[i].tree_lock);
-#endif
-
+	/* Use a smaller cluster for small-memory machines */
+	if (megs < 16)
+		page_cluster = 2;
+	else
+		page_cluster = 3;
 	/*
 	 * Right now other parts of the system means that we
 	 * _really_ don't want to cluster much more
