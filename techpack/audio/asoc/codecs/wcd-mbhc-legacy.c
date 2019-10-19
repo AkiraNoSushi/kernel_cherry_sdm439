@@ -434,10 +434,14 @@ static void wcd_mbhc_detect_plug_type(struct wcd_mbhc *mbhc)
 	wcd_schedule_hs_detect_plug(mbhc, &mbhc->correct_plug_swch);
 	pr_debug("%s: leave\n", __func__);
 }
+static  int Cap_line = 0;
+#define CAM_HS_IMPED_L  45000
+#define CAM_HS_IMPED_H 60000
 
 static void wcd_correct_swch_plug(struct work_struct *work)
 {
 	struct wcd_mbhc *mbhc;
+	int mask;
 	struct snd_soc_codec *codec;
 	enum wcd_mbhc_plug_type plug_type = MBHC_PLUG_TYPE_INVALID;
 	unsigned long timeout;
@@ -570,6 +574,22 @@ correct_plug_type:
 			}
 			goto exit;
 		}
+
+		if(mbhc->mbhc_cb->compute_impedance){
+			mbhc->zl = mbhc->zr = 0;
+			mbhc->mbhc_cb->compute_impedance(mbhc, &mbhc->zl, &mbhc->zr);
+			if ((mbhc->zl > CAM_HS_IMPED_L &&
+					mbhc->zl < CAM_HS_IMPED_H) &&
+					(mbhc->zr > CAM_HS_IMPED_L &&
+					mbhc->zr < CAM_HS_IMPED_H) &&
+					(plug_type == MBHC_PLUG_TYPE_GND_MIC_SWAP)) {
+						pr_debug("%s Cap GND_MIC --> HEADSET", __func__);
+						plug_type = MBHC_PLUG_TYPE_HEADSET;
+						Cap_line = 1;
+						goto report;
+			}
+		}
+
 		WCD_MBHC_REG_READ(WCD_MBHC_HS_COMP_RESULT, hs_comp_res);
 
 		pr_debug("%s: hs_comp_res: %x\n", __func__, hs_comp_res);
@@ -722,6 +742,10 @@ report:
 		pr_debug("%s: Switch level is low\n", __func__);
 		goto exit;
 	}
+	mask = wcd_mbhc_get_button_mask(mbhc);
+	pr_debug("get button  mask = %d", mask);
+	if (mask == SND_JACK_BTN_0)
+		mbhc->btn_press_intr = true;
 	if (plug_type == MBHC_PLUG_TYPE_GND_MIC_SWAP && mbhc->btn_press_intr) {
 		pr_debug("%s: insertion of headphone with swap\n", __func__);
 		wcd_cancel_btn_work(mbhc);
@@ -773,6 +797,7 @@ exit:
 								MIC_BIAS_2);
 	}
 
+	/* for HQ-37596
 	if (mbhc->mbhc_cfg->detect_extn_cable &&
 	    ((plug_type == MBHC_PLUG_TYPE_HEADPHONE) ||
 	     (plug_type == MBHC_PLUG_TYPE_HEADSET)) &&
@@ -781,6 +806,7 @@ exit:
 		wcd_mbhc_hs_elec_irq(mbhc, WCD_MBHC_ELEC_HS_REM, true);
 		WCD_MBHC_RSC_UNLOCK(mbhc);
 	}
+	*/
 	if (mbhc->mbhc_cb->set_cap_mode)
 		mbhc->mbhc_cb->set_cap_mode(codec, micbias1, micbias2);
 
@@ -825,6 +851,9 @@ static irqreturn_t wcd_mbhc_hs_rem_irq(int irq, void *data)
 			break;
 		}
 	} while (!time_after(jiffies, timeout));
+
+	if (1 == Cap_line)
+		removed = false;
 
 	if (wcd_swch_level_remove(mbhc)) {
 		pr_debug("%s: Switch level is low ", __func__);

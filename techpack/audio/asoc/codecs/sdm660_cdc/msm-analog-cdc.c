@@ -58,7 +58,7 @@
 #define SPK_PMD 2
 #define SPK_PMU 3
 
-#define MICBIAS_DEFAULT_VAL 1800000
+#define MICBIAS_DEFAULT_VAL 2200000
 #define MICBIAS_MIN_VAL 1600000
 #define MICBIAS_STEP_SIZE 50000
 
@@ -3028,8 +3028,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"HEADPHONE", NULL, "HPHR PA"},
 
 	{"Ext Spk", NULL, "Ext Spk Switch"},
-	{"Ext Spk Switch", "On", "HPHL PA"},
-	{"Ext Spk Switch", "On", "HPHR PA"},
+	{"Ext Spk Switch", "On", "LINEOUT PA"},
 
 	{"HPHL PA", NULL, "HPHL"},
 	{"HPHR PA", NULL, "HPHR"},
