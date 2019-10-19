@@ -114,6 +114,10 @@ ifdef CONFIG_SND_SOC_WCD9335
 	WCD9335_OBJS += wcd9335.o
 endif
 
+ifdef CONFIG_SND_SOC_AW87329
+	AW87329_OBJS += aw87329_audio.o
+endif
+
 ifdef CONFIG_SND_SOC_WSA881X
 	WSA881X_OBJS += wsa881x.o
 	WSA881X_OBJS += wsa881x-tables.o
@@ -195,6 +199,9 @@ wcd9xxx_dlkm-y := $(WCD9XXX_OBJS)
 
 obj-$(CONFIG_SND_SOC_WCD9335) += wcd9335_dlkm.o
 wcd9335_dlkm-y := $(WCD9335_OBJS)
+
+obj-$(CONFIG_SND_SOC_AW87329) += aw87329_audio_dlkm.o
+aw87329_audio_dlkm-y := $(AW87329_OBJS)
 
 obj-$(CONFIG_SND_SOC_WSA881X) += wsa881x_dlkm.o
 wsa881x_dlkm-y := $(WSA881X_OBJS)
