@@ -319,7 +319,7 @@ static int ilitek_plat_irq_register(void)
 	ret = devm_request_threaded_irq(idev->dev, idev->irq_num,
 				   ilitek_plat_isr_top_half,
 				   ilitek_plat_isr_bottom_half,
-				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT, "ilitek", NULL);
+				   IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_PERF_CRITICAL, "ilitek", NULL);
 
 	if (ret != 0)
 		ipio_err("Failed to register irq handler, irq = %d, ret = %d\n", idev->irq_num, ret);
