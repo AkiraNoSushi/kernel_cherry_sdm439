@@ -12009,7 +12009,6 @@ const struct sched_class fair_sched_class = {
 #endif
 #ifdef CONFIG_SCHED_WALT
 	.fixup_walt_sched_stats	= walt_fixup_sched_stats_fair,
-	.fixup_cumulative_runnable_avg = walt_fixup_cumulative_runnable_avg,
 #endif
 
 #ifdef CONFIG_UCLAMP_TASK
