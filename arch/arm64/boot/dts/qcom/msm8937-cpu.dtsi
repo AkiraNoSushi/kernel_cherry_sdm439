@@ -58,6 +58,7 @@
 			reg = <0x100>;
 			enable-method = "psci";
 			efficiency = <1126>;
+			clock-frequency = <1401000000>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_0>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -83,6 +84,7 @@
 			reg = <0x101>;
 			enable-method = "psci";
 			efficiency = <1126>;
+			clock-frequency = <1401000000>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_0>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -102,6 +104,7 @@
 			reg = <0x102>;
 			enable-method = "psci";
 			efficiency = <1126>;
+			clock-frequency = <1401000000>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_0>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -121,6 +124,7 @@
 			reg = <0x103>;
 			enable-method = "psci";
 			efficiency = <1126>;
+			clock-frequency = <1401000000>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_0>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -140,6 +144,7 @@
 			reg = <0x0>;
 			enable-method = "psci";
 			efficiency = <1024>;
+			clock-frequency = <1094400000>;
 			sched-energy-costs = <&CPU_COST_1 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_0>;
 			#cooling-cells = <2>;
@@ -164,6 +169,7 @@
 			reg = <0x1>;
 			enable-method = "psci";
 			efficiency = <1024>;
+			clock-frequency = <1094400000>;
 			sched-energy-costs = <&CPU_COST_1 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_0>;
 			#cooling-cells = <2>;
@@ -183,6 +189,7 @@
 			reg = <0x2>;
 			enable-method = "psci";
 			efficiency = <1024>;
+			clock-frequency = <1094400000>;
 			sched-energy-costs = <&CPU_COST_1 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_0>;
 			#cooling-cells = <2>;
@@ -202,6 +209,7 @@
 			reg = <0x3>;
 			enable-method = "psci";
 			efficiency = <1024>;
+			clock-frequency = <1094400000>;
 			sched-energy-costs = <&CPU_COST_1 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_0>;
 			#cooling-cells = <2>;
