@@ -724,7 +724,9 @@ static int msm_hs_remove(struct platform_device *pdev)
 	dev = msm_uport->uport.dev;
 	sysfs_remove_file(&pdev->dev.kobj, &dev_attr_clock.attr);
 	sysfs_remove_file(&pdev->dev.kobj, &dev_attr_debug_mask.attr);
+	#ifdef CONFIG_DEBUG_FS
 	debugfs_remove(msm_uport->loopback_dir);
+	#endif
 
 	dma_free_coherent(msm_uport->uport.dev,
 			UART_DMA_DESC_NR * UARTDM_RX_BUF_SIZE,
@@ -3580,7 +3582,9 @@ static int msm_hs_probe(struct platform_device *pdev)
 		goto err_clock;
 	}
 
+	#ifdef CONFIG_DEBUG_FS
 	msm_serial_debugfs_init(msm_uport, pdev->id);
+	#endif
 	msm_hs_unconfig_uart_gpios(uport);
 
 	uport->line = pdev->id;
@@ -3625,14 +3629,17 @@ static int __init msm_serial_hs_init(void)
 		pr_err("%s failed to load\n", __func__);
 		return ret;
 	}
+	#ifdef CONFIG_DEBUG_FS
 	debug_base = debugfs_create_dir("msm_serial_hs", NULL);
 	if (IS_ERR_OR_NULL(debug_base))
 		pr_err("msm_serial_hs: Cannot create debugfs dir\n");
-
+	#endif
 	ret = platform_driver_register(&msm_serial_hs_platform_driver);
 	if (ret) {
 		pr_err("%s failed to load\n", __func__);
+		#ifdef CONFIG_DEBUG_FS
 		debugfs_remove_recursive(debug_base);
+		#endif
 		uart_unregister_driver(&msm_hs_driver);
 		return ret;
 	}
@@ -3753,7 +3760,9 @@ static void msm_hs_shutdown(struct uart_port *uport)
 static void __exit msm_serial_hs_exit(void)
 {
 	pr_info("msm_serial_hs module removed\n");
+	#ifdef CONFIG_DEBUG_FS
 	debugfs_remove_recursive(debug_base);
+	#endif
 	platform_driver_unregister(&msm_serial_hs_platform_driver);
 	uart_unregister_driver(&msm_hs_driver);
 }
