@@ -3100,7 +3100,9 @@ static int mdss_fb_register(struct msm_fb_data_type *mfd)
 
 	snprintf(panel_name, ARRAY_SIZE(panel_name), "mdss_panel_fb%d",
 		mfd->index);
+	#ifdef CONFIG_DEBUG_FS
 	mdss_panel_debugfs_init(panel_info, panel_name);
+	#endif
 	pr_info("FrameBuffer[%d] %dx%d registered successfully!\n", mfd->index,
 					fbi->var.xres, fbi->var.yres);
 
