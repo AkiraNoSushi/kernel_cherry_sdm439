@@ -6611,7 +6611,9 @@ int cpr3_regulator_register(struct platform_device *pdev,
 	}
 
 	mutex_lock(&cpr3_controller_list_mutex);
+	#ifdef CONFIG_DEBUG_FS
 	cpr3_regulator_debugfs_ctrl_add(ctrl);
+	#endif
 	list_add(&ctrl->list, &cpr3_controller_list);
 	mutex_unlock(&cpr3_controller_list_mutex);
 
@@ -6646,7 +6648,9 @@ int cpr3_regulator_unregister(struct cpr3_controller *ctrl)
 
 	mutex_lock(&cpr3_controller_list_mutex);
 	list_del(&ctrl->list);
+	#ifdef CONFIG_DEBUG_FS
 	cpr3_regulator_debugfs_ctrl_remove(ctrl);
+	#endif
 	mutex_unlock(&cpr3_controller_list_mutex);
 
 	if (ctrl->irq && !cpumask_empty(&ctrl->irq_affinity_mask))
