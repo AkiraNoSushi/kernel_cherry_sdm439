@@ -683,6 +683,7 @@ static int msm_serial_loopback_enable_get(void *data, u64 *val)
 DEFINE_SIMPLE_ATTRIBUTE(loopback_enable_fops, msm_serial_loopback_enable_get,
 			msm_serial_loopback_enable_set, "%llu\n");
 
+#ifdef CONFIG_DEBUG_FS
 /*
  * msm_serial_hs debugfs node: <debugfs_root>/msm_serial_hs/loopback.<id>
  * writing 1 turns on internal loopback mode in HW. Useful for automation
@@ -705,6 +706,7 @@ static void msm_serial_debugfs_init(struct msm_hs_port *msm_uport,
 		MSM_HS_ERR("%s(): Cannot create loopback.%d debug entry",
 							__func__, id);
 }
+#endif
 
 static int msm_hs_remove(struct platform_device *pdev)
 {
