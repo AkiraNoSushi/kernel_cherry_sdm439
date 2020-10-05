@@ -349,7 +349,9 @@
 
 static DEFINE_MUTEX(cpr3_controller_list_mutex);
 static LIST_HEAD(cpr3_controller_list);
+#ifdef CONFIG_DEBUG_FS
 static struct dentry *cpr3_debugfs_base;
+#endif
 
 /**
  * cpr3_read() - read four bytes from the memory address specified
@@ -5108,6 +5110,7 @@ static int cpr3_regulator_vreg_register(struct cpr3_regulator *vreg)
 	return 0;
 }
 
+#ifdef CONFIG_DEBUG_FS
 static int debugfs_int_set(void *data, u64 val)
 {
 	*(int *)data = val;
@@ -6176,6 +6179,7 @@ static void cpr3_regulator_debugfs_ctrl_remove(struct cpr3_controller *ctrl)
 		debugfs_remove_recursive(ctrl->debugfs);
 	}
 }
+#endif
 
 /**
  * cpr3_regulator_init_ctrl_data() - performs initialization of CPR controller
