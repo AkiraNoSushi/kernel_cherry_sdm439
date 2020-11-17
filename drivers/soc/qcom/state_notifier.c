@@ -1,9 +1,7 @@
 /*
  * State Notifier Driver
  *
- * Copyright (c) 2013-2017, Pranav Vashi <neobuddy89@gmail.com>
- *           (c) 2017, Joe Maples <joe@frap129.org>
- *           (c) 2018, Yaroslav Furman <yaro330@gmail.com>
+ * Copyright (c) 2013-2018, Pranav Vashi <neobuddy89@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,13 +13,14 @@
 #include <linux/module.h>
 #include <linux/state_notifier.h>
 
-#define DEFAULT_SUSPEND_DEFER_TIME 	1
+#define DEFAULT_SUSPEND_DEFER_TIME 	10
 #define STATE_NOTIFIER			"state_notifier"
 
 /*
  * debug = 1 will print all
  */
 static unsigned int debug;
+module_param_named(debug_mask, debug, uint, 0644);
 
 #define dprintk(msg...)		\
 do {				\
@@ -29,12 +28,13 @@ do {				\
 		pr_info(msg);	\
 } while (0)
 
+static bool enabled = true;
+module_param_named(enabled, enabled, bool, 0664);
 static unsigned int suspend_defer_time = DEFAULT_SUSPEND_DEFER_TIME;
 module_param_named(suspend_defer_time, suspend_defer_time, uint, 0664);
 static struct delayed_work suspend_work;
 static struct workqueue_struct *susp_wq;
 struct work_struct resume_work;
-struct work_struct boost_work;
 bool state_suspended;
 module_param_named(state_suspended, state_suspended, bool, 0444);
 static bool suspend_in_progress;
@@ -88,16 +88,10 @@ static void _resume_work(struct work_struct *work)
 	dprintk("%s: resume completed.\n", STATE_NOTIFIER);
 }
 
-static void _boost_work(struct work_struct *work)
-{
-	state_suspended = false;
-	state_notifier_call_chain(STATE_NOTIFIER_BOOST, NULL);
-}
-
 void state_suspend(void)
 {
 	dprintk("%s: suspend called.\n", STATE_NOTIFIER);
-	if (state_suspended || suspend_in_progress)
+	if (state_suspended || suspend_in_progress || !enabled)
 		return;
 
 	suspend_in_progress = true;
@@ -117,16 +111,6 @@ void state_resume(void)
 		queue_work(susp_wq, &resume_work);
 }
 
-void state_boost(void)
-{
-	if (delayed_work_pending(&suspend_work))
-		cancel_delayed_work_sync(&suspend_work);
-	suspend_in_progress = false;
-
-	if (state_suspended)
-		queue_work(susp_wq, &boost_work);
-}
-
 static int __init state_notifier_init(void)
 {
 	susp_wq =
@@ -138,7 +122,6 @@ static int __init state_notifier_init(void)
 
 	INIT_DELAYED_WORK(&suspend_work, _suspend_work);
 	INIT_WORK(&resume_work, _resume_work);
-	INIT_WORK(&boost_work, _boost_work);
 
 	return 0;
 }
