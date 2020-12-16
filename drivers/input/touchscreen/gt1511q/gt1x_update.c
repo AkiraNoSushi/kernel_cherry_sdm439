@@ -12,8 +12,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- *
- */ Version: 1.6
+ * Version: 1.6
+ */
 
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
