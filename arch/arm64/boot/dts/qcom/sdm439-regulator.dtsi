@@ -160,9 +160,9 @@
 	rpm-regulator-ldoa3 {
 		status = "okay";
 		pm8953_l3: regulator-l3 {
-			regulator-min-microvolt = <1050000>;
+			regulator-min-microvolt = <1140000>;
 			regulator-max-microvolt = <1200000>;
-			qcom,init-voltage = <1050000>;
+			qcom,init-voltage = <1140000>;
 			status = "okay";
 		};
 	};
