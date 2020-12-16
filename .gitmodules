@@ -1,0 +1,6 @@
+[submodule "drivers/fs/exfat"]
+	path = drivers/fs/exfat
+	url = https://github.com/arter97/exfat-linux
+[submodule "fs/exfat"]
+	path = fs/exfat
+	url = https://github.com/arter97/exfat-linux
