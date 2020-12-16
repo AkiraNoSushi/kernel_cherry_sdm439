@@ -37,7 +37,7 @@ void __init init_random_pool(void)
 	struct tz_prng_data data;
 	int ret;
 	u32 resp;
-	struct scm_desc desc;
+	struct scm_desc desc = { 0 };
 	u64 bytes_received;
 
 	data.out_buf = (uint8_t *) virt_to_phys(random_buffer);

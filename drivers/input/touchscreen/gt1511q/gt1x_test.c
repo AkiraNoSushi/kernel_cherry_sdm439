@@ -2131,7 +2131,7 @@ static int gtp_sysfs_openshort_show(struct seq_file *file, void *data)
 		}
 	}
 
-	GTP_ERROR("This is gtp_sysfs_openshort_show result len = %d\n\n", len);
+	GTP_ERROR("This is gtp_sysfs_openshort_show result len = %zu\n\n", len);
 	seq_printf(file, "%s", ito_buf);
 	GTP_INFO("_TEST_PASS= %x", ito_result);
 	free(ito_buf);
