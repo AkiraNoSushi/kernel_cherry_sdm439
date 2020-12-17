@@ -89,6 +89,14 @@ config IOSCHED_MAPLE
 	tristate "Maple I/O scheduler"
 	default y
 
+config IOSCHED_TRIPNDROID
+	tristate "TripNDroid IO Scheduler"
+	default n
+	---help---
+	  The TripNDroid IO Scheduler is based on noop, deadline and vr
+	  it uses deadlines to ensure some fairness. The scheduler is build
+	  to keep a minimum overhead. It is mainly build for mobile devices.
+
 choice
 	prompt "Default I/O scheduler"
 	default DEFAULT_CFQ
