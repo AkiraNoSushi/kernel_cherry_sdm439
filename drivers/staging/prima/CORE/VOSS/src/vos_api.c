@@ -85,6 +85,7 @@
 #endif //WLAN_BTAMP_FEATURE
 #include "wlan_qct_wdi_cts.h"
 #include "wlan_qct_pal_sync.h"
+#include <disable.h>
 
 /*---------------------------------------------------------------------------
  * Preprocessor Definitions and Constants

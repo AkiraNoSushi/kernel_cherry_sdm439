@@ -47,6 +47,7 @@
 #include <linux/interrupt.h>
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0))
 #include <linux/sched/signal.h>
+#include <disable.h>
 #endif
 
 /*-------------------------------------------------------------------------- 
