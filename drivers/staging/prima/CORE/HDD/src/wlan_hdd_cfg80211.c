@@ -99,6 +99,7 @@
 #include "qwlan_version.h"
 #include "wlan_logging_sock_svc.h"
 #include "wlan_hdd_misc.h"
+#include <disable.h>
 
 
 #define g_mode_rates_size (12)
