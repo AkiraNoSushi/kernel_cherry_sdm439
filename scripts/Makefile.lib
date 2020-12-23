@@ -298,7 +298,9 @@ DTC_FLAGS += -Wno-unit_address_vs_reg \
 	-Wno-avoid_default_addr_size \
 	-Wno-interrupts_property \
 	-Wno-reg_format \
-	-Wno-gpios_property
+	-Wno-gpios_property \
+	-Wno-graph_child_address \
+	-Wno-i2c_bus_bridge
 endif
 
 ifeq ($(KBUILD_ENABLE_EXTRA_GCC_CHECKS),2)
