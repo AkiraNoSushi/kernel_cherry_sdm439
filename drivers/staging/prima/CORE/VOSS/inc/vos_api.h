@@ -624,8 +624,6 @@ static inline int
 vos_process_bt_profile(bool bt_enabled, bool bt_adv,
 		       bool ble_enabled, bool bt_a2dp,
 		       bool bt_sco);
-{
-	return -ENOTSUPP;
-}
+
 #endif /* FEATURE_WLAN_SW_PTA */
 #endif // if !defined __VOS_NVITEM_H
