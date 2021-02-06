@@ -158,7 +158,7 @@ static struct notifier_block dyn_fsync_notifier =
 };
 
 static struct kobj_attribute dyn_fsync_active_attribute = 
-	__ATTR(Dyn_fsync_active, 0666,
+	__ATTR(Dyn_fsync_active, 0644,
 		dyn_fsync_active_show,
 		dyn_fsync_active_store);
 
