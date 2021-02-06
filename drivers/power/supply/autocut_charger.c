@@ -24,6 +24,10 @@ static int error_disable_cnt;
 
 static struct delayed_work autocut_charger_work;
 
+// Charging will stop if charge level equals or is higher than this parameter
+static unsigned int maximum_charge_percentage = 100;
+module_param_named(maximum_charge_percentage, maximum_charge_percentage, uint, 0644);
+
 static bool set_charging_control(struct power_supply *batt_psy, bool enable)
 {
 	union power_supply_propval val = {0, };
@@ -72,10 +76,10 @@ static void autocut_charger_worker(struct work_struct *work)
 		POWER_SUPPLY_PROP_PRESENT, &present);
 
 	if (present.intval) {
-		if (charging_enabled.intval && bat_percent.intval >= 100) {
+		if (charging_enabled.intval && bat_percent.intval >= maximum_charge_percentage) {
 			if (!set_charging_control(batt_psy, false))
 				return;
-		} else if (!charging_enabled.intval && bat_percent.intval < 100) {
+		} else if (!charging_enabled.intval && bat_percent.intval < maximum_charge_percentage) {
 			if (!set_charging_control(batt_psy, true))
 				return;
 		}
