@@ -21,6 +21,7 @@
 #include <linux/freezer.h>
 #include <linux/page_owner.h>
 #include <linux/psi.h>
+#include <linux/sched.h>
 #include "internal.h"
 
 #ifdef CONFIG_COMPACTION
@@ -1996,6 +1997,9 @@ static int kcompactd(void *p)
 	struct task_struct *tsk = current;
 
 	const struct cpumask *cpumask = cpumask_of_node(pgdat->node_id);
+	struct sched_param param = { .sched_priority = 1 };
+
+	sched_setscheduler(current, SCHED_FIFO, &param);
 
 	if (!cpumask_empty(cpumask))
 		set_cpus_allowed_ptr(tsk, cpumask);
