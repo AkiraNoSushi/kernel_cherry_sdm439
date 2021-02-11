@@ -379,12 +379,12 @@
 			reg = <0x2000 0x100>;
 			regulator-name = "pm8953_s5";
 			regulator-min-microvolt = <490000>;
-			regulator-max-microvolt = <980000>;
+			regulator-max-microvolt = <1000000>;
 
 			pm8953_s5_limit: avs-limit-regulator {
 				regulator-name = "pm8953_s5_avs_limit";
 				regulator-min-microvolt = <490000>;
-				regulator-max-microvolt = <980000>;
+				regulator-max-microvolt = <1000000>;
 			};
 		};
 	};
@@ -422,8 +422,8 @@
 		regulator-max-microvolt = <6>;
 
 		qcom,cpr-fuse-corners = <3>;
-		qcom,cpr-voltage-ceiling = <810000 845000 980000>;
-		qcom,cpr-voltage-floor =   <700000 700000 790000>;
+		qcom,cpr-voltage-ceiling = <810000 845000 1000000>;
+		qcom,cpr-voltage-floor =   <700000 700000 920000>;
 		vdd-apc-supply = <&pm8953_s5>;
 		mem-acc-supply = <&apc_mem_acc_vreg>;
 		qcom,mem-acc-corner-map = <1 1 1 1 2 2>;
@@ -445,7 +445,7 @@
 		qcom,cpr-fuse-row = <67 0>;
 		qcom,cpr-fuse-target-quot = <42 24 6>;
 		qcom,cpr-fuse-ro-sel = <60 57 54>;
-		qcom,cpr-init-voltage-ref = <760000 795000 910000>;
+		qcom,cpr-init-voltage-ref = <760000 795000 960000>;
 		qcom,cpr-fuse-init-voltage =
 					<67 36 6 0>,
 					<67 18 6 0>,
@@ -458,6 +458,9 @@
 		qcom,cpr-init-voltage-step = <10000>;
 		qcom,cpr-corner-map = <1 2 3 3 3 3>;
 		qcom,cpr-corner-frequency-map =
+                <1  499200000>,
+                <1  652800000>,
+                <1  800000000>,
 				<1 1305600000>,
 				<2 1497600000>,
 				<3 1708800000>,
@@ -492,7 +495,7 @@
 			<50000 50000 65000 65000 65000 65000>;
 
 		qcom,cpr-voltage-ceiling-override =
-			<(-1) (-1) 810000 845000 885000 980000 980000 980000>;
+			<(-1) (-1) 810000 845000 985000 1000000 1000000 1000000>;
 
 		qcom,cpr-virtual-corner-quotient-adjustment =
 			<0  0    0   0   0    0>,
