@@ -28,7 +28,7 @@ static struct workqueue_struct *esd_wq;
 static struct workqueue_struct *bat_wq;
 static struct delayed_work esd_work;
 static struct delayed_work bat_work;
-struct work_struct resume_work;
+struct work_struct itk9881h_resume_work;
 bool is_lcd_resume;
 int ilitek_tddi_mp_test_handler(char *apk, bool lcm_on)
 {
@@ -751,7 +751,7 @@ int ilitek_tddi_init(void)
 		ipio_err("Failed to create fw upgrade thread\n");
 	}
 
-	INIT_WORK(&resume_work, ilitek_resume_work_handler);
+	INIT_WORK(&itk9881h_resume_work, ilitek_resume_work_handler);
 	return 0;
 }
 
@@ -773,7 +773,7 @@ void ilitek_call_resume_work(void)
 		is_lcd_resume = true;
 	}
 	mutex_unlock(&idev->touch_mutex);
-	ret = schedule_work(&resume_work);
+	ret = schedule_work(&itk9881h_resume_work);
 	if (ret < 0) {
 		ipio_err("start touch_resume_workqueue failed\n");
 	}
