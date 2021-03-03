@@ -1800,7 +1800,7 @@ static int qg_psy_get_property(struct power_supply *psy,
 		pval->intval = 4000000;
 		#endif
 
-		#if  defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+		#ifdef CONFIG_PROJECT_OLIVES
 		pval->intval = 5000000;
 		#endif
 		/*
@@ -1963,7 +1963,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			pr_info("%s:Terminated charging @ msoc=%d\n",
 					__func__, chip->msoc);
 		}
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	} else if ((!chip->charge_done || chip->msoc < recharge_soc)  //recharge_soc = 99%
 #else
 	} else if ((!chip->charge_done || chip->msoc <= recharge_soc)	//recharge_soc =98%

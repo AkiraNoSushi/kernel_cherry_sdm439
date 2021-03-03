@@ -2380,7 +2380,7 @@ static int smb5_init_hw(struct smb5 *chip)
 					rc);
 		}
 	}
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	rc = smblib_write(chg, USBIN_9V_AICL_THRESHOLD_REG, 0x5);
 	if (rc < 0) {
 		dev_err(chg->dev, "Couldn't configure USBIN_9V_AICL_THRESHOLD_REG rc=%d\n",
