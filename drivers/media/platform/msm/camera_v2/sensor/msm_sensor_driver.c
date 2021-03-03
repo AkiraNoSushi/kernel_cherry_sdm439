@@ -1214,7 +1214,7 @@ CSID_TG:
 
 	msm_sensor_fill_sensor_info(s_ctrl, probed_info, entity_name);
 	// to get proper camera info Start
-#if defined OLIVE_MSM_CAMERA_HW_INFO || defined OLIVEWOOD_MSM_CAMERA_HW_INFO
+#if defined OLIVE_MSM_CAMERA_HW_INFO || defined OLIVEWOOD_MSM_CAMERA_HW_INFO || defined OLIVELITE_MSM_CAMERA_HW_INFO
 	if (0 == s_ctrl->id) {
 		for (i = 0; i < 6; i++)	{
 			if (strncmp((char *)(s_ctrl->sensordata->eeprom_name),
@@ -1243,27 +1243,6 @@ CSID_TG:
 			}
 		}
 	}
-#elif defined OLIVELITE_MSM_CAMERA_HW_INFO
-	if (0 == s_ctrl->id) {
-		for (i = 0; i < 6; i++)	{
-			if (strncmp((char *)(s_ctrl->sensordata->eeprom_name),
-				olive_rear_camera_str_buff[i][0],
-				strlen(s_ctrl->sensordata->eeprom_name)) == 0) {
-				hq_regiser_hw_info(HWID_MAIN_CAM, olive_rear_camera_str_buff[i][1]);
-				break;
-			}
-		}
-	} else if (1 == s_ctrl->id) {
-		for (i = 0; i < 3; i++)	{
-			if (strncmp((char *)(s_ctrl->sensordata->eeprom_name),
-				olive_front_camera_str_buff[i][0],
-				strlen(s_ctrl->sensordata->eeprom_name)) == 0) {
-				hq_regiser_hw_info(HWID_SUB_CAM, olive_front_camera_str_buff[i][1]);
-				break;
-			}
-		}
-	}
-#else
 	if (0 == s_ctrl->id) {
 		if (strncmp((char *)(s_ctrl->sensordata->eeprom_name),
 			"pine_ov13855_qtech",

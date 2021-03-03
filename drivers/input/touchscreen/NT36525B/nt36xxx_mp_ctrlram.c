@@ -2039,14 +2039,14 @@ void nvt_mp_proc_deinit(void)
 
 #if NVT_LOCKDOWN
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 extern char tp_lockdown_info[40];
 #endif
 
 static int nvt_tp_lock_down_info_show(struct seq_file *m, void *data)
 {
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	NVT_LOG("nvt_tp_lock_down_info_show:%s\n", tp_lockdown_info);
 	seq_printf(m, "%s\n", tp_lockdown_info);
 #else

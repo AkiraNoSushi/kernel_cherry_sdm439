@@ -471,7 +471,7 @@ struct smb_charger {
 	bool			is_adapter_idn;
 #endif
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	unsigned long recent_collapse_time;
 	bool		  hvdcp_disabled;
 	bool		  collapsed;
