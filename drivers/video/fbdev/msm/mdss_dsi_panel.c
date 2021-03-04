@@ -592,7 +592,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			usleep_range(100, 110);
 			gpio_free(ctrl_pdata->disp_en_gpio);
 		}
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 		gpio_set_value((ctrl_pdata->rst_gpio), 0);
 		gpio_free(ctrl_pdata->rst_gpio);
 #else

@@ -83,7 +83,7 @@ enum print_reason {
 #define SDP_100_MA			100000
 #define SDP_CURRENT_UA			500000
 #define CDP_CURRENT_UA			1000000
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 #define DCP_CURRENT_UA			2000000
 #define HVDCP_CURRENT_UA		2000000
 #else
@@ -92,7 +92,7 @@ enum print_reason {
 #endif
 #define TYPEC_DEFAULT_CURRENT_UA	900000
 #define TYPEC_MEDIUM_CURRENT_UA		1500000
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 #define TYPEC_HIGH_CURRENT_UA		2000000
 #else
 #define TYPEC_HIGH_CURRENT_UA		3000000
@@ -378,7 +378,7 @@ struct smb_charger {
 	struct delayed_work	usbov_dbc_work;
 	struct delayed_work	cool_limit_work;
 	struct delayed_work 	arb_monitor_work;
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	struct delayed_work	adapter_limit_work;
 #endif
 
@@ -467,7 +467,7 @@ struct smb_charger {
 	u32			headroom_mode;
 	bool			flash_init_done;
 	bool			flash_active;
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	bool			is_adapter_idn;
 #endif
 
