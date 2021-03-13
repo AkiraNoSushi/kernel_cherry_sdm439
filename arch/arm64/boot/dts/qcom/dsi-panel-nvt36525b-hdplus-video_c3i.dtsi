@@ -272,5 +272,7 @@
 		qcom,mdss-dsi-panel-max-error-count = <3>;
 		qcom,mdss-pan-physical-width-dimension = <68>;
 		qcom,mdss-pan-physical-height-dimension = <143>;
+		qcom,ulps-enabled;
+		qcom,suspend-ulps-enabled;
 	};
 };
