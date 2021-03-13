@@ -240,5 +240,7 @@
 		qcom,mdss-dsi-tx-eot-append;
 		qcom,mdss-pan-physical-width-dimension = <68>;
 		qcom,mdss-pan-physical-height-dimension = <143>;
+		qcom,ulps-enabled;
+		qcom,suspend-ulps-enabled;
 	};
 };
