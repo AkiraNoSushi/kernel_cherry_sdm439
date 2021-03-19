@@ -28,8 +28,12 @@
 #include "step-chg-jeita.h"
 #include "storm-watch.h"
 #include "schgm-flash.h"
-#ifdef CONFIG_PROJECT_OLIVES
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
 #include <linux/jiffies.h>
+#endif
+
+#ifdef CONFIG_XIAOMI_SDM439
+#include <linux/sdm439.h>
 #endif
 
 #define smblib_err(chg, fmt, ...)		\
@@ -51,31 +55,27 @@
 	|| typec_mode == POWER_SUPPLY_TYPEC_SOURCE_HIGH)	\
 	&& !chg->typec_legacy)
 
-#ifdef CONFIG_PROJECT_PINE
 int quiet_ther_ibus[] = {2500000, 2000000, 2000000, 1000000,
 					1000000, 500000};
 
 int quiet_ther_ibus_idn[] = {2500000, 1000000, 1000000, 1000000,
 					1000000, 500000};
-#else
 int quiet_ther_ibus_olive[] = {2500000, 2000000, 2000000, 2000000,
 					1000000, 1000000};
 
 int hvdcp_ther_ibus_olive[] = {2500000, 2000000, 1500000, 1300000,
 					700000, 500000};
-#endif
 
 #define ARB_VBUS_UV_THRESHOLD 4300000
 #define ARB_IBUS_UA_THRESHOLD 100000
 #define ARB_DELAY_MS 10000
 
-#ifdef CONFIG_PROJECT_OLIVES
 #define COLLAPSE_DETACH_MAX_INTERVAL ((unsigned long)5)
 #define ATTACH_DETACH_MAX_INTERVAL ((unsigned long)310)
 #define DETACH_ATTACH_MAX_INTERVAL ((unsigned long)330)
 #define HW_SUCHG_DETECT_INTERVAL_MS 300
 #define HW_SUCHG_DETECT_COUNT		3
-#endif
+
 
 static void smblib_arb_monitor_work(struct work_struct *work)
 {
@@ -1848,6 +1848,42 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 	if (chg->system_temp_level == 0)
 		return vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, false, 0);
 
+#ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_PINE) {
+        if (chg->is_adapter_idn) {
+            vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
+                    quiet_ther_ibus_idn[chg->system_temp_level]);
+
+            smblib_err(chg, "system_temp_level = %d, ibus =%d\n",
+                chg->system_temp_level,
+                quiet_ther_ibus_idn[chg->system_temp_level]);
+        } else {
+            vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
+                    quiet_ther_ibus[chg->system_temp_level]);
+
+            smblib_err(chg, "system_temp_level = %d, ibus =%d\n",
+                chg->system_temp_level,
+                quiet_ther_ibus[chg->system_temp_level]);
+        }
+    } else {
+        if (chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP
+            || chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP_3) {
+            vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
+                    hvdcp_ther_ibus_olive[chg->system_temp_level]);
+
+            smblib_err(chg, "system_temp_level = %d, ibus =%d\n",
+                chg->system_temp_level,
+                hvdcp_ther_ibus_olive[chg->system_temp_level]);
+        } else {
+            vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
+                    quiet_ther_ibus_olive[chg->system_temp_level]);
+
+            smblib_err(chg, "system_temp_level = %d, ibus =%d\n",
+                chg->system_temp_level,
+                quiet_ther_ibus_olive[chg->system_temp_level]);
+        }
+    }
+#else
 #ifdef CONFIG_PROJECT_PINE
 	if (chg->is_adapter_idn) {
 		vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
@@ -1881,6 +1917,7 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 			chg->system_temp_level,
 			quiet_ther_ibus_olive[chg->system_temp_level]);
 	}
+#endif
 #endif
 	return 0;
 }
@@ -2278,6 +2315,17 @@ static int smblib_get_prop_ufp_mode(struct smb_charger *chg)
 	}
 	smblib_dbg(chg, PR_REGISTER, "TYPE_C_STATUS_1 = 0x%02x\n", stat);
 
+#ifdef CONFIG_XIAOMI_SDM439
+	if (sdm439_current_device == XIAOMI_OLIVES && (stat &
+	(SNK_RP_STD_DAM_BIT | SNK_RP_1P5_DAM_BIT | SNK_RP_3P0_DAM_BIT))) {
+		smblib_masked_write(chg, TYPE_C_DEBUG_ACCESS_SINK_REG,
+		DAM_DIS_AICL, 0);
+		smblib_masked_write(chg, TYPE_C_DEBUG_ACCESS_SINK_REG,
+		DAM_DIS_AICL|EN_CHG_ON_DEBUG_ACCESS_SNK, EN_CHG_ON_DEBUG_ACCESS_SNK);
+		smblib_masked_write(chg, SCHG_USB_TYPE_C_CFG,
+		BC1P2_START_ON_CC, 0);
+	}
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 	if (stat &
 	(SNK_RP_STD_DAM_BIT | SNK_RP_1P5_DAM_BIT | SNK_RP_3P0_DAM_BIT)) {
@@ -2289,16 +2337,15 @@ static int smblib_get_prop_ufp_mode(struct smb_charger *chg)
 		BC1P2_START_ON_CC, 0);
 	}
 #endif
+#endif
 
 	switch (stat & DETECTED_SRC_TYPE_MASK) {
 	case SNK_RP_STD_BIT:
 		return POWER_SUPPLY_TYPEC_SOURCE_DEFAULT;
 	case SNK_RP_1P5_BIT:
-#ifdef CONFIG_PROJECT_OLIVES
 	case SNK_RP_STD_DAM_BIT:
 	case SNK_RP_1P5_DAM_BIT:
 	case SNK_RP_3P0_DAM_BIT:
-#endif
 		return POWER_SUPPLY_TYPEC_SOURCE_MEDIUM;
 	case SNK_RP_3P0_BIT:
 		return POWER_SUPPLY_TYPEC_SOURCE_HIGH;
@@ -2957,6 +3004,23 @@ irqreturn_t default_irq_handler(int irq, void *data)
 {
 	struct smb_irq_data *irq_data = data;
 	struct smb_charger *chg = irq_data->parent_data;
+
+#ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_OLIVES) {
+        const struct apsd_result *apsd_result;
+
+        if (!strcmp(irq_data->name, "usbin-collapse")) {
+            apsd_result = smblib_get_apsd_result(chg);
+            smblib_err(chg, "IRQ: usbin-collapse, APSD = %s\n", apsd_result->name);
+            if (!strncmp(apsd_result->name, "HVDCP", 5)) {
+                chg->collapsed = true;
+                chg->recent_collapse_time = jiffies;
+                schedule_delayed_work(&chg->hw_suchg_detect_work, msecs_to_jiffies(HW_SUCHG_DETECT_INTERVAL_MS));
+                smblib_err(chg, "HVDCP-usbin-collapse, time = %lu\n", chg->recent_collapse_time);
+            }
+        }
+    }
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 	const struct apsd_result *apsd_result;
 
@@ -2971,6 +3035,8 @@ irqreturn_t default_irq_handler(int irq, void *data)
 		}
 	}
 #endif
+#endif
+
 	smblib_dbg(chg, PR_INTERRUPT, "IRQ: %s\n", irq_data->name);
 	return IRQ_HANDLED;
 }
@@ -3312,7 +3378,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 	bool vbus_rising;
 	struct smb_irq_data *data;
 	struct storm_watch *wdata;
-#ifdef CONFIG_PROJECT_OLIVES
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
 	static unsigned long detach_time;
 	static unsigned long attach_time;
 	static bool need_confirm;
@@ -3329,6 +3395,20 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 						chg->chg_freq.freq_removal);
 
 	if (vbus_rising) {
+#ifdef CONFIG_XIAOMI_SDM439
+        if (sdm439_current_device == XIAOMI_OLIVES) {
+            attach_time = jiffies;
+            smblib_err(chg, "attach_time = %lu\n", attach_time);
+            if (need_confirm && attach_time - detach_time < DETACH_ATTACH_MAX_INTERVAL) {
+                rc = smblib_masked_write(chg, USBIN_OPTIONS_1_CFG_REG, HVDCP_EN_BIT, 0);
+                if (rc < 0)
+                    smblib_err(chg, "XIAOMI can't disable HVDCP for workaround\n");
+                else
+                    chg->hvdcp_disabled = true;
+            }
+            need_confirm = false;
+        }
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 		attach_time = jiffies;
 		smblib_err(chg, "attach_time = %lu\n", attach_time);
@@ -3340,6 +3420,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 				chg->hvdcp_disabled = true;
 		}
 		need_confirm = false;
+#endif
 #endif
 		rc = smblib_request_dpdm(chg, true);
 		if (rc < 0)
@@ -3355,6 +3436,27 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 					msecs_to_jiffies(PL_DELAY_MS));
 		schedule_delayed_work(&chg->arb_monitor_work, msecs_to_jiffies(ARB_DELAY_MS));
 	} else {
+#ifdef CONFIG_XIAOMI_SDM439
+        if (sdm439_current_device == XIAOMI_OLIVES) {
+            if (chg->hvdcp_disabled) {
+                rc = smblib_masked_write(chg, USBIN_OPTIONS_1_CFG_REG, HVDCP_EN_BIT, HVDCP_EN_BIT);
+                if (rc < 0) {
+                    smblib_err(chg, "can't restore HVDCP_EN_BIT\n");
+                } else {
+                    chg->hvdcp_disabled = false;
+                }
+            }
+            if (chg->collapsed) {
+                detach_time = jiffies;
+                smblib_err(chg, "detached after collapse --> time = %lu, collapse-time = %lu, last_atta"
+                        "ch_time = %lu\n", detach_time, chg->recent_collapse_time, attach_time);
+                if (detach_time - chg->recent_collapse_time < COLLAPSE_DETACH_MAX_INTERVAL &&
+                    detach_time - attach_time < ATTACH_DETACH_MAX_INTERVAL)
+                    need_confirm = true;
+                chg->collapsed = false;
+            }
+        }
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 		if (chg->hvdcp_disabled) {
 			rc = smblib_masked_write(chg, USBIN_OPTIONS_1_CFG_REG, HVDCP_EN_BIT, HVDCP_EN_BIT);
@@ -3373,6 +3475,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 				need_confirm = true;
 			chg->collapsed = false;
 		}
+#endif
 #endif
 		if (chg->wa_flags & BOOST_BACK_WA) {
 			data = chg->irq_info[SWITCHER_POWER_OK_IRQ].irq_data;
@@ -3447,9 +3550,16 @@ irqreturn_t usb_plugin_irq_handler(int irq, void *data)
 		smblib_usb_plugin_hard_reset_locked(chg);
 	else
 		smblib_usb_plugin_locked(chg);
-#ifdef CONFIG_PROJECT_PINE
+
+    #ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_PINE) {
+        schedule_delayed_work(&chg->adapter_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS*10));
+    }
+    #else
+    #ifdef CONFIG_PROJECT_PINE
 	schedule_delayed_work(&chg->adapter_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS*10));
-#endif
+    #endif
+    #endif
 	return IRQ_HANDLED;
 }
 
@@ -3743,6 +3853,19 @@ irqreturn_t usb_source_change_irq_handler(int irq, void *data)
 	}
 	smblib_dbg(chg, PR_REGISTER, "APSD_STATUS = 0x%02x\n", stat);
 
+#ifdef CONFIG_XIAOMI_SDM439
+	if (sdm439_current_device == XIAOMI_OLIVES && chg->system_temp_level > 0) {
+		if (chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP
+			|| chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP_3) {
+			smblib_err(chg, "%s:system_temp_level = %d, ibus =%d\n",
+						__func__, chg->system_temp_level,
+						hvdcp_ther_ibus_olive[chg->system_temp_level]);
+
+			vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
+					hvdcp_ther_ibus_olive[chg->system_temp_level]);
+		}
+	}
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 	if (chg->system_temp_level > 0) {
 		if (chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP
@@ -3755,6 +3878,7 @@ irqreturn_t usb_source_change_irq_handler(int irq, void *data)
 					hvdcp_ther_ibus_olive[chg->system_temp_level]);
 		}
 	}
+#endif
 #endif
 
 	return IRQ_HANDLED;
@@ -4464,7 +4588,7 @@ out:
 	pm_relax(chg->dev);
 }
 
-#ifdef CONFIG_PROJECT_OLIVES
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
 static void smblib_hw_suchg_detect_work(struct work_struct *work)
 {
 	int rc;
@@ -4725,7 +4849,93 @@ static void smbchg_cool_limit_work(struct work_struct *work)
 	union power_supply_propval temp = {0,};
 
 	smblib_get_prop_from_bms(chg, POWER_SUPPLY_PROP_TEMP, &temp);
-
+#ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_PINE) {
+        if (temp.intval > COOL_0_TEMPERATURE
+            && temp.intval <= COOL_5_TEMPERATURE && icl != COOL_ICL_400MA) {
+            mutex_lock(&chg->cool_current);
+            rc = smblib_write(chg, JEITA_CCCOMP_CFG_COLD_REG, COOL_ICL_400MA);
+            if (rc < 0) {
+                smblib_err(chg,
+                    "Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
+                    rc);
+            } else {
+                icl = COOL_ICL_400MA;
+                smblib_err(chg,
+                    "bat temp between 0-5,set ibus 400ma\n");
+            }
+            mutex_unlock(&chg->cool_current);
+        } else if (temp.intval  > COOL_5_TEMPERATURE
+            && temp.intval  <= COOL_10_TEMPERATURE && icl != COOL_ICL_1300MA) {
+            mutex_lock(&chg->cool_current);
+            rc = smblib_write(chg, JEITA_CCCOMP_CFG_COLD_REG, COOL_ICL_1300MA);
+            if (rc < 0) {
+                smblib_err(chg, "Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
+                    rc);
+            } else {
+                icl = COOL_ICL_1300MA;
+                smblib_err(chg,
+                    "bat temp between 5-10,set ibus 1200ma\n");
+            }
+            mutex_unlock(&chg->cool_current);
+        } else if (temp.intval  > COOL_10_TEMPERATURE
+            && temp.intval  < COOL_15_TEMPERATURE && icl != COOL_ICL_1950MA) {
+            mutex_lock(&chg->cool_current);
+            rc = smblib_write(chg, JEITA_CCCOMP_CFG_COLD_REG, COOL_ICL_1950MA);
+            if (rc < 0) {
+                smblib_err(chg, "Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
+                    rc);
+            } else {
+                icl = COOL_ICL_1950MA;
+                smblib_err(chg,
+                    "bat temp between 10-15,set ibus 1950ma\n");
+            }
+            mutex_unlock(&chg->cool_current);
+        }
+    } else {
+        if (temp.intval > COOL_0_TEMPERATURE
+            && temp.intval <= COOL_5_TEMPERATURE && icl != COOL_ICL_OLIVE_1000MA) {
+            mutex_lock(&chg->cool_current);
+            rc = smblib_write(chg, JEITA_CCCOMP_CFG_COLD_REG, COOL_ICL_OLIVE_1000MA);
+            if (rc < 0) {
+                smblib_err(chg,
+                    "Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
+                    rc);
+            } else {
+                icl = COOL_ICL_OLIVE_1000MA;
+                smblib_err(chg,
+                    "bat temp between 0-5,set ibus 1000ma\n");
+            }
+            mutex_unlock(&chg->cool_current);
+        } else if (temp.intval  > COOL_5_TEMPERATURE
+            && temp.intval  <= COOL_10_TEMPERATURE && icl != COOL_ICL_OLIVE_1950MA) {
+            mutex_lock(&chg->cool_current);
+            rc = smblib_write(chg, JEITA_CCCOMP_CFG_COLD_REG, COOL_ICL_OLIVE_1950MA);
+            if (rc < 0) {
+                smblib_err(chg, "Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
+                    rc);
+            } else {
+                icl = COOL_ICL_OLIVE_1950MA;
+                smblib_err(chg,
+                    "bat temp between 5-10,set ibus 1950ma\n");
+            }
+            mutex_unlock(&chg->cool_current);
+        } else if (temp.intval  > COOL_10_TEMPERATURE
+            && temp.intval  < COOL_15_TEMPERATURE && icl != COOL_ICL_OLIVE_2950MA) {
+            mutex_lock(&chg->cool_current);
+            rc = smblib_write(chg, JEITA_CCCOMP_CFG_COLD_REG, COOL_ICL_OLIVE_2950MA);
+            if (rc < 0) {
+                smblib_err(chg, "Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
+                    rc);
+            } else {
+                icl = COOL_ICL_OLIVE_2950MA;
+                smblib_err(chg,
+                    "bat temp between 10-15,set ibus 2950ma\n");
+            }
+            mutex_unlock(&chg->cool_current);
+        }
+    }
+#else
 #ifdef CONFIG_PROJECT_PINE
 	if (temp.intval > COOL_0_TEMPERATURE
 		&& temp.intval <= COOL_5_TEMPERATURE && icl != COOL_ICL_400MA) {
@@ -4811,10 +5021,11 @@ static void smbchg_cool_limit_work(struct work_struct *work)
 		mutex_unlock(&chg->cool_current);
 	}
 #endif
+#endif
 	schedule_delayed_work(&chg->cool_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS));
 }
 
-#ifdef CONFIG_PROJECT_PINE
+#if defined(CONFIG_PROJECT_PINE) || defined(CONFIG_XIAOMI_SDM439)
 static void smblib_adapter_limit_work(struct work_struct *work)
 {
 	int settled_ua = 0;
@@ -4950,11 +5161,19 @@ int smblib_init(struct smb_charger *chg)
 	INIT_DELAYED_WORK(&chg->bb_removal_work, smblib_bb_removal_work);
 	INIT_DELAYED_WORK(&chg->usbov_dbc_work, smblib_usbov_dbc_work);
 	INIT_DELAYED_WORK(&chg->arb_monitor_work, smblib_arb_monitor_work);
+#ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_PINE) {
+	    INIT_DELAYED_WORK(&chg->adapter_limit_work, smblib_adapter_limit_work);
+    } else if (sdm439_current_device == XIAOMI_OLIVES) {
+	    INIT_DELAYED_WORK(&chg->hw_suchg_detect_work, smblib_hw_suchg_detect_work);
+    }
+#else
 #ifdef CONFIG_PROJECT_PINE
 	INIT_DELAYED_WORK(&chg->adapter_limit_work, smblib_adapter_limit_work);
 #endif
 #ifdef CONFIG_PROJECT_OLIVES
-		INIT_DELAYED_WORK(&chg->hw_suchg_detect_work, smblib_hw_suchg_detect_work);
+	INIT_DELAYED_WORK(&chg->hw_suchg_detect_work, smblib_hw_suchg_detect_work);
+#endif
 #endif
 	if (chg->hw_jeita_enabled) {
 		INIT_DELAYED_WORK(&chg->cool_limit_work, smbchg_cool_limit_work);
@@ -5067,11 +5286,19 @@ int smblib_deinit(struct smb_charger *chg)
 		cancel_delayed_work_sync(&chg->uusb_otg_work);
 		cancel_delayed_work_sync(&chg->bb_removal_work);
 		cancel_delayed_work_sync(&chg->usbov_dbc_work);
+#ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_PINE) {
+		cancel_delayed_work_sync(&chg->adapter_limit_work);
+    } else if (sdm439_current_device == XIAOMI_OLIVES) {
+		cancel_delayed_work_sync(&chg->hw_suchg_detect_work);
+    }
+#else
 #ifdef CONFIG_PROJECT_PINE
 		cancel_delayed_work_sync(&chg->adapter_limit_work);
 #endif
 #ifdef CONFIG_PROJECT_OLIVES
 		cancel_delayed_work_sync(&chg->hw_suchg_detect_work);
+#endif
 #endif
 		if (chg->hw_jeita_enabled)
 			cancel_delayed_work_sync(&chg->cool_limit_work);
