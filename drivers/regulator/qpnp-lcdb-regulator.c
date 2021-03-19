@@ -27,6 +27,10 @@
 #include <linux/regulator/machine.h>
 #include <linux/qpnp/qpnp-revid.h>
 
+#ifdef CONFIG_XIAOMI_SDM439
+#include <linux/sdm439.h>
+#endif
+
 #define QPNP_LCDB_REGULATOR_DRIVER_NAME		"qcom,qpnp-lcdb-regulator"
 
 /* LCDB */
@@ -1362,7 +1366,7 @@ static int qpnp_lcdb_ldo_regulator_enable(struct regulator_dev *rdev)
 	return rc;
 }
 
-#ifdef CONFIG_PROJECT_OLIVES
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
 extern bool ilitek_gesture_flag;
 extern bool nvt_gesture_flag;
 extern bool fts_gesture_flag;
@@ -1377,11 +1381,16 @@ static int qpnp_lcdb_ldo_regulator_disable(struct regulator_dev *rdev)
 		return 0;
 
 	mutex_lock(&lcdb->lcdb_mutex);
+#ifdef CONFIG_XIAOMI_SDM439
+	if (sdm439_current_device == XIAOMI_OLIVES && ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true) && (fts_gesture_flag != true)))
+		rc = qpnp_lcdb_disable(lcdb);
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 	if ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true) && (fts_gesture_flag != true))
 		rc = qpnp_lcdb_disable(lcdb);
 #else
 	rc = qpnp_lcdb_disable(lcdb);
+#endif
 #endif
 	if (rc < 0)
 		pr_err("Failed to disable lcdb rc=%d\n", rc);
@@ -1470,11 +1479,16 @@ static int qpnp_lcdb_ncp_regulator_disable(struct regulator_dev *rdev)
 		return 0;
 
 	mutex_lock(&lcdb->lcdb_mutex);
+#ifdef CONFIG_XIAOMI_SDM439
+	if (sdm439_current_device == XIAOMI_OLIVES && ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true) && (fts_gesture_flag != true)))
+    	rc = qpnp_lcdb_disable(lcdb);
+#else
 #ifdef CONFIG_PROJECT_OLIVES
 	if ((ilitek_gesture_flag != true) && (nvt_gesture_flag != true) && (fts_gesture_flag != true))
 		rc = qpnp_lcdb_disable(lcdb);
 #else
 	rc = qpnp_lcdb_disable(lcdb);
+#endif
 #endif
 	if (rc < 0)
 		pr_err("Failed to disable lcdb rc=%d\n", rc);
