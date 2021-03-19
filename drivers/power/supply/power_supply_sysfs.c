@@ -17,6 +17,10 @@
 #include <linux/slab.h>
 #include <linux/stat.h>
 
+#ifdef CONFIG_XIAOMI_SDM439
+#include <linux/sdm439.h>
+#endif
+
 #include "power_supply.h"
 
 /*
@@ -105,6 +109,23 @@ static ssize_t power_supply_show_property(struct device *dev,
 		}
 	}
 
+#ifdef CONFIG_XIAOMI_SDM439
+    if (sdm439_current_device == XIAOMI_OLIVES) {
+        if (value.intval == POWER_SUPPLY_TYPE_USB_PD) {
+            ret = power_supply_get_property(psy, off, &value);
+
+            if (ret < 0) {
+                if (ret == -ENODATA)
+                    dev_dbg(dev, "driver has no data for `%s' property\n",
+                        attr->attr.name);
+                else if (ret != -ENODEV && ret != -EAGAIN)
+                    dev_err(dev, "driver failed to report `%s' property: %zd\n",
+                        attr->attr.name, ret);
+                return ret;
+            }
+        }
+    }
+#else
 #ifndef CONFIG_PROJECT_PINE
 	if (value.intval == POWER_SUPPLY_TYPE_USB_PD) {
 		ret = power_supply_get_property(psy, off, &value);
@@ -119,6 +140,7 @@ static ssize_t power_supply_show_property(struct device *dev,
 			return ret;
 		}
 	}
+#endif
 #endif
 
 	if (off == POWER_SUPPLY_PROP_STATUS)
