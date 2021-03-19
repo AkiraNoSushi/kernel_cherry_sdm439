@@ -64,7 +64,7 @@
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
-struct fts_ts_data *fts_data;
+struct fts_ts_data *FT8006S_fts_data;
 
 /*****************************************************************************
 * Static function prototypes
@@ -74,21 +74,21 @@ static int fts_ts_resume(struct device *dev);
 bool is_focal_tp;
 
 /*****************************************************************************
-*  Name: fts_wait_tp_to_valid
+*  Name: FT8006S_fts_wait_tp_to_valid
 *  Brief: Read chip id until TP FW become valid(Timeout: TIMEOUT_READ_REG),
 *		 need call when reset/power on/resume...
 *  Input:
 *  Output:
 *  Return: return 0 if tp valid, otherwise return error code
 *****************************************************************************/
-int fts_wait_tp_to_valid(void)
+int FT8006S_fts_wait_tp_to_valid(void)
 {
 	int ret = 0;
 	int cnt = 0;
 	u8 idh = 0;
 	u8 idl = 0;
-	u8 chip_idh = fts_data->ic_info.ids.chip_idh;
-	u8 chip_idl = fts_data->ic_info.ids.chip_idl;
+	u8 chip_idh = FT8006S_fts_data->ic_info.ids.chip_idh;
+	u8 chip_idl = FT8006S_fts_data->ic_info.ids.chip_idl;
 
 	do {
 		ret = fts_read_reg(FTS_REG_CHIP_ID, &idh);
@@ -107,67 +107,67 @@ int fts_wait_tp_to_valid(void)
 }
 
 /*****************************************************************************
-*  Name: fts_tp_state_recovery
+*  Name: FT8006S_fts_tp_state_recovery
 *  Brief: Need execute this function when reset
 *  Input:
 *  Output:
 *  Return:
 *****************************************************************************/
-void fts_tp_state_recovery(struct fts_ts_data *ts_data)
+void FT8006S_fts_tp_state_recovery(struct fts_ts_data *ts_data)
 {
 	FTS_FUNC_ENTER();
 	/* wait tp stable */
-	fts_wait_tp_to_valid();
+	FT8006S_fts_wait_tp_to_valid();
 	/* recover TP charger state 0x8B */
 	/* recover TP glove state 0xC0 */
 	/* recover TP cover state 0xC1 */
-	fts_ex_mode_recovery(ts_data);
+	FT8006S_fts_ex_mode_recovery(ts_data);
 	/* recover TP gesture state 0xD0 */
-	fts_gesture_recovery(ts_data);
+	FT8006S_fts_gesture_recovery(ts_data);
 	FTS_FUNC_EXIT();
 }
 
-int fts_reset_proc(int hdelayms)
+int FT8006S_fts_reset_proc(int hdelayms)
 {
 	FTS_DEBUG("tp reset");
-	gpio_direction_output(fts_data->pdata->reset_gpio, 0);
+	gpio_direction_output(FT8006S_fts_data->pdata->reset_gpio, 0);
 	msleep(1);
-	gpio_direction_output(fts_data->pdata->reset_gpio, 1);
+	gpio_direction_output(FT8006S_fts_data->pdata->reset_gpio, 1);
 	if (hdelayms)
 		msleep(hdelayms);
 
 	return 0;
 }
 
-void fts_irq_disable(void)
+void FT8006S_fts_irq_disable(void)
 {
 	unsigned long irqflags;
 
 	FTS_FUNC_ENTER();
-	spin_lock_irqsave(&fts_data->irq_lock, irqflags);
+	spin_lock_irqsave(&FT8006S_fts_data->irq_lock, irqflags);
 
-	if (!fts_data->irq_disabled) {
-		disable_irq_nosync(fts_data->irq);
-		fts_data->irq_disabled = true;
+	if (!FT8006S_fts_data->irq_disabled) {
+		disable_irq_nosync(FT8006S_fts_data->irq);
+		FT8006S_fts_data->irq_disabled = true;
 	}
 
-	spin_unlock_irqrestore(&fts_data->irq_lock, irqflags);
+	spin_unlock_irqrestore(&FT8006S_fts_data->irq_lock, irqflags);
 	FTS_FUNC_EXIT();
 }
 
-void fts_irq_enable(void)
+void FT8006S_fts_irq_enable(void)
 {
 	unsigned long irqflags = 0;
 
 	FTS_FUNC_ENTER();
-	spin_lock_irqsave(&fts_data->irq_lock, irqflags);
+	spin_lock_irqsave(&FT8006S_fts_data->irq_lock, irqflags);
 
-	if (fts_data->irq_disabled) {
-		enable_irq(fts_data->irq);
-		fts_data->irq_disabled = false;
+	if (FT8006S_fts_data->irq_disabled) {
+		enable_irq(FT8006S_fts_data->irq);
+		FT8006S_fts_data->irq_disabled = false;
 	}
 
-	spin_unlock_irqrestore(&fts_data->irq_lock, irqflags);
+	spin_unlock_irqrestore(&FT8006S_fts_data->irq_lock, irqflags);
 	FTS_FUNC_EXIT();
 }
 
@@ -266,7 +266,7 @@ static int fts_read_bootid(struct fts_ts_data *ts_data, u8 *id)
 }
 
 /*****************************************************************************
-* Name: fts_get_ic_information
+* Name: FT8006S_fts_get_ic_information
 * Brief: read chip id to get ic information, after run the function, driver w-
 *		ill know which IC is it.
 *		If cant get the ic information, maybe not focaltech's touch IC, need
@@ -275,7 +275,7 @@ static int fts_read_bootid(struct fts_ts_data *ts_data, u8 *id)
 * Output:
 * Return: return 0 if get correct ic information, otherwise return error code
 *****************************************************************************/
-int fts_get_ic_information(struct fts_ts_data *ts_data)
+int FT8006S_fts_get_ic_information(struct fts_ts_data *ts_data)
 {
 	int ret = 0;
 	int cnt = 0;
@@ -285,7 +285,7 @@ int fts_get_ic_information(struct fts_ts_data *ts_data)
 	ts_data->ic_info.hid_supported = FTS_HID_SUPPORTTED;
 
 	for (cnt = 0; cnt < 3; cnt++) {
-		fts_reset_proc(0);
+		FT8006S_fts_reset_proc(0);
 		mdelay(FTS_CMD_START_DELAY);
 
 		ret = fts_read_bootid(ts_data, &chip_id[0]);
@@ -344,14 +344,14 @@ static void fts_show_touch_buffer(u8 *data, int datalen)
 
 void fts_release_all_finger(void)
 {
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 #if FTS_MT_PROTOCOL_B_EN
 	u32 finger_count = 0;
-	u32 max_touches = fts_data->pdata->max_touch_number;
+	u32 max_touches = FT8006S_fts_data->pdata->max_touch_number;
 #endif
 
 	FTS_FUNC_ENTER();
-	mutex_lock(&fts_data->report_mutex);
+	mutex_lock(&FT8006S_fts_data->report_mutex);
 #if FTS_MT_PROTOCOL_B_EN
 	for (finger_count = 0; finger_count < max_touches; finger_count++) {
 		input_mt_slot(input_dev, finger_count);
@@ -363,9 +363,9 @@ void fts_release_all_finger(void)
 	input_report_key(input_dev, BTN_TOUCH, 0);
 	input_sync(input_dev);
 
-	fts_data->touchs = 0;
-	fts_data->key_state = 0;
-	mutex_unlock(&fts_data->report_mutex);
+	FT8006S_fts_data->touchs = 0;
+	FT8006S_fts_data->key_state = 0;
+	mutex_unlock(&FT8006S_fts_data->report_mutex);
 	FTS_FUNC_EXIT();
 }
 
@@ -588,7 +588,7 @@ static int fts_read_touchdata(struct fts_ts_data *data)
 	}
 
 	if (data->gesture_mode) {
-		ret = fts_gesture_readdata(data, buf + FTS_TOUCH_DATA_LEN);
+		ret = FT8006S_fts_gesture_readdata(data, buf + FTS_TOUCH_DATA_LEN);
 		if (0 == ret) {
 		FTS_INFO("succuss to get gesture data in irq handler");
 		return 1;
@@ -626,7 +626,7 @@ static int fts_read_parse_touchdata(struct fts_ts_data *data)
 			&& (buf[6] == 0xFF)) {
 			FTS_DEBUG("touch buff is 0xff, need recovery state");
 			fts_release_all_finger();
-			fts_tp_state_recovery(data);
+			FT8006S_fts_tp_state_recovery(data);
 			return -EIO;
 		}
 	}
@@ -693,7 +693,7 @@ int enter_palm_mode(struct fts_ts_data *data)
 static void fts_irq_read_report(void)
 {
 	int ret = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 
 #if FTS_ESDCHECK_EN
 	fts_esdcheck_set_intr(1);
@@ -746,7 +746,7 @@ static int fts_irq_registration(struct fts_ts_data *ts_data)
 	struct fts_ts_platform_data *pdata = ts_data->pdata;
 
 	ts_data->irq = gpio_to_irq(pdata->irq_gpio);
-	pdata->irq_gpio_flags = IRQF_TRIGGER_FALLING | IRQF_ONESHOT;
+	pdata->irq_gpio_flags = IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_PERF_CRITICAL;
 	FTS_INFO("irq:%d, flag:%x", ts_data->irq, pdata->irq_gpio_flags);
 	ret = request_threaded_irq(ts_data->irq, NULL, fts_irq_handler,
 				   pdata->irq_gpio_flags,
@@ -1283,7 +1283,7 @@ static int fts_parse_dt(struct device *dev, struct fts_ts_platform_data *pdata)
 static void fts_resume_work(struct work_struct *work)
 {
 	struct fts_ts_data *ts_data = container_of(work, struct fts_ts_data,
-						   resume_work);
+						   ft8006s_resume_work);
 
 	fts_ts_resume(ts_data->dev);
 }
@@ -1300,7 +1300,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 	if (strnstr(saved_command_line, "androidboot.mode=ffbm-01", strlen(saved_command_line))) {
 		FTS_INFO("we are in ffbm mode. event:%lu", event);
 		if (FB_EVENT_SUSPEND == event) {
-			cancel_work_sync(&fts_data->resume_work);
+			cancel_work_sync(&FT8006S_fts_data->ft8006s_resume_work);
 			FTS_INFO("need suspend: event = %lu\n", event);
 			fts_ts_suspend(ts_data->dev);
 		}
@@ -1320,13 +1320,13 @@ static int fb_notifier_callback(struct notifier_block *self,
 		if (FB_EARLY_EVENT_BLANK == event) {
 			FTS_INFO("resume: event = %lu, not care\n", event);
 		} else if (FB_EVENT_BLANK == event) {
-			queue_work(fts_data->ts_workqueue,
-				   &fts_data->resume_work);
+			queue_work(FT8006S_fts_data->ts_workqueue,
+				   &FT8006S_fts_data->ft8006s_resume_work);
 		}
 		break;
 	case FB_BLANK_POWERDOWN:
 		if (FB_EARLY_EVENT_BLANK == event) {
-			cancel_work_sync(&fts_data->resume_work);
+			cancel_work_sync(&FT8006S_fts_data->ft8006s_resume_work);
 			fts_ts_suspend(ts_data->dev);
 		} else if (FB_EVENT_BLANK == event) {
 			FTS_INFO("suspend: event = %lu, not care\n", event);
@@ -1358,17 +1358,17 @@ static void fts_ts_late_resume(struct early_suspend *handler)
 #endif
 
 static char tp_info_summary[80] = "";
-int ctp_hw_info(struct fts_ts_data *ts_data)
+int FT8006S_ctp_hw_info(struct fts_ts_data *ts_data)
 {
 	int ret = 0;
 	u8 fw_version = 0;
 	bool fwvalid = false;
 
 	FTS_FUNC_ENTER();
-	fwvalid = fts_fwupg_check_fw_valid(ts_data);
+	fwvalid = FT8006S_fts_fwupg_check_fw_valid(ts_data);
 
 	 if (fwvalid) {
-		ret = fts_fwupg_get_ver_in_tp(ts_data, &fw_version);
+		ret = FT8006S_fts_fwupg_get_ver_in_tp(ts_data, &fw_version);
 		if (ret < 0) {
 			FTS_ERROR("get fw ver info fail");
 		return false;
@@ -1477,20 +1477,20 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 #endif
 
 #if (!FTS_CHIP_IDC)
-	fts_reset_proc(200);
+	FT8006S_fts_reset_proc(200);
 #endif
 
-	ret = fts_get_ic_information(ts_data);
+	ret = FT8006S_fts_get_ic_information(ts_data);
 	if (ret) {
 		FTS_ERROR("not focal IC, unregister driver");
 		goto err_irq_req;
 	}
 
-	ret = fts_create_apk_debug_channel(ts_data);
+	ret = FT8006S_fts_create_apk_debug_channel(ts_data);
 	if (ret)
 		FTS_ERROR("create apk debug node fail");
 
-	ret = fts_create_sysfs(ts_data);
+	ret = FT8006S_fts_create_sysfs(ts_data);
 	if (ret)
 		FTS_ERROR("create sysfs node fail");
 
@@ -1500,16 +1500,16 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 		FTS_ERROR("init point report check fail");
 #endif
 
-	ret = fts_ex_mode_init(ts_data);
+	ret = FT8006S_fts_ex_mode_init(ts_data);
 	if (ret)
 		FTS_ERROR("init glove/cover/charger fail");
 
-	ret = fts_gesture_init(ts_data);
+	ret = FT8006S_fts_gesture_init(ts_data);
 	if (ret)
 		FTS_ERROR("init gesture fail");
 
 #if FTS_TEST_EN
-	ret = fts_test_init(ts_data);
+	ret = FT8006S_fts_test_init(ts_data);
 	if (ret)
 		FTS_ERROR("init production test fail");
 #endif
@@ -1544,12 +1544,12 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 
 	init_completion(&ts_data->dev_pm_suspend_completion);
 
-	ret = fts_fwupg_init(ts_data);
+	ret = FT8006S_fts_fwupg_init(ts_data);
 	if (ret)
 		FTS_ERROR("init fw upgrade fail");
 #if defined(CONFIG_FB)
 	if (ts_data->ts_workqueue)
-		INIT_WORK(&ts_data->resume_work, fts_resume_work);
+		INIT_WORK(&ts_data->ft8006s_resume_work, fts_resume_work);
 	ts_data->fb_notif.notifier_call = fb_notifier_callback;
 	ret = fb_register_client(&ts_data->fb_notif);
 	if (ret)
@@ -1600,21 +1600,21 @@ static int fts_ts_remove_entry(struct fts_ts_data *ts_data)
 	fts_point_report_check_exit(ts_data);
 #endif
 
-	fts_release_apk_debug_channel(ts_data);
-	fts_remove_sysfs(ts_data);
-	fts_ex_mode_exit(ts_data);
+	FT8006S_fts_release_apk_debug_channel(ts_data);
+	FT8006S_fts_remove_sysfs(ts_data);
+	FT8006S_fts_ex_mode_exit(ts_data);
 
-	fts_fwupg_exit(ts_data);
+	FT8006S_fts_fwupg_exit(ts_data);
 
 #if FTS_TEST_EN
-	fts_test_exit(ts_data);
+	FT8006S_fts_test_exit(ts_data);
 #endif
 
 #if FTS_ESDCHECK_EN
 	fts_esdcheck_exit(ts_data);
 #endif
 
-	fts_gesture_exit(ts_data);
+	FT8006S_fts_gesture_exit(ts_data);
 	fts_bus_exit(ts_data);
 
 	free_irq(ts_data->irq, ts_data);
@@ -1654,7 +1654,7 @@ static int fts_ts_remove_entry(struct fts_ts_data *ts_data)
 static int fts_ts_suspend(struct device *dev)
 {
 	int ret = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 
 	FTS_FUNC_ENTER();
 	if (ts_data->suspended) {
@@ -1672,7 +1672,7 @@ static int fts_ts_suspend(struct device *dev)
 #endif
 
 	if (ts_data->gesture_mode)
-		fts_gesture_suspend(ts_data);
+		FT8006S_fts_gesture_suspend(ts_data);
 	else {
 		FTS_INFO("make TP enter into sleep mode");
 		ret = fts_write_reg(FTS_REG_POWER_MODE, FTS_REG_POWER_MODE_SLEEP);
@@ -1697,13 +1697,13 @@ static int fts_ts_suspend(struct device *dev)
 void lcd_call_tp_reset(int i)
 {
 	FTS_FUNC_ENTER();
-	gpio_set_value(fts_data->pdata->reset_gpio, i);
+	gpio_set_value(FT8006S_fts_data->pdata->reset_gpio, i);
 	FTS_FUNC_EXIT();
 }
 
 static int fts_ts_resume(struct device *dev)
 {
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 
 	FTS_FUNC_ENTER();
 	if (!ts_data->suspended) {
@@ -1717,18 +1717,18 @@ static int fts_ts_resume(struct device *dev)
 #if FTS_POWER_SOURCE_CUST_EN
 		fts_power_source_resume(ts_data);
 #endif
-		fts_reset_proc(200);
+		FT8006S_fts_reset_proc(200);
 	}
 
-	fts_wait_tp_to_valid();
-	fts_ex_mode_recovery(ts_data);
+	FT8006S_fts_wait_tp_to_valid();
+	FT8006S_fts_ex_mode_recovery(ts_data);
 
 #if FTS_ESDCHECK_EN
 	fts_esdcheck_resume();
 #endif
 
 	if (ts_data->gesture_mode)
-		fts_gesture_resume(ts_data);
+		FT8006S_fts_gesture_resume(ts_data);
 
 	ts_data->suspended = false;
 	FTS_FUNC_EXIT();
@@ -1757,11 +1757,11 @@ static int fts_ts_probe(struct spi_device *spi)
 	/* malloc memory for global struct variable */
 	ts_data = (struct fts_ts_data *)kzalloc(sizeof(*ts_data), GFP_KERNEL);
 	if (!ts_data) {
-		FTS_ERROR("allocate memory for fts_data fail");
+		FTS_ERROR("allocate memory for FT8006S_fts_data fail");
 		return -ENOMEM;
 	}
 
-	fts_data = ts_data;
+	FT8006S_fts_data = ts_data;
 	ts_data->spi = spi;
 	ts_data->dev = &spi->dev;
 	ts_data->log_level = 1;
