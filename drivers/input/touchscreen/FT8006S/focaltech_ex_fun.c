@@ -97,7 +97,7 @@ static ssize_t fts_debug_write(struct file *filp, const char __user *buff,
 	int writelen = 0;
 	int ret = 0;
 	char tmp[PROC_BUF_SIZE];
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct ftxxxx_proc *proc = &ts_data->proc;
 
 	if ((buflen <= 1) || (buflen > PAGE_SIZE)) {
@@ -176,7 +176,7 @@ static ssize_t fts_debug_write(struct file *filp, const char __user *buff,
 		tmp[buflen - 1] = '\0';
 		if (strncmp(tmp, "focal_driver", 12) == 0) {
 			FTS_INFO("APK execute HW Reset");
-			fts_reset_proc(0);
+			FT8006S_fts_reset_proc(0);
 		}
 		break;
 
@@ -217,7 +217,7 @@ static ssize_t fts_debug_read(struct file *filp, char __user *buff,
 	int buflen = count;
 	u8 *readbuf = NULL;
 	u8 tmpbuf[PROC_BUF_SIZE] = { 0 };
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct ftxxxx_proc *proc = &ts_data->proc;
 
 	if ((buflen <= 0) || (buflen > PAGE_SIZE)) {
@@ -302,7 +302,7 @@ static int fts_debug_write(struct file *filp, const char __user *buff,
 	int writelen = 0;
 	int ret = 0;
 	char tmp[PROC_BUF_SIZE];
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct ftxxxx_proc *proc = &ts_data->proc;
 
 	if ((buflen <= 1) || (buflen > PAGE_SIZE)) {
@@ -381,7 +381,7 @@ static int fts_debug_write(struct file *filp, const char __user *buff,
 		tmp[buflen - 1] = '\0';
 		if (strncmp(tmp, "focal_driver", 12) == 0) {
 			FTS_INFO("APK execute HW Reset");
-			fts_reset_proc(0);
+			FT8006S_fts_reset_proc(0);
 		}
 		break;
 
@@ -422,7 +422,7 @@ static int fts_debug_read(char *page, char **start, off_t off, int count,
 	int buflen = count;
 	u8 *readbuf = NULL;
 	u8 tmpbuf[PROC_BUF_SIZE] = { 0 };
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct ftxxxx_proc *proc = &ts_data->proc;
 
 	if ((buflen <= 0) || (buflen > PAGE_SIZE)) {
@@ -493,7 +493,7 @@ proc_read_err:
 }
 #endif
 
-int fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
+int FT8006S_fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
 {
 	struct ftxxxx_proc *proc = &ts_data->proc;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
@@ -516,7 +516,7 @@ int fts_create_apk_debug_channel(struct fts_ts_data *ts_data)
 	return 0;
 }
 
-void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
+void FT8006S_fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 {
 	struct ftxxxx_proc *proc = &ts_data->proc;
 
@@ -536,11 +536,11 @@ void fts_release_apk_debug_channel(struct fts_ts_data *ts_data)
 static ssize_t fts_hw_reset_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
 {
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 	ssize_t count = 0;
 
 	mutex_lock(&input_dev->mutex);
-	fts_reset_proc(0);
+	FT8006S_fts_reset_proc(0);
 	count = snprintf(buf, PAGE_SIZE, "hw reset executed\n");
 	mutex_unlock(&input_dev->mutex);
 
@@ -559,7 +559,7 @@ static ssize_t fts_irq_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
 {
 	ssize_t count = 0;
-	struct irq_desc *desc = irq_to_desc(fts_data->irq);
+	struct irq_desc *desc = irq_to_desc(FT8006S_fts_data->irq);
 
 	count = snprintf(buf, PAGE_SIZE, "irq_depth:%d\n", desc->depth);
 
@@ -570,15 +570,15 @@ static ssize_t fts_irq_store(struct device *dev,
 			     struct device_attribute *attr, const char *buf,
 			     size_t count)
 {
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 	if (FTS_SYSFS_ECHO_ON(buf)) {
 		FTS_INFO("enable irq");
-		fts_irq_enable();
+		FT8006S_fts_irq_enable();
 	} else if (FTS_SYSFS_ECHO_OFF(buf)) {
 		FTS_INFO("disable irq");
-		fts_irq_disable();
+		FT8006S_fts_irq_disable();
 	}
 	mutex_unlock(&input_dev->mutex);
 	return count;
@@ -589,16 +589,16 @@ static ssize_t fts_bootmode_store(struct device *dev,
 				  struct device_attribute *attr,
 				  const char *buf, size_t count)
 {
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	FTS_FUNC_ENTER();
 	mutex_lock(&input_dev->mutex);
 	if (FTS_SYSFS_ECHO_ON(buf)) {
 		FTS_INFO("[EX-FUN]set to boot mode");
-		fts_data->fw_is_running = false;
+		FT8006S_fts_data->fw_is_running = false;
 	} else if (FTS_SYSFS_ECHO_OFF(buf)) {
 		FTS_INFO("[EX-FUN]set to fw mode");
-		fts_data->fw_is_running = true;
+		FT8006S_fts_data->fw_is_running = true;
 	}
 	mutex_unlock(&input_dev->mutex);
 	FTS_FUNC_EXIT();
@@ -610,11 +610,11 @@ static ssize_t fts_bootmode_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
 {
 	ssize_t count = 0;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	FTS_FUNC_ENTER();
 	mutex_lock(&input_dev->mutex);
-	if (true == fts_data->fw_is_running)
+	if (true == FT8006S_fts_data->fw_is_running)
 		count = snprintf(buf, PAGE_SIZE, "tp is in fw mode\n");
 	else
 		count = snprintf(buf, PAGE_SIZE, "tp is in boot mode\n");
@@ -628,7 +628,7 @@ static ssize_t fts_bootmode_show(struct device *dev,
 static ssize_t fts_tpfwver_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct input_dev *input_dev = ts_data->input_dev;
 	ssize_t num_read_chars = 0;
 	u8 fwver = 0;
@@ -665,7 +665,7 @@ static ssize_t fts_tprwreg_show(struct device *dev,
 {
 	int count;
 	int i;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 
@@ -845,7 +845,7 @@ static ssize_t fts_tprwreg_store(struct device *dev,
 				 struct device_attribute *attr, const char *buf,
 				 size_t count)
 {
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 	ssize_t cmd_length = 0;
 
 	mutex_lock(&input_dev->mutex);
@@ -929,19 +929,19 @@ static ssize_t fts_tprwreg_store(struct device *dev,
 	return count;
 }
 
-/* fts_upgrade_bin interface */
-static ssize_t fts_fwupgradebin_show(struct device *dev,
+/* FT8006S_fts_upgrade_bin interface */
+static ssize_t fts_FT8006S_fwupgradebin_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
 {
 	return -EPERM;
 }
 
-static ssize_t fts_fwupgradebin_store(struct device *dev,
+static ssize_t fts_FT8006S_fwupgradebin_store(struct device *dev,
 				      struct device_attribute *attr,
 				      const char *buf, size_t count)
 {
 	char fwname[FILE_NAME_LENGTH] = { 0 };
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	if ((count <= 1) || (count >= FILE_NAME_LENGTH - 32)) {
 		FTS_ERROR("fw bin name's length(%d) fail", (int)count);
@@ -953,7 +953,7 @@ static ssize_t fts_fwupgradebin_store(struct device *dev,
 
 	FTS_INFO("upgrade with bin file through sysfs node");
 	mutex_lock(&input_dev->mutex);
-	fts_upgrade_bin(fwname, 0);
+	FT8006S_fts_upgrade_bin(fwname, 0);
 	mutex_unlock(&input_dev->mutex);
 
 	return count;
@@ -971,7 +971,7 @@ static ssize_t fts_fwforceupg_store(struct device *dev,
 				    const char *buf, size_t count)
 {
 	char fwname[FILE_NAME_LENGTH];
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	if ((count <= 1) || (count >= FILE_NAME_LENGTH - 32)) {
 		FTS_ERROR("fw bin name's length(%d) fail", (int)count);
@@ -983,7 +983,7 @@ static ssize_t fts_fwforceupg_store(struct device *dev,
 
 	FTS_INFO("force upgrade through sysfs node");
 	mutex_lock(&input_dev->mutex);
-	fts_upgrade_bin(fwname, 1);
+	FT8006S_fts_upgrade_bin(fwname, 1);
 	mutex_unlock(&input_dev->mutex);
 
 	return count;
@@ -994,7 +994,7 @@ static ssize_t fts_driverinfo_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
 	int count = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct fts_ts_platform_data *pdata = ts_data->pdata;
 	struct input_dev *input_dev = ts_data->input_dev;
 
@@ -1037,7 +1037,7 @@ static ssize_t fts_dumpreg_show(struct device *dev,
 {
 	int count = 0;
 	u8 val = 0;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 #if FTS_ESDCHECK_EN
@@ -1099,14 +1099,14 @@ static ssize_t fts_tpbuf_show(struct device *dev, struct device_attribute *attr,
 {
 	int count = 0;
 	int i = 0;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 	count += snprintf(buf + count, PAGE_SIZE, "touch point buffer:\n");
-	for (i = 0; i < fts_data->pnt_buf_size; i++) {
+	for (i = 0; i < FT8006S_fts_data->pnt_buf_size; i++) {
 		count +=
 		    snprintf(buf + count, PAGE_SIZE, "%02x ",
-			     fts_data->point_buf[i]);
+			     FT8006S_fts_data->point_buf[i]);
 	}
 	count += snprintf(buf + count, PAGE_SIZE, "\n");
 	mutex_unlock(&input_dev->mutex);
@@ -1126,11 +1126,11 @@ static ssize_t fts_log_level_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
 {
 	int count = 0;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 	count += snprintf(buf + count, PAGE_SIZE, "log level:%d\n",
-			  fts_data->log_level);
+			  FT8006S_fts_data->log_level);
 	mutex_unlock(&input_dev->mutex);
 
 	return count;
@@ -1141,13 +1141,13 @@ static ssize_t fts_log_level_store(struct device *dev,
 				   const char *buf, size_t count)
 {
 	int value = 0;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	FTS_FUNC_ENTER();
 	mutex_lock(&input_dev->mutex);
 	sscanf(buf, "%d", &value);
-	FTS_DEBUG("log level:%d->%d", fts_data->log_level, value);
-	fts_data->log_level = value;
+	FTS_DEBUG("log level:%d->%d", FT8006S_fts_data->log_level, value);
+	FT8006S_fts_data->log_level = value;
 	mutex_unlock(&input_dev->mutex);
 	FTS_FUNC_EXIT();
 
@@ -1175,9 +1175,9 @@ static DEVICE_ATTR(fts_fw_version, S_IRUGO | S_IWUSR, fts_tpfwver_show,
 */
 static DEVICE_ATTR(fts_rw_reg, S_IRUGO | S_IWUSR, fts_tprwreg_show,
 		   fts_tprwreg_store);
-/*  upgrade from fw bin file   example:echo "*.bin" > fts_upgrade_bin */
-static DEVICE_ATTR(fts_upgrade_bin, S_IRUGO | S_IWUSR, fts_fwupgradebin_show,
-		   fts_fwupgradebin_store);
+/*  upgrade from fw bin file   example:echo "*.bin" > FT8006S_fts_upgrade_bin */
+static DEVICE_ATTR(FT8006S_fts_upgrade_bin, S_IRUGO | S_IWUSR, fts_FT8006S_fwupgradebin_show,
+		   fts_FT8006S_fwupgradebin_store);
 static DEVICE_ATTR(fts_force_upgrade, S_IRUGO | S_IWUSR, fts_fwforceupg_show,
 		   fts_fwforceupg_store);
 static DEVICE_ATTR(fts_driver_info, S_IRUGO | S_IWUSR, fts_driverinfo_show,
@@ -1199,7 +1199,7 @@ static struct attribute *fts_attributes[] = {
 	&dev_attr_fts_fw_version.attr,
 	&dev_attr_fts_rw_reg.attr,
 	&dev_attr_fts_dump_reg.attr,
-	&dev_attr_fts_upgrade_bin.attr,
+	&dev_attr_FT8006S_fts_upgrade_bin.attr,
 	&dev_attr_fts_force_upgrade.attr,
 	&dev_attr_fts_driver_info.attr,
 	&dev_attr_fts_hw_reset.attr,
@@ -1214,7 +1214,7 @@ static struct attribute_group fts_attribute_group = {
 	.attrs = fts_attributes
 };
 
-int fts_create_sysfs(struct fts_ts_data *ts_data)
+int FT8006S_fts_create_sysfs(struct fts_ts_data *ts_data)
 {
 	int ret = 0;
 
@@ -1230,7 +1230,7 @@ int fts_create_sysfs(struct fts_ts_data *ts_data)
 	return ret;
 }
 
-int fts_remove_sysfs(struct fts_ts_data *ts_data)
+int FT8006S_fts_remove_sysfs(struct fts_ts_data *ts_data)
 {
 	sysfs_remove_group(&ts_data->dev->kobj, &fts_attribute_group);
 	return 0;

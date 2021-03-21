@@ -87,7 +87,7 @@ static int ft8006sp_short_test(struct fts_test *tdata, bool *test_result)
 	memset(tdata->buffer, 0, tdata->buffer_length);
 	adcdata = tdata->buffer;
 
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("enter factory mode fail,ret=%d\n",
 			ret);
@@ -163,7 +163,7 @@ static int ft8006sp_open_test(struct fts_test *tdata, bool *test_result)
 	memset(tdata->buffer, 0, tdata->buffer_length);
 	opendata = tdata->buffer;
 
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("enter factory mode fail,ret=%d\n", ret);
 		goto test_err;
@@ -177,7 +177,7 @@ static int ft8006sp_open_test(struct fts_test *tdata, bool *test_result)
 
 	/* check test status */
 	for (i = 0; i < FACTORY_TEST_RETRY; i++) {
-		sys_delay(FACTORY_TEST_RETRY_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_RETRY_DELAY);
 		ret = fts_test_read_reg(FACTORY_REG_OPEN_STATE, &state);
 		if ((ret >= 0) && (TEST_RETVAL_AA == state))
 			break;
@@ -192,7 +192,7 @@ static int ft8006sp_open_test(struct fts_test *tdata, bool *test_result)
 
 	/* get cb data */
 	byte_num = tdata->node.node_num;
-	ret = get_cb_incell(0, byte_num, opendata);
+	ret = FT8006S_get_cb_incell(0, byte_num, opendata);
 	if (ret) {
 		FTS_TEST_SAVE_ERR("get CB fail\n");
 		goto restore_reg;
@@ -251,7 +251,7 @@ static int ft8006sp_cb_test(struct fts_test *tdata, bool *test_result)
 		goto test_err;
 	}
 
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("enter factory mode fail,ret=%d\n", ret);
 		goto test_err;
@@ -272,7 +272,7 @@ static int ft8006sp_cb_test(struct fts_test *tdata, bool *test_result)
 	}
 
 	byte_num = tdata->node.node_num;
-	ret = get_cb_incell(0, byte_num, cbdata);
+	ret = FT8006S_get_cb_incell(0, byte_num, cbdata);
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("get cb fail\n");
 		goto test_err;
@@ -324,7 +324,7 @@ static int ft8006sp_rawdata_test(struct fts_test *tdata,
 		goto test_err;
 	}
 
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("enter factory mode fail,ret=%d\n", ret);
 		goto test_err;
@@ -395,7 +395,7 @@ static int ft8006sp_lcdnoise_test(struct fts_test *tdata,
 	memset(tdata->buffer, 0, tdata->buffer_length);
 	lcdnoise = tdata->buffer;
 
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("enter factory mode fail,ret=%d\n", ret);
 		goto test_err;
@@ -443,7 +443,7 @@ static int ft8006sp_lcdnoise_test(struct fts_test *tdata,
 	}
 
 	/* check test status */
-	sys_delay(frame_num * FACTORY_TEST_DELAY / 2);
+	FT8006S_sys_delay(frame_num * FACTORY_TEST_DELAY / 2);
 	for (i = 0; i < FACTORY_TEST_RETRY; i++) {
 		status = 0xFF;
 		ret = fts_test_read_reg(FACTORY_REG_LCD_NOISE_TEST_STATE,
@@ -453,7 +453,7 @@ static int ft8006sp_lcdnoise_test(struct fts_test *tdata,
 		else
 			FTS_TEST_DBG("reg%x=%x,retry:%d\n",
 						 FACTORY_REG_LCD_NOISE_TEST_STATE, status, i);
-		sys_delay(FACTORY_TEST_RETRY_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_RETRY_DELAY);
 	}
 	if (i >= FACTORY_TEST_RETRY) {
 		FTS_TEST_SAVE_ERR("lcdnoise test timeout\n");
@@ -461,7 +461,7 @@ static int ft8006sp_lcdnoise_test(struct fts_test *tdata,
 	}
 	/* read lcdnoise */
 	byte_num = tdata->node.node_num * 2;
-	ret = read_mass_data(FACTORY_REG_RAWDATA_ADDR,
+	ret = FT8006S_read_mass_data(FACTORY_REG_RAWDATA_ADDR,
 			byte_num, lcdnoise);
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("read rawdata fail\n");
@@ -520,7 +520,7 @@ static int start_test_ft8006sp(void)
 		return -EINVAL;
 	}
 	/* enter factory */
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0)
 		fts_ftest->test_item[FTS_ENTER_FACTORY_MODE].testresult = RESULT_NG ;
 	else {
@@ -595,7 +595,7 @@ bool start_selftest(int tmp)
 		return -EINVAL;
 	}
 	/* enter factory */
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0)
 		fts_ftest->test_item[FTS_ENTER_FACTORY_MODE].testresult = RESULT_NG ;
 	else {
@@ -641,7 +641,7 @@ bool start_selftest(int tmp)
 ***************************************************/
 #define packet                                  128
 
-int fts_raw_enter_factory_mode(void)
+int fts_raw_FT8006S_enter_factory_mode(void)
 {
 	int ret = 0;
 	u8 mode = 0;
@@ -711,7 +711,7 @@ int fts_raw_start_scan(void)
 	val = 0xC0;
 	finish_val = 0x40;
 
-	fts_raw_enter_factory_mode();
+	fts_raw_FT8006S_enter_factory_mode();
 	ret = fts_write_reg(addr, val);
 	if (ret < 0) {
 		FTS_INFO("write start scan mode fail\n");
@@ -833,15 +833,15 @@ int fts_rawdata_differ(u8 raw_diff, char *buf)
 	int buffer_length = 0;
 	char *tmp_buf = NULL;
 	int *buffer = NULL;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
-	fts_irq_disable();
+	FT8006S_fts_irq_disable();
 
 	cmd[0] = 0xEE;
 	cmd[1] = 1;
 	fts_write(cmd, 2);
-	fts_raw_enter_factory_mode();
+	fts_raw_FT8006S_enter_factory_mode();
 	ret = fts_test_write_reg(FACTORY_REG_RAWDATA_TEST_EN, 0x01);
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("rawdata test enable fail\n");
@@ -890,7 +890,7 @@ read_err:
 	ret = fts_test_write_reg(FACTORY_REG_RAWDATA_TEST_EN, 0x00);
 	if (ret < 0)
 		FTS_TEST_SAVE_ERR("rawdata test disable fail\n");
-	fts_irq_enable();
+	FT8006S_fts_irq_enable();
 	mutex_unlock(&input_dev->mutex);
 	cmd[0] = DEVICE_MODE_ADDR;
 	cmd[1] = 0x00;

@@ -99,7 +99,7 @@ static ssize_t fts_glove_mode_show(struct device *dev,
 {
 	int count = 0;
 	u8 val = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct input_dev *input_dev = ts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
@@ -117,7 +117,7 @@ static ssize_t fts_glove_mode_store(struct device *dev,
 				    const char *buf, size_t count)
 {
 	int ret = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 
 	if (FTS_SYSFS_ECHO_ON(buf)) {
 		if (!ts_data->glove_mode) {
@@ -144,7 +144,7 @@ static ssize_t fts_cover_mode_show(struct device *dev,
 {
 	int count = 0;
 	u8 val = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct input_dev *input_dev = ts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
@@ -162,7 +162,7 @@ static ssize_t fts_cover_mode_store(struct device *dev,
 				    const char *buf, size_t count)
 {
 	int ret = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 
 	if (FTS_SYSFS_ECHO_ON(buf)) {
 		if (!ts_data->cover_mode) {
@@ -189,7 +189,7 @@ static ssize_t fts_charger_mode_show(struct device *dev,
 {
 	int count = 0;
 	u8 val = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct input_dev *input_dev = ts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
@@ -208,7 +208,7 @@ static ssize_t fts_charger_mode_store(struct device *dev,
 				      const char *buf, size_t count)
 {
 	int ret = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 
 	if (FTS_SYSFS_ECHO_ON(buf)) {
 		if (!ts_data->charger_mode) {
@@ -254,7 +254,7 @@ static struct attribute_group fts_touch_mode_group = {
 	.attrs = fts_touch_mode_attrs,
 };
 
-int fts_ex_mode_recovery(struct fts_ts_data *ts_data)
+int FT8006S_fts_ex_mode_recovery(struct fts_ts_data *ts_data)
 {
 	if (ts_data->glove_mode)
 		fts_ex_mode_switch(MODE_GLOVE, ENABLE);
@@ -268,7 +268,7 @@ int fts_ex_mode_recovery(struct fts_ts_data *ts_data)
 	return 0;
 }
 
-int fts_ex_mode_init(struct fts_ts_data *ts_data)
+int FT8006S_fts_ex_mode_init(struct fts_ts_data *ts_data)
 {
 	int ret = 0;
 
@@ -288,7 +288,7 @@ int fts_ex_mode_init(struct fts_ts_data *ts_data)
 	return 0;
 }
 
-int fts_ex_mode_exit(struct fts_ts_data *ts_data)
+int FT8006S_fts_ex_mode_exit(struct fts_ts_data *ts_data)
 {
 	sysfs_remove_group(&ts_data->dev->kobj, &fts_touch_mode_group);
 	return 0;

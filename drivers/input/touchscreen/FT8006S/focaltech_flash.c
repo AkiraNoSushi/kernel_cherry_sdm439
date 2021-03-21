@@ -53,24 +53,24 @@
 /*****************************************************************************
 * Global variable or extern global variabls/functions
 *****************************************************************************/
-u8 fw_file[] = {
+u8 FT8006S_fw_file[] = {
 #include FTS_UPGRADE_FW_FILE
 };
 
-u8 fw_file2[] = {
+u8 FT8006S_fw_file2[] = {
 #include FTS_UPGRADE_FW2_FILE
 };
 
-u8 fw_file3[] = {
+u8 FT8006S_fw_file3[] = {
 #include FTS_UPGRADE_FW3_FILE
 };
 
 struct upgrade_module module_list[] = {
-	{FTS_MODULE_ID, FTS_MODULE_NAME, fw_file, sizeof(fw_file)}
+	{FTS_MODULE_ID, FTS_MODULE_NAME, FT8006S_fw_file, sizeof(FT8006S_fw_file)}
 	,
-	{FTS_MODULE2_ID, FTS_MODULE2_NAME, fw_file2, sizeof(fw_file2)}
+	{FTS_MODULE2_ID, FTS_MODULE2_NAME, FT8006S_fw_file2, sizeof(FT8006S_fw_file2)}
 	,
-	{FTS_MODULE3_ID, FTS_MODULE3_NAME, fw_file3, sizeof(fw_file3)}
+	{FTS_MODULE3_ID, FTS_MODULE3_NAME, FT8006S_fw_file3, sizeof(FT8006S_fw_file3)}
 	,
 };
 
@@ -82,14 +82,14 @@ struct upgrade_setting_nf upgrade_setting_list[] = {
 	{0x86, 0x32, 0, (64 * 1024), (128 * 1024), 0xA5, 0x01, 12, 0, 0, 0, 0},
 };
 
-struct fts_upgrade *fwupgrade;
+struct fts_upgrade *FT8006S_fwupgrade;
 
 static int fts_check_bootid(void)
 {
 	int ret = 0;
 	u8 cmd = 0;
 	u8 id[2] = { 0 };
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 	struct ft_chip_t *chip_id;
 
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -116,7 +116,7 @@ static int fts_check_bootid(void)
 
 static int fts_fwupg_hardware_reset_to_boot(void)
 {
-	fts_reset_proc(0);
+	FT8006S_fts_reset_proc(0);
 	return 0;
 }
 
@@ -126,7 +126,7 @@ static int fts_enter_into_boot(void)
 	int i = 0;
 	int j = 0;
 	u8 cmd[2] = { 0 };
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
 		FTS_ERROR("upgrade/ts_data/setting_nf is null");
@@ -201,7 +201,7 @@ static int fts_dpram_write_pe(u32 saddr,
 	u32 packet_len = 0;
 	u32 packet_size = FTS_FLASH_PACKET_LENGTH_SPI;
 	bool fd_support = true;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("dpram write");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -289,7 +289,7 @@ static int fts_dpram_write(u32 saddr,
 	u32 packet_number = 0;
 	u32 packet_len = 0;
 	u32 packet_size = FTS_FLASH_PACKET_LENGTH_SPI;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("dpram write");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -366,7 +366,7 @@ static int fts_ecc_cal_tp(u32 ecc_saddr, u32 ecc_len, u16 *ecc_value)
 	int i = 0;
 	u8 cmd[FTS_ROMBOOT_CMD_ECC_NEW_LEN] = { 0 };
 	u8 value[2] = { 0 };
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("ecc calc in tp");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -451,7 +451,7 @@ static int fts_ecc_check(const u8 *buf, u32 len, u32 ecc_saddr)
 	int packet_remainder = 0;
 	int offset = 0;
 	u32 packet_size = FTS_MAX_LEN_FILE;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("ecc check");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -505,7 +505,7 @@ static int fts_pram_write_ecc(const u8 *buf, u32 len)
 	u16 code_len = 0;
 	u16 code_len_n = 0;
 	u32 pram_start_addr = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("begin to write pram app(bin len:%d)", len);
 	if (!upg || !upg->setting_nf) {
@@ -559,7 +559,7 @@ static int fts_dram_write_ecc(const u8 *buf, u32 len)
 	u16 const_len = 0;
 	u16 const_len_n = 0;
 	const u8 *dram_buf = NULL;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("begin to write dram data(bin len:%d)", len);
 	if (!upg || !upg->setting_nf) {
@@ -632,7 +632,7 @@ static int fts_pram_start(void)
 static int fts_fw_write_start(const u8 *buf, u32 len, bool need_reset)
 {
 	int ret = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("begin to write and start fw(bin len:%d)", len);
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -678,9 +678,9 @@ static int fts_fw_write_start(const u8 *buf, u32 len, bool need_reset)
 	FTS_INFO("fw download successfully");
 
 #if HQ_CTP_HWINFO_REGISTER
-	ret = ctp_hw_info(fts_data);
+	ret = FT8006S_ctp_hw_info(FT8006S_fts_data);
 	if (ret) {
-		FTS_ERROR("Unable to register ctp_hw_info: %d", ret);
+		FTS_ERROR("Unable to register FT8006S_ctp_hw_info: %d", ret);
 	}
 #endif
 
@@ -691,7 +691,7 @@ static int fts_fw_download(const u8 *buf, u32 len, bool need_reset)
 {
 	int ret = 0;
 	int i = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("fw upgrade download function");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -705,7 +705,7 @@ static int fts_fw_download(const u8 *buf, u32 len, bool need_reset)
 	}
 
 	upg->ts_data->fw_loading = 1;
-	fts_irq_disable();
+	FT8006S_fts_irq_disable();
 #if FTS_ESDCHECK_EN
 	fts_esdcheck_switch(DISABLE);
 #endif
@@ -728,7 +728,7 @@ static int fts_fw_download(const u8 *buf, u32 len, bool need_reset)
 
 	ret = 0;
 err_fw_download:
-	fts_irq_enable();
+	FT8006S_fts_irq_enable();
 	upg->ts_data->fw_loading = 0;
 
 	return ret;
@@ -782,12 +782,12 @@ static int fts_read_file(char *file_name, u8 **file_buf)
 	return ret;
 }
 
-int fts_upgrade_bin(char *fw_name, bool force)
+int FT8006S_fts_upgrade_bin(char *fw_name, bool force)
 {
 	int ret = 0;
-	u32 fw_file_len = 0;
-	u8 *fw_file_buf = NULL;
-	struct fts_upgrade *upg = fwupgrade;
+	u32 FT8006S_fw_file_len = 0;
+	u8 *FT8006S_fw_file_buf = NULL;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("start upgrade with fw bin");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -800,15 +800,15 @@ int fts_upgrade_bin(char *fw_name, bool force)
 		return -EINVAL;
 	}
 
-	ret = fts_read_file(fw_name, &fw_file_buf);
+	ret = fts_read_file(fw_name, &FT8006S_fw_file_buf);
 	if ((ret < 0) || (ret < FTS_MIN_LEN)) {
 		FTS_ERROR("read fw bin file(sdcard) fail, len:%d", ret);
 		goto err_bin;
 	}
 
-	fw_file_len = ret;
-	FTS_INFO("fw bin file len:%d", fw_file_len);
-	ret = fts_fw_download(fw_file_buf, fw_file_len, true);
+	FT8006S_fw_file_len = ret;
+	FTS_INFO("fw bin file len:%d", FT8006S_fw_file_len);
+	ret = fts_fw_download(FT8006S_fw_file_buf, FT8006S_fw_file_len, true);
 	if (ret < 0) {
 		FTS_ERROR("upgrade fw bin failed");
 		goto err_bin;
@@ -817,9 +817,9 @@ int fts_upgrade_bin(char *fw_name, bool force)
 	FTS_INFO("upgrade fw bin success");
 
 err_bin:
-	if (fw_file_buf) {
-		vfree(fw_file_buf);
-		fw_file_buf = NULL;
+	if (FT8006S_fw_file_buf) {
+		vfree(FT8006S_fw_file_buf);
+		FT8006S_fw_file_buf = NULL;
 	}
 	return ret;
 }
@@ -831,7 +831,7 @@ int fts_enter_test_environment(bool test_state)
 	int i = 0;
 	u8 detach_flag = 0;
 	u32 app_offset = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("fw test download function");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -878,7 +878,7 @@ int fts_enter_test_environment(bool test_state)
 int fts_fw_resume(void)
 {
 	int ret = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 	const struct firmware *fw = NULL;
 	char fwname[FILE_NAME_LENGTH] = { 0 };
 
@@ -926,7 +926,7 @@ int fts_fw_recovery(void)
 	int ret = 0;
 	u8 boot_state = 0;
 	u8 chip_id = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 	FTS_INFO("check if boot recovery");
 	if (!upg || !upg->ts_data || !upg->setting_nf) {
@@ -970,7 +970,7 @@ int fts_fw_recovery(void)
 	ret = fts_read_reg(FTS_REG_CHIP_ID, &chip_id);
 	FTS_INFO("read chip id:0x%02x", chip_id);
 
-	fts_tp_state_recovery(upg->ts_data);
+	FT8006S_fts_tp_state_recovery(upg->ts_data);
 
 	FTS_INFO("boot recovery pass");
 	return ret;
@@ -1005,7 +1005,7 @@ static int fts_fwupg_get_module_info(struct fts_upgrade *upg)
 	return 0;
 }
 
-static int fts_get_fw_file_via_request_firmware(struct fts_upgrade *upg)
+static int fts_get_FT8006S_fw_file_via_request_firmware(struct fts_upgrade *upg)
 {
 	int ret = 0;
 	const struct firmware *fw = NULL;
@@ -1040,9 +1040,9 @@ static int fts_get_fw_file_via_request_firmware(struct fts_upgrade *upg)
 	return ret;
 }
 
-static int fts_get_fw_file_via_i(struct fts_upgrade *upg)
+static int fts_get_FT8006S_fw_file_via_i(struct fts_upgrade *upg)
 {
-	upg->fw = upg->module_info->fw_file;
+	upg->fw = upg->module_info->FT8006S_fw_file;
 	upg->fw_length = upg->module_info->fw_len;
 	upg->fw_from_request = 0;
 
@@ -1050,7 +1050,7 @@ static int fts_get_fw_file_via_i(struct fts_upgrade *upg)
 }
 
 /*****************************************************************************
- *  Name: fts_fwupg_get_fw_file
+ *  Name: fts_fwupg_get_FT8006S_fw_file
  *  Brief: get fw image/file,
  *		 If support muitl modules, please set FTS_GET_MODULE_NUM, and FTS_-
  *		 MODULE_ID/FTS_MODULE_NAME;
@@ -1066,7 +1066,7 @@ static int fts_get_fw_file_via_i(struct fts_upgrade *upg)
  *  Output:
  *  Return: return 0 if success, otherwise return error code
  *****************************************************************************/
-static int fts_fwupg_get_fw_file(struct fts_upgrade *upg)
+static int fts_fwupg_get_FT8006S_fw_file(struct fts_upgrade *upg)
 {
 	int ret = 0;
 	bool get_fw_i_flag = false;
@@ -1085,14 +1085,14 @@ static int fts_fwupg_get_fw_file(struct fts_upgrade *upg)
 
 	if (FTS_FW_REQUEST_SUPPORT) {
 		msleep(500);
-		ret = fts_get_fw_file_via_request_firmware(upg);
+		ret = fts_get_FT8006S_fw_file_via_request_firmware(upg);
 		if (ret != 0)
 			get_fw_i_flag = true;
 	} else
 		get_fw_i_flag = true;
 
 	if (get_fw_i_flag)
-		ret = fts_get_fw_file_via_i(upg);
+		ret = fts_get_FT8006S_fw_file_via_i(upg);
 
 	FTS_INFO("upgrade fw file len:%d", upg->fw_length);
 	if (upg->fw_length < FTS_MIN_LEN) {
@@ -1107,7 +1107,7 @@ static void fts_fwupg_work(struct work_struct *work)
 {
 	int ret = 0;
 	u8 chip_id = 0;
-	struct fts_upgrade *upg = fwupgrade;
+	struct fts_upgrade *upg = FT8006S_fwupgrade;
 
 #if !FTS_AUTO_UPGRADE_EN
 	FTS_INFO("FTS_AUTO_UPGRADE_EN is disabled, not upgrade when power on");
@@ -1121,7 +1121,7 @@ static void fts_fwupg_work(struct work_struct *work)
 	}
 
 	/* get fw */
-	ret = fts_fwupg_get_fw_file(upg);
+	ret = fts_fwupg_get_FT8006S_fw_file(upg);
 	if (ret < 0) {
 		FTS_ERROR("get file fail, can't upgrade");
 		return ;
@@ -1142,7 +1142,7 @@ static void fts_fwupg_work(struct work_struct *work)
 	}
 }
 
-int fts_fwupg_init(struct fts_ts_data *ts_data)
+int FT8006S_fts_fwupg_init(struct fts_ts_data *ts_data)
 {
 	int i = 0;
 	struct upgrade_setting_nf *setting = &upgrade_setting_list[0];
@@ -1160,14 +1160,14 @@ int fts_fwupg_init(struct fts_ts_data *ts_data)
 		return -ENODATA;
 	}
 
-	fwupgrade = (struct fts_upgrade *)kzalloc(sizeof(*fwupgrade), GFP_KERNEL);
-	if (NULL == fwupgrade) {
+	FT8006S_fwupgrade = (struct fts_upgrade *)kzalloc(sizeof(*FT8006S_fwupgrade), GFP_KERNEL);
+	if (NULL == FT8006S_fwupgrade) {
 		FTS_ERROR("malloc memory for upgrade fail");
 		return -ENOMEM;
 	}
 
 	if (1 == setting_count)
-		fwupgrade->setting_nf = setting;
+		FT8006S_fwupgrade->setting_nf = setting;
 	else {
 		for (i = 0; i < setting_count; i++) {
 			setting = &upgrade_setting_list[i];
@@ -1175,15 +1175,15 @@ int fts_fwupg_init(struct fts_ts_data *ts_data)
 				&& (setting->rom_idl == ts_data->ic_info.ids.rom_idl)) {
 				FTS_INFO("match upgrade setting,type(ID):0x%02x%02x",
 						 setting->rom_idh, setting->rom_idl);
-				fwupgrade->setting_nf = setting;
+				FT8006S_fwupgrade->setting_nf = setting;
 			}
 		}
 	}
 
-	if (NULL == fwupgrade->setting_nf) {
+	if (NULL == FT8006S_fwupgrade->setting_nf) {
 		FTS_ERROR("no upgrade settings match, can't upgrade");
-		kfree(fwupgrade);
-		fwupgrade = NULL;
+		kfree(FT8006S_fwupgrade);
+		FT8006S_fwupgrade = NULL;
 		return -ENODATA;
 	}
 
@@ -1191,22 +1191,22 @@ int fts_fwupg_init(struct fts_ts_data *ts_data)
 	fts_esdcheck_switch(DISABLE);
 #endif
 
-	fwupgrade->ts_data = ts_data;
+	FT8006S_fwupgrade->ts_data = ts_data;
 	INIT_WORK(&ts_data->fwupg_work, fts_fwupg_work);
 	queue_work(ts_data->ts_workqueue, &ts_data->fwupg_work);
 
 	return 0;
 }
 
-bool fts_fwupg_check_fw_valid(struct fts_ts_data *ts_data)
+bool FT8006S_fts_fwupg_check_fw_valid(struct fts_ts_data *ts_data)
 {
 	FTS_FUNC_ENTER();
-	fts_wait_tp_to_valid();
+	FT8006S_fts_wait_tp_to_valid();
 	FTS_FUNC_EXIT();
 	return true;
 }
 
-int fts_fwupg_get_ver_in_tp(struct fts_ts_data *ts_data, u8 *ver)
+int FT8006S_fts_fwupg_get_ver_in_tp(struct fts_ts_data *ts_data, u8 *ver)
 {
 	int ret = 0;
 
@@ -1224,17 +1224,17 @@ int fts_fwupg_get_ver_in_tp(struct fts_ts_data *ts_data, u8 *ver)
 	return 0;
 }
 
-int fts_fwupg_exit(struct fts_ts_data *ts_data)
+int FT8006S_fts_fwupg_exit(struct fts_ts_data *ts_data)
 {
 	FTS_FUNC_ENTER();
-	if (fwupgrade) {
-		if (fwupgrade->fw_from_request) {
-			vfree(fwupgrade->fw);
-			fwupgrade->fw = NULL;
+	if (FT8006S_fwupgrade) {
+		if (FT8006S_fwupgrade->fw_from_request) {
+			vfree(FT8006S_fwupgrade->fw);
+			FT8006S_fwupgrade->fw = NULL;
 		}
 
-		kfree(fwupgrade);
-		fwupgrade = NULL;
+		kfree(FT8006S_fwupgrade);
+		FT8006S_fwupgrade = NULL;
 	}
 	FTS_FUNC_EXIT();
 	return 0;

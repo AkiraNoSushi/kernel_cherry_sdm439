@@ -16,7 +16,7 @@
 /*****************************************************************************
 * Private constant and macro definitions using #define
 *****************************************************************************/
-struct ini_ic_type ic_types[] = {
+struct ini_ic_type FT8006S_ic_types[] = {
 	{"FT5X46", 0x54000002},
 	{"FT5X46i", 0x54010002},
 	{"FT5526", 0x54020002},
@@ -299,7 +299,7 @@ static int fts_test_get_ini_via_request_firmware(struct ini_data *ini,
 {
 	int ret = 0;
 	const struct firmware *fw = NULL;
-	struct device *dev = &fts_data->input_dev->dev;
+	struct device *dev = &FT8006S_fts_data->input_dev->dev;
 
 	ret = request_firmware(&fw, fwname, dev);
 	if (0 == ret) {
@@ -1292,16 +1292,16 @@ static u32 ini_get_ic_code(char *ic_name)
 	int i = 0;
 	int type_size = 0;
 	int ini_icname_len = 0;
-	int ic_types_len = 0;
+	int FT8006S_ic_types_len = 0;
 
 	ini_icname_len = strlen(ic_name);
-	type_size = sizeof(ic_types) / sizeof(ic_types[0]);
+	type_size = sizeof(FT8006S_ic_types) / sizeof(FT8006S_ic_types[0]);
 	for (i = 0; i < type_size; i++) {
-		ic_types_len = strlen(ic_name);
-		if (ini_icname_len == ic_types_len) {
+		FT8006S_ic_types_len = strlen(ic_name);
+		if (ini_icname_len == FT8006S_ic_types_len) {
 			if (0 ==
-			    strncmp(ic_name, ic_types[i].ic_name, ic_types_len))
-				return ic_types[i].ic_type;
+			    strncmp(ic_name, FT8006S_ic_types[i].ic_name, FT8006S_ic_types_len))
+				return FT8006S_ic_types[i].ic_type;
 		}
 	}
 
@@ -1366,13 +1366,13 @@ static int ini_init_test(struct ini_data *ini)
 }
 
 /*
- * fts_test_get_testparam_from_ini - get test parameters from ini
+ * FT8006S_fts_test_get_testparam_from_ini - get test parameters from ini
  *
  * read, parse the configuration file, initialize the test variable
  *
  * return 0 if succuss, else errro code
  */
-int fts_test_get_testparam_from_ini(char *config_name)
+int FT8006S_fts_test_get_testparam_from_ini(char *config_name)
 {
 	int ret = 0;
 	struct ini_data *ini = &fts_ftest->ini;
