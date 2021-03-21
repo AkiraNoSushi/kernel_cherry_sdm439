@@ -6,12 +6,14 @@ else
 	KERNEL_BUILD := 0
 endif
 
-ifeq ($(TARGET_AW87519), y)
-	CDEFINES += -DAW87519_PA
-endif
-
-ifeq ($(TARGET_AW87329), y)
-	CDEFINES += -DAW87329_PA
+ifeq ($(CONFIG_XIAOMI_SDM439), y)
+    CDEFINES += -DCONFIG_XIAOMI_SDM439
+else
+    ifeq ($(CONFIG_PROJECT_OLIVES), y)
+        CDEFINES += -DAW87519_PA -DCONFIG_PROJECT_OLIVES
+    else ifeq ($(CONFIG_PROJECT_PINE), y)
+        CDEFINES += -DAW87329_PA -DCONFIG_PROJECT_PINE
+    endif
 endif
 
 ifeq ($(KERNEL_BUILD), 1)
