@@ -63,12 +63,12 @@ static u8 ito_test_status;
 /*****************************************************************************
 * functions body
 *****************************************************************************/
-void sys_delay(int ms)
+void FT8006S_sys_delay(int ms)
 {
 	msleep(ms);
 }
 
-int focal_abs(int value)
+int FT8006S_focal_abs(int value)
 {
 	if (value < 0)
 		value = 0 - value;
@@ -76,12 +76,12 @@ int focal_abs(int value)
 	return value;
 }
 
-void *fts_malloc(size_t size)
+void *FT8006S_fts_malloc(size_t size)
 {
 	return kzalloc(size, GFP_KERNEL);
 }
 
-void fts_free_proc(void *p)
+void FT8006S_fts_free_proc(void *p)
 {
 	return kfree(p);
 }
@@ -220,7 +220,7 @@ int fts_test_write(u8 addr, u8 *writebuf, int writelen)
 	int offset = 0;
 	int byte_num = writelen;
 
-	data = fts_malloc(BYTES_PER_TIME + 1);
+	data = FT8006S_fts_malloc(BYTES_PER_TIME + 1);
 	if (!data) {
 		FTS_TEST_ERROR("malloc memory for bus write data fail");
 		return -ENOMEM;
@@ -263,7 +263,7 @@ int fts_test_write(u8 addr, u8 *writebuf, int writelen)
 /********************************************************************
  * test global function enter work/factory mode
  *******************************************************************/
-int enter_work_mode(void)
+int FT8006S_enter_work_mode(void)
 {
 	int ret = 0;
 	u8 mode = 0;
@@ -279,7 +279,7 @@ int enter_work_mode(void)
 	for (i = 0; i < ENTER_WORK_FACTORY_RETRIES; i++) {
 		ret = fts_test_write_reg(DEVIDE_MODE_ADDR, 0x00);
 		if (ret >= 0) {
-			sys_delay(FACTORY_TEST_DELAY);
+			FT8006S_sys_delay(FACTORY_TEST_DELAY);
 			for (j = 0; j < 20; j++) {
 				ret =
 				    fts_test_read_reg(DEVIDE_MODE_ADDR, &mode);
@@ -288,11 +288,11 @@ int enter_work_mode(void)
 					    ("enter work mode success");
 					return 0;
 				} else
-					sys_delay(FACTORY_TEST_DELAY);
+					FT8006S_sys_delay(FACTORY_TEST_DELAY);
 			}
 		}
 
-		sys_delay(50);
+		FT8006S_sys_delay(50);
 	}
 
 	if (i >= ENTER_WORK_FACTORY_RETRIES) {
@@ -304,7 +304,7 @@ int enter_work_mode(void)
 	return 0;
 }
 
-int enter_factory_mode(void)
+int FT8006S_enter_factory_mode(void)
 {
 	int ret = 0;
 	u8 mode = 0;
@@ -318,21 +318,21 @@ int enter_factory_mode(void)
 	for (i = 0; i < ENTER_WORK_FACTORY_RETRIES; i++) {
 		ret = fts_test_write_reg(DEVIDE_MODE_ADDR, 0x40);
 		if (ret >= 0) {
-			sys_delay(FACTORY_TEST_DELAY);
+			FT8006S_sys_delay(FACTORY_TEST_DELAY);
 			for (j = 0; j < 20; j++) {
 				ret =
 				    fts_test_read_reg(DEVIDE_MODE_ADDR, &mode);
 				if ((ret >= 0) && (0x40 == mode)) {
 					FTS_TEST_INFO
 					    ("enter factory mode success");
-					sys_delay(200);
+					FT8006S_sys_delay(200);
 					return 0;
 				} else
-					sys_delay(FACTORY_TEST_DELAY);
+					FT8006S_sys_delay(FACTORY_TEST_DELAY);
 			}
 		}
 
-		sys_delay(50);
+		FT8006S_sys_delay(50);
 	}
 
 	if (i >= ENTER_WORK_FACTORY_RETRIES) {
@@ -344,20 +344,20 @@ int enter_factory_mode(void)
 }
 
 /*
- * read_mass_data - read rawdata/short test data
+ * FT8006S_read_mass_data - read rawdata/short test data
  * addr - register addr which read data from
  * byte_num - read data length, unit:byte
  * buf - save data
  *
  * return 0 if read data succuss, otherwise return error code
  */
-int read_mass_data(u8 addr, int byte_num, int *buf)
+int FT8006S_read_mass_data(u8 addr, int byte_num, int *buf)
 {
 	int ret = 0;
 	int i = 0;
 	u8 *data = NULL;
 
-	data = (u8 *) fts_malloc(byte_num * sizeof(u8));
+	data = (u8 *) FT8006S_fts_malloc(byte_num * sizeof(u8));
 	if (NULL == data) {
 		FTS_TEST_SAVE_ERR("mass data buffer malloc fail\n");
 		return -ENOMEM;
@@ -395,7 +395,7 @@ int short_get_adcdata_incell(u8 retval, u8 ch_num, int byte_num, int *adc_buf)
 		goto adc_err;
 	}
 
-	sys_delay(ch_num * FACTORY_TEST_DELAY);
+	FT8006S_sys_delay(ch_num * FACTORY_TEST_DELAY);
 	for (times = 0; times < FACTORY_TEST_RETRY; times++) {
 		ret =
 		    fts_test_read_reg(FACTORY_REG_SHORT_TEST_STATE,
@@ -407,7 +407,7 @@ int short_get_adcdata_incell(u8 retval, u8 ch_num, int byte_num, int *adc_buf)
 				     FACTORY_REG_SHORT_TEST_STATE, short_state,
 				     times);
 
-		sys_delay(FACTORY_TEST_RETRY_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_RETRY_DELAY);
 	}
 	if (times >= FACTORY_TEST_RETRY) {
 		FTS_TEST_SAVE_ERR("short test timeout, ADC data not OK\n");
@@ -415,7 +415,7 @@ int short_get_adcdata_incell(u8 retval, u8 ch_num, int byte_num, int *adc_buf)
 		goto adc_err;
 	}
 
-	ret = read_mass_data(FACTORY_REG_SHORT_ADDR, byte_num, adc_buf);
+	ret = FT8006S_read_mass_data(FACTORY_REG_SHORT_ADDR, byte_num, adc_buf);
 	if (ret)
 		FTS_TEST_SAVE_ERR("get short(adc) data fail\n");
 
@@ -425,16 +425,16 @@ adc_err:
 }
 
 /*
- * wait_state_update - wait fw status update
+ * FT8006S_wait_state_update - wait fw status update
  */
-int wait_state_update(u8 retval)
+int FT8006S_wait_state_update(u8 retval)
 {
 	int ret = 0;
 	int times = 0;
 	u8 state = 0xFF;
 
 	while (times++ < FACTORY_TEST_RETRY) {
-		sys_delay(FACTORY_TEST_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_DELAY);
 		/* Wait register status update */
 		state = 0xFF;
 		ret = fts_test_read_reg(FACTORY_REG_PARAM_UPDATE_STATE, &state);
@@ -491,7 +491,7 @@ int start_scan(void)
 
 	/* Wait for the scan to complete */
 	while (times++ < FACTORY_TEST_RETRY) {
-		sys_delay(FACTORY_TEST_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_DELAY);
 
 		ret = fts_test_read_reg(addr, &val);
 		if ((ret >= 0) && (val == finish_val))
@@ -520,7 +520,7 @@ static int read_rawdata(u8 off_addr,
 		return ret;
 	}
 
-	ret = read_mass_data(rawdata_addr, byte_num, data);
+	ret = FT8006S_read_mass_data(rawdata_addr, byte_num, data);
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("read rawdata fail\n");
 		return ret;
@@ -544,7 +544,7 @@ int get_rawdata(int *data)
 	}
 
 	/* enter factory mode */
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("failed to enter factory mode,ret=%d\n", ret);
 		return ret;
@@ -599,7 +599,7 @@ int chip_clb(void)
 	}
 
 	while (times++ < FACTORY_TEST_RETRY) {
-		sys_delay(FACTORY_TEST_RETRY_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_RETRY_DELAY);
 		ret = fts_test_read_reg(FACTORY_REG_CLB, &val);
 		if ((0 == ret) && (0x02 == val)) {
 			/* clb ok */
@@ -618,9 +618,9 @@ int chip_clb(void)
 }
 
 /*
- * get_cb_incell - get cb data for incell IC
+ * FT8006S_get_cb_incell - get cb data for incell IC
  */
-int get_cb_incell(u16 saddr, int byte_num, int *cb_buf)
+int FT8006S_get_cb_incell(u16 saddr, int byte_num, int *cb_buf)
 {
 	int ret = 0;
 	int i = 0;
@@ -634,7 +634,7 @@ int get_cb_incell(u16 saddr, int byte_num, int *cb_buf)
 	int addr = 0;
 	u8 *data = NULL;
 
-	data = (u8 *) fts_malloc(byte_num * sizeof(u8));
+	data = (u8 *) FT8006S_fts_malloc(byte_num * sizeof(u8));
 	if (NULL == data) {
 		FTS_TEST_SAVE_ERR("cb buffer malloc fail\n");
 		return -ENOMEM;
@@ -701,7 +701,7 @@ int get_cb_sc(int byte_num, int *cb_buf, enum byte_mode mode)
 		return -EINVAL;
 	}
 
-	cb = (u8 *) fts_malloc(byte_num * sizeof(u8));
+	cb = (u8 *) FT8006S_fts_malloc(byte_num * sizeof(u8));
 	if (NULL == cb) {
 		FTS_TEST_SAVE_ERR("malloc memory for cb buffer fail\n");
 		return -ENOMEM;
@@ -883,7 +883,7 @@ int mapping_switch(u8 mapping)
 				FTS_TEST_ERROR("write 0x54 register fail");
 				return ret;
 			}
-			sys_delay(FACTORY_TEST_DELAY);
+			FT8006S_sys_delay(FACTORY_TEST_DELAY);
 		}
 	}
 
@@ -1035,7 +1035,7 @@ int short_get_adc_data_mc(u8 retval, int byte_num, int *adc_buf, u8 mode)
 	}
 
 	for (i = 0; i < FACTORY_TEST_RETRY; i++) {
-		sys_delay(FACTORY_TEST_RETRY_DELAY);
+		FT8006S_sys_delay(FACTORY_TEST_RETRY_DELAY);
 
 		ret =
 		    fts_test_read_reg(FACTROY_REG_SHORT_TEST_EN, &short_state);
@@ -1051,7 +1051,7 @@ int short_get_adc_data_mc(u8 retval, int byte_num, int *adc_buf, u8 mode)
 		goto test_err;
 	}
 
-	ret = read_mass_data(FACTORY_REG_SHORT_ADDR_MC, byte_num, adc_buf);
+	ret = FT8006S_read_mass_data(FACTORY_REG_SHORT_ADDR_MC, byte_num, adc_buf);
 	if (ret < 0)
 		FTS_TEST_SAVE_ERR("get short(adc) data fail\n");
 
@@ -1398,7 +1398,7 @@ void fts_test_save_data(char *name, int code, int *data, int datacnt,
 	}
 
 	FTS_TEST_DBG("name:%s,len:%d", name, datalen);
-	info->data = fts_malloc(datalen * sizeof(int));
+	info->data = FT8006S_fts_malloc(datalen * sizeof(int));
 	if (!info->data) {
 		FTS_TEST_ERROR("malloc memory for item(%d) data fail",
 			       td->item_count);
@@ -1429,14 +1429,14 @@ static int fts_test_malloc_free_incell(struct fts_test *tdata, bool allocate)
 
 	if (true == allocate) {
 		FTS_TEST_INFO("buflen:%d", buflen);
-		fts_malloc_r(thr->rawdata_min, buflen);
-		fts_malloc_r(thr->rawdata_max, buflen);
+		FT8006S_fts_malloc_r(thr->rawdata_min, buflen);
+		FT8006S_fts_malloc_r(thr->rawdata_max, buflen);
 		if (tdata->func->rawdata2_support) {
-			fts_malloc_r(thr->rawdata2_min, buflen);
-			fts_malloc_r(thr->rawdata2_max, buflen);
+			FT8006S_fts_malloc_r(thr->rawdata2_min, buflen);
+			FT8006S_fts_malloc_r(thr->rawdata2_max, buflen);
 		}
-		fts_malloc_r(thr->cb_min, buflen);
-		fts_malloc_r(thr->cb_max, buflen);
+		FT8006S_fts_malloc_r(thr->cb_min, buflen);
+		FT8006S_fts_malloc_r(thr->cb_max, buflen);
 	} else {
 		fts_free(thr->rawdata_min);
 		fts_free(thr->rawdata_max);
@@ -1458,29 +1458,29 @@ static int fts_test_malloc_free_mc_sc(struct fts_test *tdata, bool allocate)
 	int buflen_sc = tdata->sc_node.node_num * sizeof(int);
 
 	if (true == allocate) {
-		fts_malloc_r(thr->rawdata_h_min, buflen);
-		fts_malloc_r(thr->rawdata_h_max, buflen);
+		FT8006S_fts_malloc_r(thr->rawdata_h_min, buflen);
+		FT8006S_fts_malloc_r(thr->rawdata_h_max, buflen);
 		if (tdata->func->rawdata2_support) {
-			fts_malloc_r(thr->rawdata_l_min, buflen);
-			fts_malloc_r(thr->rawdata_l_max, buflen);
+			FT8006S_fts_malloc_r(thr->rawdata_l_min, buflen);
+			FT8006S_fts_malloc_r(thr->rawdata_l_max, buflen);
 		}
-		fts_malloc_r(thr->tx_linearity_max, buflen);
-		fts_malloc_r(thr->tx_linearity_min, buflen);
-		fts_malloc_r(thr->rx_linearity_max, buflen);
-		fts_malloc_r(thr->rx_linearity_min, buflen);
+		FT8006S_fts_malloc_r(thr->tx_linearity_max, buflen);
+		FT8006S_fts_malloc_r(thr->tx_linearity_min, buflen);
+		FT8006S_fts_malloc_r(thr->rx_linearity_max, buflen);
+		FT8006S_fts_malloc_r(thr->rx_linearity_min, buflen);
 
-		fts_malloc_r(thr->scap_cb_off_min, buflen_sc);
-		fts_malloc_r(thr->scap_cb_off_max, buflen_sc);
-		fts_malloc_r(thr->scap_cb_on_min, buflen_sc);
-		fts_malloc_r(thr->scap_cb_on_max, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_cb_off_min, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_cb_off_max, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_cb_on_min, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_cb_on_max, buflen_sc);
 
-		fts_malloc_r(thr->scap_rawdata_off_min, buflen_sc);
-		fts_malloc_r(thr->scap_rawdata_off_max, buflen_sc);
-		fts_malloc_r(thr->scap_rawdata_on_min, buflen_sc);
-		fts_malloc_r(thr->scap_rawdata_on_max, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_rawdata_off_min, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_rawdata_off_max, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_rawdata_on_min, buflen_sc);
+		FT8006S_fts_malloc_r(thr->scap_rawdata_on_max, buflen_sc);
 
-		fts_malloc_r(thr->panel_differ_min, buflen);
-		fts_malloc_r(thr->panel_differ_max, buflen);
+		FT8006S_fts_malloc_r(thr->panel_differ_min, buflen);
+		FT8006S_fts_malloc_r(thr->panel_differ_max, buflen);
 	} else {
 		fts_free(thr->rawdata_h_min);
 		fts_free(thr->rawdata_h_max);
@@ -1516,12 +1516,12 @@ static int fts_test_malloc_free_sc(struct fts_test *tdata, bool allocate)
 	int buflen = tdata->node.node_num * sizeof(int);
 
 	if (true == allocate) {
-		fts_malloc_r(thr->rawdata_min, buflen);
-		fts_malloc_r(thr->rawdata_max, buflen);
-		fts_malloc_r(thr->cb_min, buflen);
-		fts_malloc_r(thr->cb_max, buflen);
-		fts_malloc_r(thr->dcb_sort, buflen);
-		fts_malloc_r(thr->dcb_base, buflen);
+		FT8006S_fts_malloc_r(thr->rawdata_min, buflen);
+		FT8006S_fts_malloc_r(thr->rawdata_max, buflen);
+		FT8006S_fts_malloc_r(thr->cb_min, buflen);
+		FT8006S_fts_malloc_r(thr->cb_max, buflen);
+		FT8006S_fts_malloc_r(thr->dcb_sort, buflen);
+		FT8006S_fts_malloc_r(thr->dcb_base, buflen);
 	} else {
 		fts_free(thr->rawdata_min);
 		fts_free(thr->rawdata_max);
@@ -1544,9 +1544,9 @@ static int fts_test_malloc_free_thr(struct fts_test *tdata, bool allocate)
 	}
 
 	if (true == allocate) {
-		fts_malloc_r(tdata->node_valid,
+		FT8006S_fts_malloc_r(tdata->node_valid,
 			     tdata->node.node_num * sizeof(int));
-		fts_malloc_r(tdata->node_valid_sc,
+		FT8006S_fts_malloc_r(tdata->node_valid_sc,
 			     tdata->sc_node.node_num * sizeof(int));
 	} else {
 		fts_free(tdata->node_valid);
@@ -1574,7 +1574,7 @@ static int fts_test_malloc_free_thr(struct fts_test *tdata, bool allocate)
 }
 
 /* default enable all test item */
-static void fts_test_init_item(struct fts_test *tdata)
+static void FT8006S_fts_test_init_item(struct fts_test *tdata)
 {
 	switch (tdata->func->hwtype) {
 	case IC_HW_INCELL:
@@ -1597,7 +1597,7 @@ static int get_tx_rx_num(u8 tx_rx_reg, u8 *ch_num, u8 ch_num_max)
 	for (i = 0; i < 3; i++) {
 		ret = fts_test_read_reg(tx_rx_reg, ch_num);
 		if ((ret < 0) || (*ch_num > ch_num_max))
-			sys_delay(50);
+			FT8006S_sys_delay(50);
 		else
 			break;
 	}
@@ -1758,7 +1758,7 @@ static int get_channel_num(struct fts_test *tdata)
 	return 0;
 }
 
-static int fts_test_init_basicinfo(struct fts_test *tdata)
+static int FT8006S_fts_test_init_basicinfo(struct fts_test *tdata)
 {
 	int ret = 0;
 	u8 val = 0;
@@ -1779,7 +1779,7 @@ static int fts_test_init_basicinfo(struct fts_test *tdata)
 	}
 
 	/* enter factory mode */
-	ret = enter_factory_mode();
+	ret = FT8006S_enter_factory_mode();
 	if (ret < 0) {
 		FTS_TEST_SAVE_ERR("enter factory mode fail\n");
 		return ret;
@@ -1812,7 +1812,7 @@ static int fts_test_main_init(void)
 	memset(&tdata->testdata, 0, sizeof(struct fts_test_data));
 
 	/* get basic information: tx/rx num ... */
-	ret = fts_test_init_basicinfo(tdata);
+	ret = FT8006S_fts_test_init_basicinfo(tdata);
 	if (ret < 0) {
 		FTS_TEST_ERROR("test init basicinfo fail");
 		return ret;
@@ -1826,7 +1826,7 @@ static int fts_test_main_init(void)
 	}
 
 	/* default enable all test item */
-	fts_test_init_item(tdata);
+	FT8006S_fts_test_init_item(tdata);
 
 	ret = fts_test_malloc_free_data_txt(tdata, true);
 	if (ret < 0) {
@@ -1838,7 +1838,7 @@ static int fts_test_main_init(void)
 	tdata->buffer_length = (tdata->node.tx_num + 1) * tdata->node.rx_num;
 	tdata->buffer_length *= sizeof(int) * 2;
 	FTS_TEST_INFO("test buffer length:%d", tdata->buffer_length);
-	tdata->buffer = (int *)fts_malloc(tdata->buffer_length);
+	tdata->buffer = (int *)FT8006S_fts_malloc(tdata->buffer_length);
 	if (NULL == tdata->buffer) {
 		FTS_TEST_ERROR("test buffer(%d) malloc fail",
 			       tdata->buffer_length);
@@ -1883,7 +1883,7 @@ static int fts_test_get_testparams(char *config_name)
 {
 	int ret = 0;
 
-	ret = fts_test_get_testparam_from_ini(config_name);
+	ret = FT8006S_fts_test_get_testparam_from_ini(config_name);
 
 	return ret;
 }
@@ -1942,12 +1942,12 @@ static int fts_test_entry(char *ini_file_name)
 	ret = 0;
 test_err:
 	fts_test_main_exit();
-	enter_work_mode();
+	FT8006S_enter_work_mode();
 	return ret;
 }
 
 #ifdef ITO_TEST_NORMALIZED_NODE
-u8 FTS_IS_TESTING_FLAG;
+u8 FT8006S_FTS_IS_TESTING_FLAG;
 
 static ssize_t fts_ito_test_write(struct file *file, const char __user *buffer,
 	size_t count, loff_t *pos)
@@ -1966,7 +1966,7 @@ static int fts_ito_test_show(struct seq_file *file, void *data)
 	char test_result_bmp[5];
 	int i = 0;
 	int ret = 0;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	memset(fwname, 0, sizeof(fwname));
 	snprintf(fwname, FILE_NAME_LENGTH, "%s", buf);
@@ -1976,7 +1976,7 @@ static int fts_ito_test_show(struct seq_file *file, void *data)
 		fts_ftest->test_item[i].testresult = 0 ;
 
 mutex_lock(&input_dev->mutex);
-	fts_irq_disable();
+	FT8006S_fts_irq_disable();
 
 #if defined(FTS_ESDCHECK_EN) && (FTS_ESDCHECK_EN)
 	fts_esdcheck_switch(DISABLE);
@@ -1994,7 +1994,7 @@ mutex_lock(&input_dev->mutex);
 	fts_esdcheck_switch(ENABLE);
 #endif
 
-	fts_irq_enable();
+	FT8006S_fts_irq_enable();
 	mutex_unlock(&input_dev->mutex);
 	//fts_test_entry(fwname);
 
@@ -2116,7 +2116,7 @@ static ssize_t fts_test_store(struct device *dev,
 {
 	int ret = 0;
 	char fwname[FILE_NAME_LENGTH] = { 0 };
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct input_dev *input_dev;
 
 	if (ts_data->suspended) {
@@ -2131,7 +2131,7 @@ static ssize_t fts_test_store(struct device *dev,
 	FTS_TEST_DBG("fwname:%s.", fwname);
 
 	mutex_lock(&input_dev->mutex);
-	fts_irq_disable();
+	FT8006S_fts_irq_disable();
 
 #if defined(FTS_ESDCHECK_EN) && (FTS_ESDCHECK_EN)
 	fts_esdcheck_switch(DISABLE);
@@ -2149,7 +2149,7 @@ static ssize_t fts_test_store(struct device *dev,
 	fts_esdcheck_switch(ENABLE);
 #endif
 
-	fts_irq_enable();
+	FT8006S_fts_irq_enable();
 	mutex_unlock(&input_dev->mutex);
 
 	return count;
@@ -2206,11 +2206,11 @@ static int fts_test_func_init(struct fts_ts_data *ts_data)
 		return -ENODATA;
 	}
 
-	fts_ftest->ts_data = fts_data;
+	fts_ftest->ts_data = FT8006S_fts_data;
 	return 0;
 }
 
-int fts_test_init(struct fts_ts_data *ts_data)
+int FT8006S_fts_test_init(struct fts_ts_data *ts_data)
 {
 	int ret = 0;
 
@@ -2252,7 +2252,7 @@ int fts_test_init(struct fts_ts_data *ts_data)
 	return ret;
 }
 
-int fts_test_exit(struct fts_ts_data *ts_data)
+int FT8006S_fts_test_exit(struct fts_ts_data *ts_data)
 {
 	FTS_TEST_FUNC_ENTER();
 
@@ -2277,7 +2277,7 @@ bool fts_selftest_start(int temp)
 
 	testresult = start_selftest(temp);
 
-	enter_work_mode();
+	FT8006S_enter_work_mode();
 
 	FTS_TEST_FUNC_EXIT();
 
@@ -2319,7 +2319,7 @@ static int fts_selftest_enry(char *ini_file_name, int temp)
 	ret = 0;
 test_err:
 	fts_test_main_exit();
-	enter_work_mode();
+	FT8006S_enter_work_mode();
 	return ret;
 
 	FTS_TEST_FUNC_EXIT();
@@ -2332,7 +2332,7 @@ static ssize_t fts_tp_selftest_write(struct file *file, const char __user *buffe
 	int ret = 0;
 	char tmp[6] = {0};
 	char fwname[FILE_NAME_LENGTH] = "Conf_MultipleTest.ini";
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	struct input_dev *input_dev;
 	my_test_result = 0;
 
@@ -2352,7 +2352,7 @@ static ssize_t fts_tp_selftest_write(struct file *file, const char __user *buffe
 	fwname[strlen(fwname) + 1] = '\0';
 	FTS_TEST_DBG("fwname:%s.", fwname);
 	if (memcmp(tmp, "i2c", 3) == 0) {
-		ret = fts_get_ic_information(ts_data);
+		ret = FT8006S_fts_get_ic_information(ts_data);
 		if (ret)
 			my_test_result = 1;
 		else
@@ -2365,7 +2365,7 @@ static ssize_t fts_tp_selftest_write(struct file *file, const char __user *buffe
 			my_test_type = TEST_OPEN;
 
 	mutex_lock(&input_dev->mutex);
-	fts_irq_disable();
+	FT8006S_fts_irq_disable();
 
 #if defined(FTS_ESDCHECK_EN) && (FTS_ESDCHECK_EN)
 	fts_esdcheck_switch(DISABLE);
@@ -2383,7 +2383,7 @@ static ssize_t fts_tp_selftest_write(struct file *file, const char __user *buffe
 	fts_esdcheck_switch(ENABLE);
 #endif
 
-	fts_irq_enable();
+	FT8006S_fts_irq_enable();
 	mutex_unlock(&input_dev->mutex);
 	}
 	return count;

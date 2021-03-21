@@ -97,7 +97,7 @@ int idc_esdcheck_lcderror(struct fts_ts_data *ts_data)
 		tp_need_recovery = 0;
 		/* LCD reset, need recover TP state */
 		fts_release_all_finger();
-		fts_tp_state_recovery(ts_data);
+		FT8006S_fts_tp_state_recovery(ts_data);
 	}
 
 	ret = fts_read_reg(FTS_REG_ESD_SATURATE, &val);
@@ -129,9 +129,9 @@ static int fts_esdcheck_tp_reset(struct fts_ts_data *ts_data)
 	fts_esdcheck_data.flow_work_hold_cnt = 0;
 	fts_esdcheck_data.hardware_reset_cnt++;
 
-	fts_reset_proc(200);
+	FT8006S_fts_reset_proc(200);
 	fts_release_all_finger();
-	fts_tp_state_recovery(ts_data);
+	FT8006S_fts_tp_state_recovery(ts_data);
 
 	FTS_FUNC_EXIT();
 	return 0;
@@ -334,7 +334,7 @@ int fts_esdcheck_proc_busy(bool proc_debug)
 *****************************************************************************/
 int fts_esdcheck_switch(bool enable)
 {
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	FTS_FUNC_ENTER();
 	if (fts_esdcheck_data.mode == ENABLE) {
 		if (enable) {
@@ -383,7 +383,7 @@ static ssize_t fts_esdcheck_store(struct device *dev,
 				  struct device_attribute *attr,
 				  const char *buf, size_t count)
 {
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 	if (FTS_SYSFS_ECHO_ON(buf)) {
@@ -404,7 +404,7 @@ static ssize_t fts_esdcheck_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
 {
 	int count;
-	struct input_dev *input_dev = fts_data->input_dev;
+	struct input_dev *input_dev = FT8006S_fts_data->input_dev;
 
 	mutex_lock(&input_dev->mutex);
 	count = snprintf(buf, PAGE_SIZE, "Esd check: %s\n",

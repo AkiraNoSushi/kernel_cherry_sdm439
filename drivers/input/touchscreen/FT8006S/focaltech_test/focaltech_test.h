@@ -548,19 +548,19 @@ extern struct test_funcs test_func_ft8006sp;
 
 extern struct fts_test *fts_ftest;
 
-void sys_delay(int ms);
-int focal_abs(int value);
+void FT8006S_sys_delay(int ms);
+int FT8006S_focal_abs(int value);
 void print_buffer(int *buffer, int length, int line_num);
 int fts_test_read_reg(u8 addr, u8 *val);
 int fts_test_write_reg(u8 addr, u8 val);
 int fts_test_read(u8 addr, u8 *readbuf, int readlen);
 int fts_test_write(u8 addr, u8 *writebuf, int writelen);
-int enter_work_mode(void);
-int enter_factory_mode(void);
-int read_mass_data(u8 addr, int byte_num, int *buf);
+int FT8006S_enter_work_mode(void);
+int FT8006S_enter_factory_mode(void);
+int FT8006S_read_mass_data(u8 addr, int byte_num, int *buf);
 int chip_clb(void);
-int wait_state_update(u8 retval);
-int get_cb_incell(u16 saddr, int byte_num, int *cb_buf);
+int FT8006S_wait_state_update(u8 retval);
+int FT8006S_get_cb_incell(u16 saddr, int byte_num, int *cb_buf);
 int short_get_adcdata_incell(u8 retval, u8 ch_num, int byte_num, int *adc_buf);
 int start_scan(void);
 int get_rawdata(int *data);
@@ -578,8 +578,8 @@ int get_rawdata_mc(u8 fre, u8 fir, int *rawdata);
 int short_get_adc_data_mc(u8 retval, int byte_num, int *adc_buf, u8 mode);
 bool compare_mc_sc(bool, bool, int *, int *, int *);
 void show_data_mc_sc(int *data);
-void *fts_malloc(size_t size);
-void fts_free_proc(void *p);
+void *FT8006S_fts_malloc(size_t size);
+void FT8006S_fts_free_proc(void *p);
 void fts_test_save_data(char *name, int code, int *data, int datacnt,
 			bool mc_sc, bool key, bool result);
 
@@ -588,9 +588,9 @@ bool start_selftest(int tmp);
 int fts_tp_differ_proc(void); //FTS_GET_TP_DIFFER
 #define FTS_GET_TP_DIFFER                       //获取tp 实时differ
 
-#define fts_malloc_r(p, size) do {\
+#define FT8006S_fts_malloc_r(p, size) do {\
 if (NULL == p) {\
-	p = fts_malloc(size);\
+	p = FT8006S_fts_malloc(size);\
 	if (NULL == p) {\
 		return -ENOMEM;\
 	} \
@@ -599,7 +599,7 @@ if (NULL == p) {\
 
 #define fts_free(p) do {\
 if (p) {\
-	fts_free_proc(p);\
+	FT8006S_fts_free_proc(p);\
 	p = NULL;\
 	} \
 } while (0)
