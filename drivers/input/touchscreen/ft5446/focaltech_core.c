@@ -62,7 +62,9 @@
 * Global variable or extern global variabls/functions
 *****************************************************************************/
 struct fts_ts_data *fts_data;
+#ifdef CONFIG_TOUCHSCREEN_GOODIX_GT1X
 extern u8 goodix_flag;
+#endif
 /*****************************************************************************
 * Static function prototypes
 *****************************************************************************/
@@ -1402,11 +1404,12 @@ static int fts_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 	struct fts_ts_data *ts_data;
 
 	FTS_FUNC_ENTER();
-
+#ifdef CONFIG_TOUCHSCREEN_GOODIX_GT1X
 	if (goodix_flag == 1) {
 		FTS_ERROR("The current ic is goodix!!!");
 		return -ENODEV;
 	}
+#endif
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		FTS_ERROR("I2C not supported");
 		return -ENODEV;
