@@ -73,7 +73,7 @@
 static int fts_spi_transfer(u8 *tx_buf, u8 *rx_buf, u32 len)
 {
 	int ret = 0;
-	struct spi_device *spi = fts_data->spi;
+	struct spi_device *spi = FT8006S_fts_data->spi;
 	struct spi_message msg;
 	struct spi_transfer xfer = {
 		.tx_buf = tx_buf,
@@ -129,7 +129,7 @@ int fts_write(u8 *writebuf, u32 writelen)
 {
 	int ret = 0;
 	int i = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	u8 *txbuf = NULL;
 	u8 *rxbuf = NULL;
 	u32 txlen = 0;
@@ -216,7 +216,7 @@ int fts_read(u8 *cmd, u32 cmdlen, u8 *data, u32 datalen)
 {
 	int ret = 0;
 	int i = 0;
-	struct fts_ts_data *ts_data = fts_data;
+	struct fts_ts_data *ts_data = FT8006S_fts_data;
 	u8 *txbuf = NULL;
 	u8 *rxbuf = NULL;
 	u32 txlen = 0;
