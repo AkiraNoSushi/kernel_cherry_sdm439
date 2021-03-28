@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2015-2019, The Linux Foundation. All rights reserved.
  * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -144,9 +144,8 @@
 		i2c2 = &i2c_2;
 		i2c5 = &i2c_5;
 		spi3 = &spi_3;
-		spi6 = &spi_6;
 		i2c3 = &i2c_3;
-		i2c4 = &i2c_4;
+		spi6 = &spi_6;
 		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
 		sdhc2 = &sdhc_2; /* SDC2 for SD card */
 	};
@@ -163,7 +162,7 @@
 
 };
 
-#include "msm8937-pinctrl.dtsi"
+#include "msm8937-pinctrl-olive.dtsi"
 #include "msm8937-cpu.dtsi"
 #include "msm8937-ion.dtsi"
 #include "msm-arm-smmu-8937.dtsi"
@@ -173,7 +172,7 @@
 #include "msm8937-pm.dtsi"
 #include "msm8937-gpu.dtsi"
 #include "msm8937-mdss.dtsi"
-#include "msm8937-mdss-pll.dtsi"
+#include "msm8937-mdss-pll-olive.dtsi"
 
 &soc {
 	#address-cells = <1>;
@@ -591,32 +590,6 @@
 		status = "disabled";
 	};
 
-	i2c_4: i2c@78b8000 { /* BLSP1 QUP4 */
-		compatible = "qcom,i2c-msm-v2";
-		#address-cells = <1>;
-		#size-cells = <0>;
-		reg-names = "qup_phys_addr";
-		reg = <0x78b8000 0x600>;
-		interrupt-names = "qup_irq";
-		interrupts = <0 98 0>;
-		qcom,clk-freq-out = <400000>;
-		qcom,clk-freq-in  = <19200000>;
-		clock-names = "iface_clk", "core_clk";
-		clocks = <&clock_gcc clk_gcc_blsp1_ahb_clk>,
-			<&clock_gcc clk_gcc_blsp1_qup4_i2c_apps_clk>;
-
-		pinctrl-names = "i2c_active", "i2c_sleep";
-		pinctrl-0 = <&i2c_4_active>;
-		pinctrl-1 = <&i2c_4_sleep>;
-		qcom,noise-rjct-scl = <0>;
-		qcom,noise-rjct-sda = <0>;
-		qcom,master-id = <86>;
-		dmas = <&dma_blsp1 10 64 0x20000020 0x20>,
-			<&dma_blsp1 11 32 0x20000020 0x20>;
-		dma-names = "tx", "rx";
-		status = "disabled";
-	};
-
 	i2c_5: i2c@7af5000 { /* BLSP2 QUP1 */
 		compatible = "qcom,i2c-msm-v2";
 		#address-cells = <1>;
@@ -669,7 +642,7 @@
 		status = "disabled";
 	};
 
-	spi_6: spi@7af6000 { /* BLSP2 QUP1 */
+	spi_6: spi@7af6000 { /* BLSP2 QUP2 */
 		compatible = "qcom,spi-qup-v2";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -678,12 +651,12 @@
 			<0x7ac4000 0x1f000>;
 		interrupt-names = "spi_irq", "spi_bam_irq";
 		interrupts = <0 300 0>, <0 239 0>;
-		spi-max-frequency = <19200000>;
+		spi-max-frequency = <50000000>;
 		pinctrl-names = "spi_default", "spi_sleep";
 		pinctrl-0 = <&spi6_default &spi6_cs0_active>;
 		pinctrl-1 = <&spi6_sleep &spi6_cs0_sleep>;
 		clocks = <&clock_gcc clk_gcc_blsp2_ahb_clk>,
-			<&clock_gcc clk_gcc_blsp2_qup1_spi_apps_clk>;
+			<&clock_gcc clk_gcc_blsp2_qup2_spi_apps_clk>;
 		clock-names = "iface_clk", "core_clk";
 		qcom,infinite-mode = <0>;
 		qcom,use-bam;
@@ -692,43 +665,6 @@
 		qcom,bam-consumer-pipe-index = <6>;
 		qcom,bam-producer-pipe-index = <7>;
 		qcom,master-id = <84>;
-		status = "disabled";
-	};
-
-	blsp2_uart2: uart@7af0000 { /* BLSP2 UART2 */
-		compatible = "qcom,msm-hsuart-v14";
-		reg = <0x7af0000 0x200>,
-			<0x7ac4000 0x1f000>;
-		reg-names = "core_mem", "bam_mem";
-		interrupt-names = "core_irq", "bam_irq", "wakeup_irq";
-		#address-cells = <0>;
-		interrupt-parent = <&blsp2_uart2>;
-		interrupts = <0 1 2>;
-		#interrupt-cells = <1>;
-		interrupt-map-mask = <0xffffffff>;
-		interrupt-map = <0 &intc 0 307 0
-				1 &intc 0 239 0
-				2 &tlmm 21 0>;
-
-		qcom,inject-rx-on-wakeup;
-		qcom,rx-char-to-inject = <0xfd>;
-
-		qcom,bam-tx-ep-pipe-index = <2>;
-		qcom,bam-rx-ep-pipe-index = <3>;
-		qcom,master-id = <84>;
-		clock-names = "core_clk", "iface_clk";
-		clocks = <&clock_gcc clk_gcc_blsp2_uart2_apps_clk>,
-				<&clock_gcc clk_gcc_blsp2_ahb_clk>;
-		pinctrl-names = "sleep", "default";
-		pinctrl-0 = <&blsp2_uart2_sleep>;
-		pinctrl-1 = <&blsp2_uart2_active>;
-		qcom,msm-bus,name = "blsp2_uart2";
-		qcom,msm-bus,num-cases = <2>;
-		qcom,msm-bus,num-paths = <1>;
-		qcom,msm-bus,vectors-KBps =
-				<84 512 0 0>,
-				<84 512 500 800>;
-		status = "disabled";
 	};
 
 	msm_cpufreq: qcom,msm-cpufreq {
@@ -896,6 +832,11 @@
 				<84 512 0 0>,
 				<84 512 500 800>;
 		status = "disabled";
+	};
+
+	simtray {
+		compatible = "xiaomi,simtray-status";
+		status-gpio = <&tlmm 54 0x00>;
 	};
 
 	qcom,ipc-spinlock@1905000 {
@@ -1079,7 +1020,7 @@
 		reg = <0xb017000 0x1000>;
 		reg-names = "wdt-base";
 		interrupts = <0 3 0>, <0 4 0>;
-		qcom,bark-time = <15000>;
+		qcom,bark-time = <11000>;
 		qcom,pet-time = <9360>;
 		qcom,ipi-ping;
 		qcom,wakeup-enable;
@@ -1848,7 +1789,7 @@
 		qcom,iris-vdddig-supply  = <&pm8937_l5>;
 
 		qcom,iris-vddxo-voltage-level = <1800000 0 1800000>;
-		qcom,iris-vddrfa-voltage-level = <1450000 0 1450000>;
+		qcom,iris-vddrfa-voltage-level = <1350000 0 1350000>;
 		qcom,iris-vddpa-voltage-level = <3300000 0 3300000>;
 		qcom,iris-vdddig-voltage-level = <1800000 0 1800000>;
 
@@ -1914,9 +1855,9 @@
 };
 
 #include "pm8937-rpm-regulator.dtsi"
-#include "msm8937-regulator.dtsi"
+#include "msm8937-regulator-olive.dtsi"
 #include "pm8937.dtsi"
-#include "msm8937-audio.dtsi"
+#include "msm8937-audio-olive.dtsi"
 #include "msm8937-camera.dtsi"
 #include "msm-gdsc-8916.dtsi"
 #include "msm8937-coresight.dtsi"
