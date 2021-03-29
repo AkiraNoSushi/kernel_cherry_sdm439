@@ -300,6 +300,7 @@
 		reg = <0x4ab000 0x4>,
 			<0x193d100 0x4>;
 		reg-names = "pshold-base", "tcsr-boot-misc-detect";
+		qcom,force-warm-reboot;
 	};
 
 	qcom,mpm2-sleep-counter@4a3000 {
