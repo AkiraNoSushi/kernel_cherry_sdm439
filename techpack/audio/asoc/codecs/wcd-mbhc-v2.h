@@ -1,4 +1,5 @@
 /* Copyright (c) 2014-2017, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -150,7 +151,11 @@ do {                                                    \
 #define FAKE_REM_RETRY_ATTEMPTS 3
 #define MAX_IMPED 60000
 
-#define WCD_MBHC_BTN_PRESS_COMPL_TIMEOUT_MS  50
+//#ifdef AW87519_PA
+#define WCD_MBHC_BTN_PRESS_COMPL_TIMEOUT_MS  250
+//#else
+//#define WCD_MBHC_BTN_PRESS_COMPL_TIMEOUT_MS  50
+//#endif
 #define ANC_DETECT_RETRY_CNT 7
 #define WCD_MBHC_SPL_HS_CNT  1
 

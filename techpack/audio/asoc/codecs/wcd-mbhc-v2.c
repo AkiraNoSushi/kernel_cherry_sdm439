@@ -1,4 +1,5 @@
 /* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2020 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -34,6 +35,12 @@
 #include "wcd-mbhc-v2-api.h"
 
 #include <linux/switch.h>
+
+#include <linux/switch.h>
+
+#define CAM_HS_IMPED 45000
+#define EUR_HS_LOW 5000
+#define EUR_HS_HIGH 15000
 
 static struct switch_dev accdet_data;
 
@@ -719,6 +726,44 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 				pr_debug("%s: Marking jack type as SND_JACK_LINEOUT\n",
 				__func__);
 			}
+
+			wcd_mbhc_set_and_turnoff_hph_padac(mbhc);
+			if ((mbhc->zl > CAM_HS_IMPED &&
+				mbhc->zl < MAX_IMPED) &&
+				(mbhc->zr > CAM_HS_IMPED &&
+				mbhc->zr < MAX_IMPED) &&
+				(jack_type == SND_JACK_UNSUPPORTED)) {
+					jack_type = SND_JACK_HEADSET;
+					mbhc->current_plug = MBHC_PLUG_TYPE_HEADSET;
+					mbhc->jiffies_atreport = jiffies;
+					if (mbhc->hph_status) {
+						mbhc->hph_status &= ~(SND_JACK_HEADSET |
+						SND_JACK_LINEOUT |
+						SND_JACK_UNSUPPORTED);
+						wcd_mbhc_jack_report(mbhc,
+						&mbhc->headset_jack,
+						mbhc->hph_status,
+						WCD_MBHC_JACK_MASK);
+				}
+			}
+
+			if ((mbhc->zl > EUR_HS_LOW &&
+				mbhc->zl < EUR_HS_HIGH) &&
+				(mbhc->zr > EUR_HS_LOW &&
+				mbhc->zr < EUR_HS_HIGH) &&
+				(jack_type == SND_JACK_UNSUPPORTED)) {
+					pr_info(" EUR HS !");
+					jack_type = SND_JACK_HEADPHONE;
+					mbhc->current_plug = MBHC_PLUG_TYPE_HEADPHONE;
+					if (mbhc->hph_status) {
+						mbhc->hph_status &= ~(MBHC_PLUG_TYPE_HEADPHONE |
+						SND_JACK_UNSUPPORTED);
+						wcd_mbhc_jack_report(mbhc,
+						&mbhc->headset_jack,
+						mbhc->hph_status,
+						WCD_MBHC_JACK_MASK);
+				}
+			}
 		}
 
 		mbhc->hph_status |= jack_type;
@@ -861,6 +906,8 @@ static void wcd_mbhc_swch_irq_handler(struct wcd_mbhc *mbhc)
 	struct snd_soc_codec *codec = mbhc->codec;
 	enum snd_jack_types jack_type;
 
+	u8 loop_time = 3;
+
 	dev_dbg(codec->dev, "%s: enter\n", __func__);
 	WCD_MBHC_RSC_LOCK(mbhc);
 	mbhc->in_swch_irq_handler = true;
@@ -870,13 +917,19 @@ static void wcd_mbhc_swch_irq_handler(struct wcd_mbhc *mbhc)
 		pr_debug("%s: button press is canceled\n", __func__);
 
 	WCD_MBHC_REG_READ(WCD_MBHC_MECH_DETECTION_TYPE, detection_type);
+	while(loop_time != 0){
+		if(mbhc->current_plug != detection_type)
+			break;
 
+		WCD_MBHC_REG_READ(WCD_MBHC_MECH_DETECTION_TYPE, detection_type);
+		mdelay(50);
+		loop_time --;
+	}
 	/* Set the detection type appropriately */
 	WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_MECH_DETECTION_TYPE,
 				 !detection_type);
-
-	pr_debug("%s: mbhc->current_plug: %d detection_type: %d\n", __func__,
-			mbhc->current_plug, detection_type);
+	pr_info("%s: %d  mbhc->current_plug: %d detection_type: %d\n", __func__, loop_time,
+				mbhc->current_plug, detection_type);
 
 	switch_set_state(&accdet_data, detection_type ? PLUG_IN_STATE : NO_DEVICE_STATE);
 
