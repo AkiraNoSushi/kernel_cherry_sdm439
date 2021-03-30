@@ -76,7 +76,6 @@
 #include <linux/security.h>
 #include <linux/mount.h>
 #include <linux/firmware.h>
-#include <linux/hqsysfs.h>
 
 #ifdef CONFIG_OF
 #include <linux/of_address.h>

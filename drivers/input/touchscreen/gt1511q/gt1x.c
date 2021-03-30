@@ -844,8 +844,6 @@ int gtp_hw_info(void)
 
     snprintf(gtp_info_summary, sizeof(gtp_info_summary), "%s:%d CFG:%02x\n", GTP_VENDOR_INFO, patch_id, cfg_ver_info);
     GTP_INFO("%s", gtp_info_summary);
-    hq_regiser_hw_info(HWID_CTP, gtp_info_summary);
-
 err:
     return ret;
 }

@@ -3093,53 +3093,44 @@ static struct device_node *mdss_dsi_find_panel_of_node(
 			__func__, panel_cfg, panel_name);
 		if (!strcmp(panel_name, NONE_PANEL))
 			goto exit;
-		if (!strcmp(panel_name, "qcom,mdss_dsi_ili9881c_hdplus_video")) {
-			hq_regiser_hw_info(HWID_LCM, "oncell,vendor:ebbg,IC:ili9881c(ilitek)");
-		} else if (!strcmp(panel_name, "qcom,mdss_dsi_ili9881c_hdplus_video_c3e")) {
-			hq_regiser_hw_info(HWID_LCM, "oncell,vendor:ebbg,IC:ili9881c(ilitek)");
+		if (!strcmp(panel_name, "qcom,mdss_dsi_ili9881c_hdplus_video_c3e")) {
 #ifdef CONFIG_WPONIT_ADJUST_FUN
 			white_point_num_r = 625329;
 			white_point_num_g = 307618;
 			white_point_num_b = 169047;
 #endif
 		} else if (!strcmp(panel_name, "qcom,mdss_dsi_ili9881d_hdplus_video_c3e")) {
-			hq_regiser_hw_info(HWID_LCM, "oncell,vendor:ebbg,IC:ili9881d(ilitek)");
 #ifdef CONFIG_WPONIT_ADJUST_FUN
 			white_point_num_r = 627328;
 			white_point_num_g = 302614;
 			white_point_num_b = 163052;
 #endif
 		} else if (!strcmp(panel_name, "qcom,mdss_dsi_jd9365z_hdplus_video_c3e")) {
-			hq_regiser_hw_info(HWID_LCM, "oncell,vendor:holitech,IC:jd9365z(fitipower)");
 #ifdef CONFIG_WPONIT_ADJUST_FUN
 			white_point_num_r = 653334;
 			white_point_num_g = 309625;
 			white_point_num_b = 150050;
 #endif
 		} else if (!strcmp(panel_name, "qcom,mdss_dsi_ili9881h_hdplus_video_c3i")) {
-			hq_regiser_hw_info(HWID_LCM, "incell,vendor:TIANMA,IC:ili9881h(ilitek)");
 #ifdef CONFIG_WPONIT_ADJUST_FUN
 			white_point_num_r = 640339;
 			white_point_num_g = 319605;
 			white_point_num_b = 147057;
 #endif
 		} else if (!strcmp(panel_name, "qcom,mdss_dsi_nvt36525b_hdplus_video_c3i")) {
-			hq_regiser_hw_info(HWID_LCM, "incell,vendor:Truly,IC:nvt36525b(novatek)");
 #ifdef CONFIG_WPONIT_ADJUST_FUN
 			white_point_num_r = 639336;
 			white_point_num_g = 316607;
 			white_point_num_b = 157060;
 #endif
 		} else if (!strcmp(panel_name, "qcom,mdss_dsi_FT8006S_hdplus_video_c3i")) {
-			hq_regiser_hw_info(HWID_LCM, "incell,vendor:ebbg,IC:ft8006s(focal)");
 #ifdef CONFIG_WPONIT_ADJUST_FUN
 			white_point_num_r = 635332;
 			white_point_num_g = 306611;
 			white_point_num_b = 158059;
 #endif
-		} else {
-			hq_regiser_hw_info(HWID_LCM, "UNKNOWN PANEL");
 		}
+
 		mdss_node = of_parse_phandle(pdev->dev.of_node,
 			"qcom,mdss-mdp", 0);
 		if (!mdss_node) {

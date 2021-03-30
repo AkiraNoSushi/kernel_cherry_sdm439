@@ -38,7 +38,6 @@
 #include <linux/irq.h>
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h>
-#include <linux/hqsysfs.h>
 #ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
 #endif
