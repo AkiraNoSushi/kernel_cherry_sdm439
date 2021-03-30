@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (C) 2012-2018, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (C) 2012-2018, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 * Copyright (C) 2021 XiaoMi, Inc.
 *
 * File Name: Focaltech_test_ft5x46.c
@@ -1325,7 +1325,7 @@ unsigned char FT5X46_TestItem_PanelDifferTest(bool *bTestResult)
 
 	//Determine whether for v3 TP first, and then read the value of the 0x54
 	//and check the mapping type is right or not,if not, write the register
-	//rawdata test mapping¡ê?before mapping¡êo0x54=1;after mapping¡êo0x54=0;
+	//rawdata test mappingï¿½ï¿½?before mappingï¿½ï¿½o0x54=1;after mappingï¿½ï¿½o0x54=0;
 	if (m_bV3TP) {
 		ReCode = read_reg(REG_MAPPING_SWITCH, &strSwitch);
 		if (ReCode != ERROR_CODE_OK) {
@@ -1403,7 +1403,7 @@ unsigned char FT5X46_TestItem_PanelDifferTest(bool *bTestResult)
 	}
 	ReCode = GetRawData();
 
-	//change register value before,need to lose 3 frame data¡ê?4th frame data is valid
+	//change register value before,need to lose 3 frame dataï¿½ï¿½?4th frame data is valid
 	for (index = 0; index < 4; ++index) {
 		ReCode = GetRawData();
 		if (ReCode != ERROR_CODE_OK) {
@@ -1839,9 +1839,9 @@ unsigned char FT5X46_TestItem_WeakShortTest(bool *bTestResult)
 		if ((iMin_CG > fGShortResistance[i]) || (iDsen - iDoffset < 0)) { //<=0 ShortResistance = 0
 			iCount++;
 			if (i + 1 <= iMaxTx)
-				FTS_TEST_SAVE_INFO("\nTx%02d: %02d (k¦¸),	", i + 1, fGShortResistance[i]);
+				FTS_TEST_SAVE_INFO("\nTx%02d: %02d (k00),	", i + 1, fGShortResistance[i]);
 			else
-				FTS_TEST_SAVE_INFO("\nRx%02d: %02d (k¦¸),	", i + 1 - iMaxTx, fGShortResistance[i]);
+				FTS_TEST_SAVE_INFO("\nRx%02d: %02d (k00),	", i + 1 - iMaxTx, fGShortResistance[i]);
 			if (iCount % 10 == 0)
 				FTS_TEST_SAVE_INFO("\n\n");
 		}
@@ -1896,9 +1896,9 @@ unsigned char FT5X46_TestItem_WeakShortTest(bool *bTestResult)
 		if (fMShortResistance[i] <= 0  || fMShortResistance[i] < iMin_CC) {
 			iCount++;
 			if (i + 1 <= iMaxTx)
-				FTS_TEST_SAVE_INFO("\nTx%02d: %02d(k¦¸),	", i + 1, fMShortResistance[i]);
+				FTS_TEST_SAVE_INFO("\nTx%02d: %02d(k00),	", i + 1, fMShortResistance[i]);
 			else
-				FTS_TEST_SAVE_INFO("\nRx%02d: %02d(k¦¸),	", i + 1 - iMaxTx, fMShortResistance[i]);
+				FTS_TEST_SAVE_INFO("\nRx%02d: %02d(k00),	", i + 1 - iMaxTx, fMShortResistance[i]);
 
 			if (iCount % 10 == 0)
 				FTS_TEST_SAVE_INFO("\n\n");
