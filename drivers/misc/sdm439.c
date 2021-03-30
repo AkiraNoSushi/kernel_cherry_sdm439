@@ -21,7 +21,7 @@
 int sdm439_current_device = DEVICE_UNKNOWN;
 EXPORT_SYMBOL(sdm439_current_device);
 
-int sdm439_init(void) {
+static int __init sdm439_init(void) {
 	const char *machine_name = of_flat_dt_get_machine_name();
     if (strncmp(machine_name, "PINE", 4) == 0) {
       sdm439_current_device = XIAOMI_PINE;
@@ -31,7 +31,7 @@ int sdm439_init(void) {
     return 0;
 }
 
-void sdm439_exit(void) {
+static void sdm439_exit(void) {
 	return;
 }
 
