@@ -848,6 +848,10 @@ config SIMTRAY_STATUS
 	help
 	  Say 'y' here to support SIM tray GPIO detection
 
+config GPIO_FM_LAN_ENABLE
+	bool "fm lan_enable"
+	default y
+
 config XIAOMI_SDM439
 	bool "Xiaomi SDM439 device detection"
 	default n
@@ -872,7 +876,6 @@ source "drivers/misc/mic/Kconfig"
 source "drivers/misc/genwqe/Kconfig"
 source "drivers/misc/echo/Kconfig"
 source "drivers/misc/cxl/Kconfig"
-source "drivers/misc/hqsysfs/Kconfig"
 source "drivers/misc/fpr_FingerprintCard/Kconfig"
 source "drivers/misc/xiaomi_fs/Kconfig"
 source "drivers/misc/goodix/Kconfig"

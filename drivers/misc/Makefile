@@ -60,7 +60,7 @@ obj-$(CONFIG_QPNP_MISC) 	+= qpnp-misc.o
 obj-$(CONFIG_FPR_FPC) 	+= fpr_FingerprintCard/
 obj-$(CONFIG_FINGERPRINT_GOODIX_GF3208)     += goodix/
 obj-$(CONFIG_MEMORY_STATE_TIME)	+= memory_state_time.o
-obj-$(CONFIG_HQ_SYSFS_SUPPORT) 	+= hqsysfs/
+obj-$(CONFIG_GPIO_FM_LAN_ENABLE) 	+= fm_con.o
 obj-$(CONFIG_MI_FS)             +=xiaomi_fs/
 obj-$(CONFIG_SIMTRAY_STATUS)    += simtray.o
 
