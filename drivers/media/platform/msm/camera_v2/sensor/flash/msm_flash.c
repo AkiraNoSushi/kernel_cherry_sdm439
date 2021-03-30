@@ -97,7 +97,7 @@ static void msm_flashlight_brightness_vince_set(struct led_classdev *led_cdev,
 	Define FLASH_ACTIVE_5V_ENABLE: If it supports QC3.0 charger;
 	Then we need to do call qpnp_flash_led_prepare() to enable flash triggers;
 	*/
-#ifdef FLASH_ACTIVE_5V_ENABLE
+#if defined(CONFIG_XIAOMI_SDM439) || defined(CONFIG_PROJECT_OLIVES)
 	int32_t max_current = -EINVAL;
 	int32_t ret = 0;
 #endif
@@ -108,7 +108,7 @@ static void msm_flashlight_brightness_vince_set(struct led_classdev *led_cdev,
 		   __func__, __LINE__, value);
 	if (value == 0) {
 		/* Turn off flash triggers */
-#ifdef FLASH_ACTIVE_5V_ENABLE
+#if defined(CONFIG_XIAOMI_SDM439) || defined(CONFIG_PROJECT_OLIVES)
 		ret = qpnp_flash_led_prepare(flash_ctrl->switch_trigger,
 						DISABLE_REGULATOR, &max_current);
 		if (ret < 0) {
@@ -123,7 +123,7 @@ static void msm_flashlight_brightness_vince_set(struct led_classdev *led_cdev,
 		if (flash_ctrl->switch_trigger)
 			led_trigger_event(flash_ctrl->switch_trigger, 0);
 	} else {/* Turn on flash triggers */
-#ifdef FLASH_ACTIVE_5V_ENABLE
+#if defined(CONFIG_XIAOMI_SDM439) || defined(CONFIG_PROJECT_OLIVES)
 		ret = qpnp_flash_led_prepare(flash_ctrl->switch_trigger,
 						ENABLE_REGULATOR, &max_current);
 		if (ret < 0) {
