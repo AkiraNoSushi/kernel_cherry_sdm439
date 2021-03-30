@@ -1,5 +1,5 @@
 /************************************************************************
-* Copyright (C) 2012-2018, Focaltech Systems (R)£¬All Rights Reserved.
+* Copyright (C) 2012-2018, Focaltech Systems (R)ï¿½ï¿½All Rights Reserved.
 * Copyright (C) 2021 XiaoMi, Inc.
 *
 * File Name: focaltech_test_ini.c
@@ -52,7 +52,7 @@ int fts_strncmp(const char *cs, const char *ct, size_t count)
 /*************************************************************
 Function:  Get the value of key
 Input: char * filedata; char * section; char * key
-Output: char * value¡¡key
+Output: char * valueï¿½ï¿½key
 Return: 0       SUCCESS
 		-1      can not find section
 		-2      can not find key
@@ -414,7 +414,7 @@ int fts_test_get_ini_size(char *config_name)
 	FTS_TEST_FUNC_ENTER();
 
 	memset(filepath, 0, sizeof(filepath));
-	snprintf(filepath, PAGE_SIZE, "%s%s", FTS_INI_FILE_PATH, config_name);
+	snprintf(filepath, sizeof(filepath), "%s%s", FTS_INI_FILE_PATH, config_name);
 	filename = getname_kernel(filepath);
 
 	if (NULL == pfile)
@@ -452,7 +452,7 @@ int fts_test_read_ini_data(char *config_name, char *config_buf)
 	FTS_TEST_FUNC_ENTER();
 
 	memset(filepath, 0, sizeof(filepath));
-	snprintf(filepath, PAGE_SIZE, "%s%s", FTS_INI_FILE_PATH, config_name);
+	snprintf(filepath, sizeof(filepath), "%s%s", FTS_INI_FILE_PATH, config_name);
 	filename = getname_kernel(filepath);
 	if (NULL == pfile) {
 		pfile = file_open_name(filename, O_RDONLY, 0);
