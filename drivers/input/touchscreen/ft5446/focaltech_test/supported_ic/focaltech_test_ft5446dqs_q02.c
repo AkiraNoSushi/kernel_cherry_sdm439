@@ -2572,7 +2572,7 @@ void init_basicthreshold_ft5x46(char *strIniFile)
 
 	//////////////////////////////////////////////////////////// Project Code Test
 	GetPrivateProfileString("Basic_Threshold", "Project_Code", " ", str, strIniFile);
-	snprintf(g_stCfg_FT5X46_BasicThreshold.Project_Code, PAGE_SIZE, "%s", str);
+	snprintf(g_stCfg_FT5X46_BasicThreshold.Project_Code, sizeof(g_stCfg_FT5X46_BasicThreshold.Project_Code), "%s", str);
 
 	GetPrivateProfileString("Basic_Threshold", "RawDataTest_Low_Min", "3000", str, strIniFile);
 	g_stCfg_FT5X46_BasicThreshold.RawDataTest_low_Min = fts_atoi(str);
