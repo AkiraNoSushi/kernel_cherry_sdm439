@@ -842,12 +842,16 @@ config QPNP_MISC
 	  peripheral. The MISC peripheral holds the USB ID interrupt
 	  and the driver provides an API to check if this interrupt
 	  is available on the current PMIC chip.
+
 config SIMTRAY_STATUS
 	tristate "Xiaomi SIM tray status"
 	default n
 	help
 	  Say 'y' here to support SIM tray GPIO detection
 
+config GPIO_FM_LAN_ENABLE
+	bool "fm lan_enable"
+	default n
 
 config XIAOMI_SDM439
 	bool "Xiaomi SDM439 device detection"
@@ -873,7 +877,6 @@ source "drivers/misc/mic/Kconfig"
 source "drivers/misc/genwqe/Kconfig"
 source "drivers/misc/echo/Kconfig"
 source "drivers/misc/cxl/Kconfig"
-source "drivers/misc/hqsysfs/Kconfig"
 source "drivers/misc/fpr_FingerprintCard/Kconfig"
 source "drivers/misc/xiaomi_fs/Kconfig"
 source "drivers/misc/goodix/Kconfig"

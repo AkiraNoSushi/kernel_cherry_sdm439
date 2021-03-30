@@ -73,7 +73,7 @@ obj-$(CONFIG_TUSB1064_XR_MISC) += tusb1064.o
 obj-$(CONFIG_VXR200_XR_MISC) += vxr7200.o
 
 
-obj-$(CONFIG_HQ_SYSFS_SUPPORT) 	+= hqsysfs/
+obj-$(CONFIG_GPIO_FM_LAN_ENABLE) += fm_con.o
 obj-$(CONFIG_MI_FS)             +=xiaomi_fs/
 obj-$(CONFIG_SIMTRAY_STATUS)    += simtray.o
 lkdtm-$(CONFIG_LKDTM)		+= lkdtm_core.o
