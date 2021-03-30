@@ -903,7 +903,7 @@ static int fts_test_save_test_data(char *file_name, char *data_buf, int len)
 
 	FTS_TEST_FUNC_ENTER();
 	memset(filepath, 0, sizeof(filepath));
-	snprintf(filepath, PAGE_SIZE, "%s%s", FTS_ITO_RESULT_PATH, file_name);
+	snprintf(filepath, sizeof(filepath), "%s%s", FTS_ITO_RESULT_PATH, file_name);
 	filename = getname_kernel(filepath);
 	if (NULL == pfile) {
 		pfile = file_open_name(filename, O_TRUNC | O_CREAT | O_RDWR, 0);
@@ -1366,7 +1366,7 @@ static int fts_ito_test_show(struct seq_file *file, void *data)
 	FTS_IS_TESTING_FLAG = 1;
 
 	memset(fwname, 0, sizeof(fwname));
-	snprintf(fwname, PAGE_SIZE, "%s", buf);
+	snprintf(fwname, sizeof(fwname), "%s", buf);
 	FTS_TEST_DBG("fwname:%s.", fwname);
 
 	for (i = FT5X46_ENTER_FACTORY_MODE ; i <= FT5X46_PANELDIFFER_UNIFORMITY_TEST;  i++) {
@@ -1558,13 +1558,10 @@ static ssize_t fts_test_show(struct device *dev, struct device_attribute *attr, 
 		break;
 	}
 
-	switch (ito_test_result) {
-	case true:
+	if (ito_test_result == true) {
 		num_read_chars = snprintf(buf, PAGE_SIZE, "Pass\n");
-		break;
-	case false:
+	} else {
 		num_read_chars = snprintf(buf, PAGE_SIZE, "Failed\n");
-		break;
 	}
 
 	return num_read_chars;
@@ -1589,7 +1586,7 @@ static ssize_t fts_test_store(struct device *dev, struct device_attribute *attr,
 	client = ts_data->client;
 	input_dev = ts_data->input_dev;
 	memset(fwname, 0, sizeof(fwname));
-	snprintf(fwname, PAGE_SIZE, "%s", buf);
+	snprintf(fwname, sizeof(fwname), "%s", buf);
 	fwname[count - 1] = '\0';
 	FTS_TEST_DBG("fwname:%s.", fwname);
 
