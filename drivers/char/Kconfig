@@ -669,3 +669,10 @@ config VSERVICES_VTTY_COUNT
 	help
 	  The maximum number of Virtual Services serial devices to support.
 	  This limit applies to both the client and server.
+
+
+config RANDOM_FORCE_URANDOM
+	bool "Force /dev/urandom"
+	default n
+	help
+	  Force all processes to use /dev/urandom instead of /dev/random.
