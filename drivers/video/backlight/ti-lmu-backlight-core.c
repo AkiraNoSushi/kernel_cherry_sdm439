@@ -139,68 +139,68 @@ static int dump_i2c_reg(struct ti_lmu_bl_chip *chip)
 	int ret_val = 0;
 #if 1
 	regmap_read(regmap, 0x10, &ret_val);
-	pr_err("[bkl] %s read 0x10 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x10 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x1A, &ret_val);
-	pr_err("[bkl] %s read 0x1A = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x1A = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x1C, &ret_val);
-	pr_err("[bkl] %s read 0x1C = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x1C = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x22, &ret_val);
-	pr_err("[bkl] %s read 0x22 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x22 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x23, &ret_val);
-	pr_err("[bkl] %s read 0x23 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x23 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x24, &ret_val);
-	pr_err("[bkl] %s read 0x24 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x24 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x18, &ret_val);
-	pr_err("[bkl] %s read 0x18 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x18 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x16, &ret_val);
-	pr_err("[bkl] %s read 0x16 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x16 = 0x%x\n", __func__, ret_val);
 #else
 	regmap_read(regmap, 0x00, &ret_val);
-	pr_err("[bkl] %s read 0x00 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x00 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x01, &ret_val);
-	pr_err("[bkl] %s read 0x01 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x01 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x10, &ret_val);
-	pr_err("[bkl] %s read 0x10 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x10 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x11, &ret_val);
-	pr_err("[bkl] %s read 0x11 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x11 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x12, &ret_val);
-	pr_err("[bkl] %s read 0x12 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x12 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x13, &ret_val);
-	pr_err("[bkl] %s read 0x13 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x13 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x14, &ret_val);
-	pr_err("[bkl] %s read 0x14 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x14 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x15, &ret_val);
-	pr_err("[bkl] %s read 0x15 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x15 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x16, &ret_val);
-	pr_err("[bkl] %s read 0x16 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x16 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x17, &ret_val);
-	pr_err("[bkl] %s read 0x17 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x17 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x18, &ret_val);
-	pr_err("[bkl] %s read 0x18 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x18 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x19, &ret_val);
-	pr_err("[bkl] %s read 0x19 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x19 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x1A, &ret_val);
-	pr_err("[bkl] %s read 0x1A = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x1A = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x1B, &ret_val);
-	pr_err("[bkl] %s read 0x1B = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x1B = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x1C, &ret_val);
-	pr_err("[bkl] %s read 0x1C = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x1C = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x20, &ret_val);
-	pr_err("[bkl] %s read 0x20 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x20 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x21, &ret_val);
-	pr_err("[bkl] %s read 0x21 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x21 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x22, &ret_val);
-	pr_err("[bkl] %s read 0x22 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x22 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x23, &ret_val);
-	pr_err("[bkl] %s read 0x23 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x23 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0x24, &ret_val);
-	pr_err("[bkl] %s read 0x24 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0x24 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0xB0, &ret_val);
-	pr_err("[bkl] %s read 0xB0 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0xB0 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0xB2, &ret_val);
-	pr_err("[bkl] %s read 0xB2 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0xB2 = 0x%x\n", __func__, ret_val);
 	regmap_read(regmap, 0xB4, &ret_val);
-	pr_err("[bkl] %s read 0xB4 = 0x%x\n", __func__, ret_val);
+	pr_debug_ratelimited("[bkl] %s read 0xB4 = 0x%x\n", __func__, ret_val);
 #endif
 
 	return 0;
@@ -211,28 +211,28 @@ int ti_hbm_set(enum backlight_hbm_mode hbm_mode)
 	struct regmap *regmap = bl_chip->lmu->regmap;
 	int value = 0;
 
-	pr_err("[bkl] %s enter\n", __func__);
+	pr_debug_ratelimited("[bkl] %s enter\n", __func__);
 
 	switch (hbm_mode) {
 	case HBM_MODE_DEFAULT:
 		regmap_write(regmap, 0x18, 0x13);
-		pr_err("This is hbm mode 1\n");
+		pr_debug_ratelimited("This is hbm mode 1\n");
 		break;
 	case HBM_MODE_LEVEL1:
 		regmap_write(regmap, 0x18, 0x16);
-		pr_err("This is hbm mode 2\n");
+		pr_debug_ratelimited("This is hbm mode 2\n");
 		break;
 	case HBM_MODE_LEVEL2:
 		regmap_write(regmap, 0x18, 0x19);
-		pr_err("This is hbm mode 3\n");
+		pr_debug_ratelimited("This is hbm mode 3\n");
 		break;
 	default:
-		pr_err("This isn't hbm mode\n");
+		pr_debug_ratelimited("This isn't hbm mode\n");
 		break;
 	}
 
 	regmap_read(regmap, 0x18, &value);
-	pr_err("[bkl]%s hbm_mode = %d,regmap value=0x%x\n", __func__, hbm_mode, value);
+	pr_debug_ratelimited("[bkl]%s hbm_mode = %d,regmap value=0x%x\n", __func__, hbm_mode, value);
 	return 0;
 }
 
@@ -345,11 +345,11 @@ static int ti_lmu_backlight_update_brightness_register(struct ti_lmu_bl *lmu_bl,
 					 brightness);
 		if (ret)
 			return ret;
-		pr_err("[bkl][after]11bit %s brightness = %d\n", __func__, brightness);
+		pr_debug_ratelimited("[bkl][after]11bit %s brightness = %d\n", __func__, brightness);
 		val = (brightness >> LMU_BACKLIGHT_11BIT_MSB_SHIFT) & 0xFF;
 	} else {
 		val = brightness & 0xFF;
-		pr_err("[bkl]8bit %s val = %d\n", __func__, val);
+		pr_debug_ratelimited("[bkl]8bit %s val = %d\n", __func__, val);
 	}
 
 	reg = reginfo->brightness_msb[lmu_bl->bank_id];
@@ -358,7 +358,7 @@ static int ti_lmu_backlight_update_brightness_register(struct ti_lmu_bl *lmu_bl,
 
 int lm3697_set_brightness(int brightness)
 {
-	pr_err("[bkl][before]%s brightness = %d\n", __func__, brightness);
+	pr_debug_ratelimited("[bkl][before]%s brightness = %d\n", __func__, brightness);
 	return ti_lmu_backlight_update_brightness_register(bl_chip->lmu_bl, brightness);
 }
 
@@ -403,7 +403,7 @@ static int of_property_count_elems_of_size(const struct device_node *np,
 		return -ENODATA;
 
 	if (prop->length % elem_size != 0) {
-		pr_err("size of %s in node %s is not a multiple of %d\n",
+		pr_debug_ratelimited("size of %s in node %s is not a multiple of %d\n",
 		       propname, np->full_name, elem_size);
 		return -EINVAL;
 	}
@@ -608,7 +608,7 @@ static int ti_lmu_backlight_update_ctrl_mode(struct ti_lmu_bl *lmu_bl)
 	 * Update PWM configuration register.
 	 * If the mode is register based, then clear the bit.
 	 */
-	pr_err("[bkl] %s reg = 0x%x\n", __func__, *reg);
+	pr_debug_ratelimited("[bkl] %s reg = 0x%x\n", __func__, *reg);
 	if (lmu_bl->mode == BL_PWM_BASED)
 		val = LMU_BL_GET_VAL(*reg);
 	else
@@ -717,7 +717,7 @@ static int ti_lmu_backlight_init(struct ti_lmu_bl_chip *chip)
 	//u32 *reg = chip->cfg->reginfo->init;
 	//int num_init = chip->cfg->reginfo->num_init;
 	//int i, ret;
-	pr_err("[bkl] %s enter\n", __func__);
+	pr_debug_ratelimited("[bkl] %s enter\n", __func__);
 	/*
 	 * 'init' register data consists of address, mask, value.
 	 * Driver can get each data by using LMU_BL_GET_ADDR(),
@@ -732,7 +732,7 @@ static int ti_lmu_backlight_init(struct ti_lmu_bl_chip *chip)
 		ret = regmap_update_bits(regmap, LMU_BL_GET_ADDR(*reg),
 					 LMU_BL_GET_MASK(*reg),
 					 LMU_BL_GET_VAL(*reg));
-		pr_err("%s ADDR = 0x%x, MASK = 0x%x, VAL = 0x%x\n", __func__,
+		pr_debug_ratelimited("%s ADDR = 0x%x, MASK = 0x%x, VAL = 0x%x\n", __func__,
 					 LMU_BL_GET_ADDR(*reg),
 					 LMU_BL_GET_MASK(*reg),
 					 LMU_BL_GET_VAL(*reg));
@@ -753,7 +753,7 @@ static int ti_lmu_backlight_init(struct ti_lmu_bl_chip *chip)
 	regmap_write(regmap, 0x24, 0x02);
 #endif
 
-	pr_err("[bkl] %s finish\n", __func__);
+	pr_debug_ratelimited("[bkl] %s finish\n", __func__);
 	return 0;
 }
 
@@ -807,7 +807,7 @@ ti_lmu_backlight_register(struct device *dev, struct ti_lmu *lmu,
 	struct ti_lmu_bl *each;
 	int i, ret;
 
-	pr_err("[bkl] %s enter\n", __func__);
+	pr_debug_ratelimited("[bkl] %s enter\n", __func__);
 
 	if (!cfg) {
 		dev_err(dev, "Operation is not configured\n");
@@ -863,7 +863,7 @@ ti_lmu_backlight_register(struct device *dev, struct ti_lmu *lmu,
 
 	bl_chip = chip;
 
-	pr_err("[bkl] %s finish\n", __func__);
+	pr_debug_ratelimited("[bkl] %s finish\n", __func__);
 
 	return chip;
 }
@@ -903,7 +903,7 @@ static int ti_lmu_backlight_probe(struct platform_device *pdev)
 	struct ti_lmu_bl_chip *chip;
 	int ret;
 
-	pr_err("[bkl] %s enter\n", __func__);
+	pr_debug_ratelimited("[bkl] %s enter\n", __func__);
 
 	/* set PM439_GPIO4 output ,HIGH and enable */
 	//spmi_register_write(0xC340,0x11);
@@ -929,7 +929,7 @@ static int ti_lmu_backlight_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, chip);
-	pr_err("[bkl] %s finish\n", __func__);
+	pr_debug_ratelimited("[bkl] %s finish\n", __func__);
 	return 0;
 }
 
