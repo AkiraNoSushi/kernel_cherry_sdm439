@@ -1207,7 +1207,9 @@ static int fts_test_get_testparams(char *config_name)
  * ============================
  */
 static bool ito_test_result;
+#if FTS_TP_SELFTEST
 static u8 self_test_result = TP_SELFTEST_RESULT_INVALID;
+#endif
 static u8 ito_test_status;
 
 static bool fts_test_start(void)
