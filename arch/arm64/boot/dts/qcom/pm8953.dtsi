@@ -44,7 +44,7 @@
 				qcom,support-reset = <1>;
 				qcom,s1-timer = <6720>;
 				qcom,s2-timer = <0>;
-				qcom,s2-type = <7>;
+				qcom,s2-type = <1>;
 				linux,code = <116>;
 			};
 
