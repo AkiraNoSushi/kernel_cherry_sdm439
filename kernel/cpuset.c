@@ -1773,7 +1773,9 @@ static ssize_t cpuset_write_resmask(struct kernfs_open_file *of,
 	free_trial_cpuset(trialcs);
 
 #ifdef CONFIG_UCLAMP_ASSIST
-	uclamp_set(of, nbytes, off);
+	// Uclamp Assist: Only overwrite if current task is booster.
+	if (task_is_booster(current))
+		uclamp_set(of, nbytes, off);
 #endif
 out_unlock:
 	mutex_unlock(&cpuset_mutex);
