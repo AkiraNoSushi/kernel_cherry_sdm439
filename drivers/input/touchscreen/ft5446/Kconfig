@@ -3,7 +3,7 @@
 #
 
 menuconfig TOUCHSCREEN_FT5446
-		bool "Focaltech Touchscreen"
+		tristate "Focaltech Touchscreen"
 		depends on I2C
 		default n
 		help
