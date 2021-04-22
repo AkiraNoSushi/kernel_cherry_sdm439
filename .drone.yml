@@ -1,0 +1,21 @@
+kind: pipeline
+type: docker
+name: CherryKernel
+
+clone:
+  depth: 1
+
+steps:
+- name: Building CherryKernel
+  image: kernelci/build-base:latest
+  environment:
+    TELEGRAM_BOT_TOKEN:
+      from_secret: TELEGRAM_BOT_TOKEN
+    TELEGRAM_CHAT_ID:
+      from_secret: TELEGRAM_CHAT_ID
+    DEBIAN_FRONTEND: noninteractive
+    ARCH: arm64
+    SUBARCH: arm64
+  commands:
+  - bash -xe .drone.sh
+
