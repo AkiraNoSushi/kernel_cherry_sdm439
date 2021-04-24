@@ -1,3 +1,8 @@
+# Silence Clang warning
+ifeq ($(cc-name),clang)
+EXTRA_CFLAGS += $(call cc-option, -Wframe-larger-than=6144)
+endif
+
 ccflags-y += -Idrivers/media/platform/msm/camera_v2/
 ccflags-y += -Idrivers/media/platform/msm/camera_v2/common
 ccflags-y += -Idrivers/media/platform/msm/camera_v2/sensor
