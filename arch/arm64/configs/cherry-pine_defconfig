@@ -766,3 +766,6 @@ CONFIG_UCLAMP_ASSIST=y
 
 # Force /dev/urandom
 CONFIG_RANDOM_FORCE_URANDOM=y
+
+# Devfreq boost
+CONFIG_DEVFREQ_BOOST=y
