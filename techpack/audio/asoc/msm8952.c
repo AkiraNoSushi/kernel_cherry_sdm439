@@ -1823,16 +1823,16 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	btn_low[0] = 89;
-	btn_high[0] = 89;
-	btn_low[1] = 288;
-	btn_high[1] = 288;
-	btn_low[2] = 488;
-	btn_high[2] = 555;
-	btn_low[3] = 488;
-	btn_high[3] = 555;
-	btn_low[4] = 488;
-	btn_high[4] = 555;
+	btn_low[0] = 75;
+	btn_high[0] = 75;
+	btn_low[1] = 150;
+	btn_high[1] = 150;
+	btn_low[2] = 225;
+	btn_high[2] = 225;
+	btn_low[3] = 450;
+	btn_high[3] = 450;
+	btn_low[4] = 500;
+	btn_high[4] = 500;
 
 	return msm8952_wcd_cal;
 }
