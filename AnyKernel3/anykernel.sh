@@ -67,4 +67,7 @@ patch_prop /system/build.prop "ro.lmk.upgrade_pressure" "95"
 patch_prop /system/build.prop "ro.lmk.downgrade_pressure" "60"
 patch_prop /system/build.prop "ro.lmk.log_stats" "true"
 patch_prop /system/build.prop "ro.lmk.use_psi" "true"
+# Replace post_boot with ours.
+ui_print "Pushing init.qcom.post_boot.sh..."
+replace_file "/vendor/bin/init.qcom.post_boot.sh" "0755" "init.qcom.post_boot.sh"
 ## end install
