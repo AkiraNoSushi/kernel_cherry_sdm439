@@ -39,15 +39,6 @@ ui_print "Mounting /vendor and /system..."
 mount -o rw,remount /vendor
 mount -o rw,remount /system
 
-# Prima
-ui_print "Setting up Prima..."
-if [ -d "/vendor/lib/modules" ]; then
-    cp pronto_wlan.ko modules/vendor/lib/modules
-fi
-if [ -f "/system/lib/modules/pronto_wlan.ko" ]; then
-    cp pronto_wlan.ko modules/system/lib/modules
-fi
-
 # Patches
 # Prevent init from overriding kernel tweaks.
 ui_print "Patching init..."
