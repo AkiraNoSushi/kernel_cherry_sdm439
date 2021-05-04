@@ -43,10 +43,9 @@ mount -o rw,remount /system
 ui_print "Setting up Prima..."
 if [ -d "/vendor/lib/modules" ]; then
     cp pronto_wlan.ko modules/vendor/lib/modules
-    # Ugly hack for some ROMs
-    if [ -f "/system/lib/modules/pronto_wlan.ko" ]; then
-        cp pronto_wlan.ko modules/system/lib/modules
-    fi
+fi
+if [ -f "/system/lib/modules/pronto_wlan.ko" ]; then
+    cp pronto_wlan.ko modules/system/lib/modules
 fi
 
 # Patches
