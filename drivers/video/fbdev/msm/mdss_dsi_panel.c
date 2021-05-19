@@ -2822,6 +2822,27 @@ static int mdss_dsi_panel_timing_from_dt(struct device_node *np,
 
 	rc = of_property_read_u32(np, "qcom,mdss-dsi-panel-framerate", &tmp);
 	pt->timing.frame_rate = !rc ? tmp : DEFAULT_FRAME_RATE;
+
+#ifdef CONFIG_XIAOMI_SDM439
+	if((sdm439_current_device == XIAOMI_PINE && pt->timing.frame_rate > 70) ||
+	   (sdm439_current_device == XIAOMI_OLIVES && pt->timing.frame_rate > 60)) {
+		pr_info("setting panel refresh rate above safe values isn't allowed.");
+		BUG();
+	}
+#else
+#ifdef CONFIG_PROJECT_PINE
+	if(pt->timing.frame_rate > 70) {
+		pr_info("setting panel refresh rate above safe values isn't allowed.");
+		BUG();
+	}
+#elif CONFIG_PROJECT_OLIVES
+	if(pt->timing.frame_rate > 60) {
+		pr_info("setting panel refresh rate above safe values isn't allowed.");
+		BUG();
+	}
+#endif
+#endif
+
 	rc = of_property_read_u64(np, "qcom,mdss-dsi-panel-clockrate", &tmp64);
 	if (rc == -EOVERFLOW) {
 		tmp64 = 0;
