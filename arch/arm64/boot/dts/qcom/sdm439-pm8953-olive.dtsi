@@ -191,7 +191,7 @@
 
 #include "pm8953.dtsi"
 #include "pm8953-rpm-regulator.dtsi"
-#include "sdm439-regulator.dtsi"
+#include "sdm439-regulator-olive.dtsi"
 
 &thermal_zones {
 	aoss0-lowf {

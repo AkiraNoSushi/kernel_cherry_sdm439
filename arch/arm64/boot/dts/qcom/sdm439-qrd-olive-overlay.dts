@@ -15,9 +15,9 @@
 /dts-v1/;
 /plugin/;
 
-#include "sdm439-qrd.dtsi"
+#include "sdm439-qrd-olive.dtsi"
 
 / {
-	model = "PINE QRD";
-	qcom,board-id = <0xb 2>;
+	model = "Olive QRD";
+	qcom,board-id = <0xb 8>;
 };

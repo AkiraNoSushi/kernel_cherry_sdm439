@@ -12,17 +12,17 @@
  * GNU General Public License for more details.
  */
 
-#include "msm8937.dtsi"
-#include "sdm439-pm8953.dtsi"
-#include "sdm439-pmi632.dtsi"
-#include "sdm439-audio.dtsi"
+#include "msm8937-olive.dtsi"
+#include "sdm439-pm8953-olive.dtsi"
+#include "sdm439-pmi632-olive.dtsi"
+#include "sdm439-audio-olive.dtsi"
 #include "sdm439-mtp.dtsi"
-#include "sdm439-ctp.dtsi"
+#include "sdm439-ctp-olive.dtsi"
 
 / {
 	model = "Qualcomm Technologies, Inc. SDM439";
 	compatible = "qcom,sdm439";
-	qcom,msm-id = <353 0x0>;
+	qcom,msm-id = <353 0x10008>;
 };
 
 &soc {
@@ -301,6 +301,17 @@
 		compatible = "qcom,smmu-kgsl-cb";
 		iommus = <&kgsl_smmu 2>;
 		memory-region = <&secure_mem>;
+	};
+};
+
+&spi_6 {
+	status = "ok";
+	irled@0 {
+		compatible = "ir-spi";
+		reg = <0x0>;
+		vdd-supply = <&pm8953_l8>; //vdd
+		status = "ok";
+		spi-max-frequency = <19200000>;
 	};
 };
 
@@ -720,7 +731,6 @@
 &sdhc_1 {
 	/* DLL HSR settings. Refer go/hsr - <Target> DLL settings */
 	qcom,dll-hsr-list = <0x00076400 0x0 0x0 0x0 0x00040868>;
-	qcom,ddr-config = <0x00040868>;
 
 };
 
@@ -745,5 +755,5 @@
 };
 
 &usb_otg {
-	qcom,hsusb-otg-phy-init-seq = <0x43 0x80 0x06 0x82 0xffffffff>;
+	qcom,hsusb-otg-phy-init-seq =  <0x43 0x80 0x37 0x81 0x76 0x82 0xffffffff>;
 };

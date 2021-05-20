@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  */
 
-#include "pmi632.dtsi"
+#include "pmi632-olive.dtsi"
 
 &pmi632_charger {
 	dpdm-supply = <&usb_otg>;
@@ -31,10 +31,9 @@
 /{
 	mtp_batterydata: qcom,battery-data {
 		qcom,batt-id-range-pct = <10>;
-		#include "Peony-GY-4000mah-51kohm.dtsi"
-		#include "Peony-NVT-4000mah-41kohm.dtsi"
-		#include "Peony-SWD-4000mah-78kohm.dtsi"
-		#include "Peony-Default-4000mah-78kohm.dtsi"
+		#include "Olive-SWD-5000mah-330kohm.dtsi"
+		#include "Olive-GY-5000mah-100kohm.dtsi"
+		#include "Olive-Default-5000mah-330kohm.dtsi"
 	};
 };
 
@@ -159,7 +158,7 @@
 				type = "passive";
 			};
 			quiet_batt_439_trip1: quiet-batt-trip1 {
-				temperature = <38000>;
+				temperature = <37000>;
 				hysteresis = <4000>;
 				type = "passive";
 			};
@@ -169,17 +168,17 @@
 				type = "passive";
 			};
 			quiet_batt_439_trip2: quiet-batt-trip2 {
-				temperature = <40000>;
+				temperature = <38000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};
 			quiet_batt_439_trip3: quiet-batt-trip3 {
-				temperature = <43000>;
+				temperature = <40000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};
 			quiet_batt_439_trip4: quiet-batt-trip4 {
-				temperature = <48000>;
+				temperature = <43000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};
@@ -189,7 +188,7 @@
 				type = "passive";
 			};
 			quiet_batt_439_trip5: quiet-batt-trip5 {
-				temperature = <56000>;
+				temperature = <48000>;
 				hysteresis = <2000>;
 				type = "passive";
 			};

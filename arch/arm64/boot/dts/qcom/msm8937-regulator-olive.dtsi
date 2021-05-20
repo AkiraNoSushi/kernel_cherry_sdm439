@@ -270,8 +270,8 @@
 	rpm-regulator-ldoa19 {
 		status = "okay";
 		pm8937_l19: regulator-l19 {
-			regulator-min-microvolt = <1450000>;
-			regulator-max-microvolt = <1450000>;
+			regulator-min-microvolt = <1350000>;
+			regulator-max-microvolt = <1350000>;
 			qcom,init-voltage = <1225000>;
 			status = "okay";
 		};
