@@ -9,6 +9,7 @@
  *  - tested with a Tesun USB-703 game controller.
  *
  * Copyright (c) 2009 Richard Walmsley <richwalm@gmail.com>
+ * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 /*
