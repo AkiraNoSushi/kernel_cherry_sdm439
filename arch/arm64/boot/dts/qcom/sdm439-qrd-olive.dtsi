@@ -13,7 +13,7 @@
  */
 
 #include "msm8937-mdss-panels.dtsi"
-#include "sdm439-camera-sensor-qrd.dtsi"
+#include "sdm439-camera-sensor-qrd-olive.dtsi"
 
 &blsp1_uart2 {
 	status = "ok";
@@ -146,6 +146,7 @@
 			linux,can-disable;
 			gpio-key,wakeup;
 		};
+
 		camera_snapshot {
 			label = "camera_snapshot";
 			gpios = <&tlmm 127 0x1>;
@@ -156,10 +157,35 @@
 			gpio-key,wakeup;
 		};
 	};
+
 	gpio_ldo_power {
 		compatible = "fm,fm_lan_enable";
-		qcom,fm_lan_enable_pin = <&tlmm 87 0>;
+		qcom,fm_lan_enable_pin = <&tlmm 89 0>;
 	};
+
+	/*add fingerprint for C3I-224 by gaoge start*/
+	goodix_fp {
+		compatible = "goodix,fingerprint";
+		spi-max-frequency = <1000000>;
+		input-device-name = "gf3208";
+		interrupt-parent = <&tlmm>;
+		interrupts = <48 0x0>;
+		goodix,gpio_reset    = <&tlmm 124 0>;
+		goodix,gpio_irq      = <&tlmm 48 0>;
+		clock-names = "iface_clk", "core_clk";
+		clocks = <&clock_gcc clk_gcc_blsp1_ahb_clk>,
+		<&clock_gcc clk_gcc_blsp1_qup1_spi_apps_clk>;
+		fpc,enable-on-boot;
+		pinctrl-names = "goodixfp_spi_active",
+			"goodixfp_reset_reset",
+			"goodixfp_reset_active",
+			"goodixfp_irq_active";
+		pinctrl-0 = <&goodix_spi_active>;
+		pinctrl-1 = <&goodix_reset_reset>;
+		pinctrl-2 = <&goodix_reset_active>;
+		pinctrl-3 = <&goodix_irq_active>;
+	};
+	/*add fingerprint for C3I-224 by gaoge end*/
 
 	fpc1020 {
 		compatible = "fpc,fpc1020";
