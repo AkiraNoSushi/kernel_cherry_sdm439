@@ -25,6 +25,10 @@ ifeq ($(strip $(TARGET_ROARING_LIONUS)),true)
 AUDIO_SELECT  += CONFIG_MSM_8905=m
 endif
 
+ifeq ($(strip $(FACTORY_VERSION_MODE)), true)
+AUDIO_SELECT  += CONFIG_SND_SOC_MBHC_RETRY=y
+endif
+
 AUDIO_CHIPSET := audio
 # Build/Package only in case of supported target
 ifeq ($(call is-board-platform-in-list,msm8909 msm8953 msm8937 sdm845 sdm710 qcs605),true)
@@ -78,6 +82,26 @@ ifeq ($(call is-board-platform-in-list,msm8909 msm8953 msm8937 sdm710 qcs605),tr
 include $(CLEAR_VARS)
 LOCAL_MODULE              := $(AUDIO_CHIPSET)_wcd_cpe.ko
 LOCAL_MODULE_KBUILD_NAME  := wcd_cpe_dlkm.ko
+LOCAL_MODULE_TAGS         := optional
+LOCAL_MODULE_DEBUG_ENABLE := true
+LOCAL_MODULE_PATH         := $(KERNEL_MODULES_OUT)
+include $(DLKM_DIR)/AndroidKernelModule.mk
+endif
+###########################################################
+ifeq ($(call is-board-platform-in-list,msm8909 msm8953 msm8937 sdm439),true)
+include $(CLEAR_VARS)
+LOCAL_MODULE              := $(AUDIO_CHIPSET)_aw87329_audio.ko
+LOCAL_MODULE_KBUILD_NAME  := aw87329_audio_dlkm.ko
+LOCAL_MODULE_TAGS         := optional
+LOCAL_MODULE_DEBUG_ENABLE := true
+LOCAL_MODULE_PATH         := $(KERNEL_MODULES_OUT)
+include $(DLKM_DIR)/AndroidKernelModule.mk
+endif
+###########################################################
+ifeq ($(call is-board-platform-in-list,msm8909 msm8953 msm8937 sdm439),true)
+include $(CLEAR_VARS)
+LOCAL_MODULE              := $(AUDIO_CHIPSET)_aw87519_audio.ko
+LOCAL_MODULE_KBUILD_NAME  := aw87519_audio_dlkm.ko
 LOCAL_MODULE_TAGS         := optional
 LOCAL_MODULE_DEBUG_ENABLE := true
 LOCAL_MODULE_PATH         := $(KERNEL_MODULES_OUT)
