@@ -1,4 +1,5 @@
 /* Copyright (c) 2015-2020, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -58,7 +59,7 @@
 #define SPK_PMD 2
 #define SPK_PMU 3
 
-#define MICBIAS_DEFAULT_VAL 1800000
+#define MICBIAS_DEFAULT_VAL 2200000
 #define MICBIAS_MIN_VAL 1600000
 #define MICBIAS_STEP_SIZE 50000
 
@@ -1390,7 +1391,7 @@ static int msm_anlg_cdc_codec_enable_on_demand_supply(
 		ret = -EINVAL;
 		goto out;
 	}
-	dev_dbg(codec->dev, "%s: supply: %s event: %d ref: %d\n",
+	dev_err(codec->dev, "%s: supply: %s event: %d ref: %d\n",
 		__func__, on_demand_supply_name[w->shift], event,
 		atomic_read(&sdm660_cdc->on_demand_list[w->shift].ref));
 
@@ -2137,7 +2138,7 @@ static int msm_anlg_cdc_codec_enable_adc(struct snd_soc_dapm_widget *w,
 	u16 adc_reg;
 	u8 init_bit_shift;
 
-	dev_dbg(codec->dev, "%s %d\n", __func__, event);
+	dev_err(codec->dev, "%s %s %d\n", __func__, w->name, event);
 
 	adc_reg = MSM89XX_PMIC_ANALOG_TX_1_2_TEST_CTL_2;
 
@@ -2477,7 +2478,7 @@ static int msm_anlg_cdc_codec_enable_micbias(struct snd_soc_dapm_widget *w,
 	char *external_text = "External";
 	bool micbias2;
 
-	dev_dbg(codec->dev, "%s %d\n", __func__, event);
+	dev_err(codec->dev, "%s %s %d %d\n", __func__, w->name, event, w->reg);
 	switch (w->reg) {
 	case MSM89XX_PMIC_ANALOG_MICB_1_EN:
 	case MSM89XX_PMIC_ANALOG_MICB_2_EN:
@@ -2643,7 +2644,7 @@ static int msm_anlg_cdc_codec_enable_rx_bias(struct snd_soc_dapm_widget *w,
 	struct sdm660_cdc_priv *sdm660_cdc =
 					snd_soc_codec_get_drvdata(codec);
 
-	dev_dbg(codec->dev, "%s %d\n", __func__, event);
+	dev_err(codec->dev, "%s %d\n", __func__, event);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -2698,9 +2699,10 @@ static void wcd_imped_config(struct snd_soc_codec *codec,
 				snd_soc_codec_get_drvdata(codec);
 
 	value = wcd_get_impedance_value(imped);
+	dev_err(codec->dev, "%s, %d Ohm\n", __func__, value);
 
 	if (value < wcd_imped_val[0]) {
-		dev_dbg(codec->dev,
+		dev_err(codec->dev,
 			"%s, detected impedance is less than 4 Ohm\n",
 			 __func__);
 		return;
@@ -2771,7 +2773,7 @@ static int msm_anlg_cdc_hphl_dac_event(struct snd_soc_dapm_widget *w,
 					snd_soc_codec_get_drvdata(codec);
 	int ret;
 
-	dev_dbg(codec->dev, "%s %s %d\n", __func__, w->name, event);
+	dev_err(codec->dev, "%s %s %d\n", __func__, w->name, event);
 	ret = wcd_mbhc_get_impedance(&sdm660_cdc->mbhc,
 			&impedl, &impedr);
 
@@ -2887,7 +2889,7 @@ static int msm_anlg_cdc_hphr_dac_event(struct snd_soc_dapm_widget *w,
 	struct sdm660_cdc_priv *sdm660_cdc =
 					snd_soc_codec_get_drvdata(codec);
 
-	dev_dbg(codec->dev, "%s %s %d\n", __func__, w->name, event);
+	dev_err(codec->dev, "%s %s %d\n", __func__, w->name, event);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -2931,7 +2933,7 @@ static int msm_anlg_cdc_hph_pa_event(struct snd_soc_dapm_widget *w,
 	struct sdm660_cdc_priv *sdm660_cdc =
 					snd_soc_codec_get_drvdata(codec);
 
-	dev_dbg(codec->dev, "%s: %s event = %d\n", __func__, w->name, event);
+	dev_err(codec->dev, "%s: %s event = %d\n", __func__, w->name, event);
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
@@ -3029,8 +3031,7 @@ static const struct snd_soc_dapm_route audio_map[] = {
 	{"HEADPHONE", NULL, "HPHR PA"},
 
 	{"Ext Spk", NULL, "Ext Spk Switch"},
-	{"Ext Spk Switch", "On", "HPHL PA"},
-	{"Ext Spk Switch", "On", "HPHR PA"},
+	{"Ext Spk Switch", "On", "LINEOUT PA"},
 
 	{"HPHL PA", NULL, "HPHL"},
 	{"HPHR PA", NULL, "HPHR"},
