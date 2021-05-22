@@ -1824,7 +1824,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#if defined(CONFIG_PROJECT_OLIVES)
 	btn_low[0] = 92;
 	btn_high[0] = 92;
 	btn_low[1] = 266;
