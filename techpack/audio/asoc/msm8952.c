@@ -94,8 +94,6 @@ extern unsigned char aw87519_audio_receiver(void);
 extern unsigned char aw87519_audio_off(void);
 static int aw87519_spk_control = 0;
 static int aw87519_rcv_control = 0;
-static const char *const ext_speaker_amp_function[] = { "Off", "On" };
-static const char *const ext_receiver_amp_function[] = { "Off", "On" };
 #elif defined AW87329_PA
 //add by 101003082 for aw87329 begin at 2018/12/18
 extern unsigned char aw87329_audio_kspk(void);
