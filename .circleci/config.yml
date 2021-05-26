@@ -1,0 +1,118 @@
+version: 2.1
+jobs:
+  build:
+   docker:
+      - image: kernelci/build-base:latest
+   environment:
+      CIRCLE_COMPARE_URL: << pipeline.project.git_url >>/compare/<< pipeline.git.base_revision >>..<<pipeline.git.revision>>
+   steps:
+      - restore_cache:
+          keys:
+            - v1-apt-cache-{{ checksum "/var/lib/dpkg/available" }}
+            - v1-apt-cache-
+      - run:
+          name: Setting up build environment
+          command: |
+           # APT cache
+           rm /etc/apt/apt.conf.d/docker-clean
+           echo "Binary::apt::APT::Keep-Downloaded-Packages \\"1\\";" >> /etc/apt/apt.conf.d/99keep-downloaded
+           # Set up build environment
+           apt-get update -y
+           apt-get upgrade -y
+           export DEBIAN_FRONTEND=noninteractive
+           ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+           apt-get install tzdata -y
+           dpkg-reconfigure --frontend noninteractive tzdata
+           apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget ssh-client -yq
+           # Fix GitHub SSH key checking
+           mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+      - save_cache:
+          key: v1-apt-cache-{{ checksum "/var/lib/dpkg/available" }}
+          paths:
+            - /var/cache/apt
+      - run: 
+          name: Cloning kernel sources
+          command: |
+            git clone --depth 1 --single-branch "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
+      - restore_cache:
+          keys:
+            - v1-toolchains-clang-
+      - restore_cache:
+          keys:
+            - v1-toolchains-binutils-
+      - run:
+          name: Fetching AOSP toolchains
+          command: |
+           download_clang() {
+              wget "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/$1.tar.gz"
+              mkdir -p clang
+              tar -xf "$1.tar.gz" -C clang/
+           }
+           latest_clang=$(curl "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/refs/heads/master/?format=TEXT" | base64 --decode | grep -Eoh "clang-r[a-z0-9]*?" | tail -n1)
+           if [ -d "clang" ]; then 
+            if [ ! "$latest_clang" == "clang-"$(cat clang/AndroidVersion.txt | grep -Eoh "based on r[a-z0-9]+" | grep -Eoh "r[a-z0-9]+") ]; then
+              download_clang $latest_clang
+            fi
+           else
+            download_clang $latest_clang
+           fi
+           git -C "android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9" pull --rebase || git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 --depth=1 --single-branch --branch="lineage-19.0"
+           git -C "android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9" pull --rebase || git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 --depth=1 --single-branch --branch="lineage-19.0"
+      - save_cache:
+          key: v1-toolchains-clang-{{ checksum "~/project/clang/AndroidVersion.txt" }}
+          paths:
+            - ~/project/clang
+      - save_cache:
+          key: v1-toolchains-binutils-{{ checksum "~/project/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/.git/refs/heads/lineage-19.0" }}-{{ checksum "~/project/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9/.git/refs/heads/lineage-19.0" }}
+          paths:
+            - ~/project/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9
+            - ~/project/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9
+      - restore_cache:
+          keys:
+            - v2-compiler-cache-{{ .Branch }}-{{ .Revision }}
+            - v2-compiler-cache-{{ .Branch }}-
+            - v2-compiler-cache-
+      - run:
+          name: Starting build process
+          command: |
+           mkdir -p ~/project/ccache
+           CCACHE_DIR=~/project/ccache ccache -M 500M
+           mkdir -p /tmp/targets-output/
+      - run:
+          name: Building Mi439 target
+          command: |
+           export ARCH=arm64 && export SUBARCH=arm64 && export CCACHE_DIR=~/project/ccache
+           make O=out ARCH=arm64 cherry-mi439_defconfig
+           export PATH="$(pwd)/clang/bin:$(pwd)/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin:$(pwd)/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9/bin:${PATH}"
+           make -j$(nproc --all) O=out \
+                                 ARCH=arm64 \
+                                 CC="ccache clang" \
+                                 CLANG_TRIPLE=aarch64-linux-gnu- \
+                                 CROSS_COMPILE=aarch64-linux-android- \
+                                 CROSS_COMPILE_ARM32=arm-linux-androideabi-
+           cp out/arch/arm64/boot/dtbo.img AnyKernel3/
+           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/
+      - save_cache:
+          key: v2-compiler-cache-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/project/ccache
+      - run:
+          name: Creating flashable zip
+          command: |
+           mkdir -p /tmp/output
+           cd AnyKernel3
+           export zipfile="/tmp/output/CherryKernel_$(date +%Y%m%d-%H%M).zip"
+           7z a -mm=Deflate -mfb=258 -mpass=15 -r $zipfile *
+           FILE_CAPTION=$(cat \<< EOF
+           *Branch:* $CIRCLE_BRANCH
+           *Commit:* [$(echo $CIRCLE_SHA1 | cut -c -7)]($CIRCLE_COMPARE_URL)
+           EOF
+           )
+           curl -F document=@"${zipfile}" -F "caption=${FILE_CAPTION}" "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument?chat_id=${TELEGRAM_CHAT_ID}&parse_mode=Markdown"
+      - store_artifacts:
+          path: /tmp/output
+workflows:
+  version: 2.1
+  kernel:
+    jobs:
+      - build
