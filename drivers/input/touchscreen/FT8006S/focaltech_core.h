@@ -172,7 +172,6 @@ struct fts_ts_data {
 	bool glove_mode;
 	bool cover_mode;
 	bool charger_mode;
-	bool gesture_mode;
 	bool dev_pm_suspend;
 	/* gesture enable or disable, default: disable */
 	/* multi-touch */

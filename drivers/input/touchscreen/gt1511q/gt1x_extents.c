@@ -26,6 +26,7 @@
 #include <linux/device.h>
 #include <linux/miscdevice.h>
 #include <linux/input.h>
+#include <linux/sysctl.h>
 
 #include <asm/uaccess.h>
 #include <linux/proc_fs.h>	/*proc */
@@ -56,13 +57,17 @@ typedef struct {
 #define CHKBITS_16			16
 #define CHKBITS_8			8
 
-int gesture_enabled;	//* module switch */
+int gesture_enabled = 1;	//* module switch */
 DOZE_T gesture_doze_status = DOZE_DISABLED; //* doze status */
 
 //static u8 egde_config;
 static u8 gestures_flag[32];	//* gesture flag, every bit stands for a gesture */
 static st_gesture_data gesture_data;	//* gesture data buffer */
 static struct mutex gesture_data_mutex;	//* lock for gesture data */
+
+static int sysctl_dt2w_min_val = 0;
+static int sysctl_dt2w_max_val = 1;
+static struct ctl_table_header *dt2w_sysctl_header;
 
 int gt1x_gesture_switch(struct input_dev *dev, unsigned int type, unsigned int code, int value)
 {
@@ -983,6 +988,28 @@ static struct miscdevice hotknot_misc_device = {
 };
 #endif
 
+static struct ctl_table dt2w_child_table[] = {
+    {
+        .procname       = "dt2w",
+        .maxlen         = sizeof(int),
+        .mode           = 0666,
+        .data           = &gesture_enabled,
+        .proc_handler   = &proc_dointvec_minmax,
+        .extra1         = &sysctl_dt2w_min_val,
+        .extra2         = &sysctl_dt2w_max_val,
+    },
+    {}
+};
+
+static struct ctl_table dt2w_parent_table[] = {
+    {
+        .procname       = "dev",
+        .mode           = 0555,
+        .child          = dt2w_child_table,
+    },
+    {}
+};
+
 s32 gt1x_init_node(void)
 {
 #ifdef CONFIG_GTP_GESTURE_WAKEUP
@@ -1008,6 +1035,14 @@ s32 gt1x_init_node(void)
 		GTP_INFO("Created misc device in /dev/hotknot.");
 	}
 #endif
+
+	/* DT2W sysctl */
+	dt2w_sysctl_header = register_sysctl_table(dt2w_parent_table);
+	if (!dt2w_sysctl_header) {
+		printk(KERN_ALERT "Error: Failed to register dt2w_sysctl_header\n");
+		return -EFAULT;
+	}
+
 	return 0;
 }
 
@@ -1020,6 +1055,9 @@ void gt1x_deinit_node(void)
 #ifdef CONFIG_GTP_HOTKNOT
 	misc_deregister(&hotknot_misc_device);
 #endif
+
+	/* DT2W sysctl */
+	unregister_sysctl_table(dt2w_sysctl_header);
 }
 
 /*

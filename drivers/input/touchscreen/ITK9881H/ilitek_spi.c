@@ -653,7 +653,7 @@ static struct spi_device_id tp_spi_id[] = {
 	{TDDI_DEV_ID, 0},
 };
 
-bool ilitek_gesture_flag;
+bool ilitek_gesture_flag = true;
 
 int ilitek_gesture_switch(struct input_dev *dev, unsigned int type, unsigned int code, int value)
 {
