@@ -346,6 +346,8 @@ int ilitek_tddi_sleep_handler(int mode)
 	mutex_lock(&idev->touch_mutex);
 	atomic_set(&idev->tp_sleep, START);
 
+	idev->gesture = ilitek_gesture_flag ? ENABLE : DISABLE;
+
 	if (atomic_read(&idev->fw_stat) ||
 		atomic_read(&idev->mp_stat)) {
 		ipio_info("fw upgrade or mp still running, ignore sleep requst\n");

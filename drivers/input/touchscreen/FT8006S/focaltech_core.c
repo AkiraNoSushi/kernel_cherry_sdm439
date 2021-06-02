@@ -65,6 +65,7 @@
 * Global variable or extern global variabls/functions
 *****************************************************************************/
 struct fts_ts_data *FT8006S_fts_data;
+extern bool ft8006s_gesture_mode;
 
 /*****************************************************************************
 * Static function prototypes
@@ -587,7 +588,7 @@ static int fts_read_touchdata(struct fts_ts_data *data)
 		return -EIO;
 	}
 
-	if (data->gesture_mode) {
+	if (ft8006s_gesture_mode) {
 		ret = FT8006S_fts_gesture_readdata(data, buf + FTS_TOUCH_DATA_LEN);
 		if (0 == ret) {
 		FTS_INFO("succuss to get gesture data in irq handler");
@@ -1671,7 +1672,7 @@ static int fts_ts_suspend(struct device *dev)
 	fts_esdcheck_suspend();
 #endif
 
-	if (ts_data->gesture_mode)
+	if (ft8006s_gesture_mode)
 		FT8006S_fts_gesture_suspend(ts_data);
 	else {
 		FTS_INFO("make TP enter into sleep mode");
@@ -1727,7 +1728,7 @@ static int fts_ts_resume(struct device *dev)
 	fts_esdcheck_resume();
 #endif
 
-	if (ts_data->gesture_mode)
+	if (ft8006s_gesture_mode)
 		FT8006S_fts_gesture_resume(ts_data);
 
 	ts_data->suspended = false;

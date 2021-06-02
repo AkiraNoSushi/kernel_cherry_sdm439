@@ -20,6 +20,11 @@
  */
 
 #include "ilitek.h"
+#include <linux/sysctl.h>
+
+static int sysctl_dt2w_min_val = 0;
+static int sysctl_dt2w_max_val = 1;
+static struct ctl_table_header *dt2w_sysctl_header;
 
 #define USER_STR_BUFF		PAGE_SIZE
 #define IOCTL_I2C_BUFF		PAGE_SIZE
@@ -1950,6 +1955,28 @@ void ilitek_tp_selftest(void)
 	}
 }
 
+static struct ctl_table dt2w_child_table[] = {
+    {
+        .procname       = "dt2w",
+        .maxlen         = sizeof(int),
+        .mode           = 0666,
+        .data           = &ilitek_gesture_flag,
+        .proc_handler   = &proc_dointvec_minmax,
+        .extra1         = &sysctl_dt2w_min_val,
+        .extra2         = &sysctl_dt2w_max_val,
+    },
+    {}
+};
+
+static struct ctl_table dt2w_parent_table[] = {
+    {
+        .procname       = "dev",
+        .mode           = 0555,
+        .child          = dt2w_child_table,
+    },
+    {}
+};
+
 void ilitek_tddi_node_init(void)
 {
 	int i = 0, ret = 0;
@@ -1974,4 +2001,10 @@ void ilitek_tddi_node_init(void)
 	}
 
 	netlink_init();
+
+	/* DT2W sysctl */
+	dt2w_sysctl_header = register_sysctl_table(dt2w_parent_table);
+	if (!dt2w_sysctl_header) {
+		printk(KERN_ALERT "Error: Failed to register dt2w_sysctl_header\n");
+	}
 }
