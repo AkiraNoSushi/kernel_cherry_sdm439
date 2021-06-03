@@ -114,7 +114,7 @@
 			compatible = "shared-dma-pool";
 			reusable;
 			alignment = <0 0x400000>;
-			size = <0 0x400000>;
+			size = <0 0x800000>;
 		};
 
 		cont_splash_mem: splash_region@83000000 {
@@ -124,7 +124,7 @@
 		dump_mem: mem_dump_region {
 			compatible = "shared-dma-pool";
 			reusable;
-			size = <0x400000>;
+			size = <0 0x400000>;
 		};
 	};
 
