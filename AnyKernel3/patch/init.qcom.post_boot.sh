@@ -204,3 +204,8 @@ esac
 misc_link=$(ls -l /dev/block/bootdevice/by-name/misc)
 real_path=${misc_link##*>}
 setprop persist.vendor.mmi.misc_dev_path $real_path
+
+wifi_hal=$(find /vendor/lib64 /vendor/lib -name "libwifi-hal.so" | head -n 1)
+if grep -q "pronto_wlan.ko" $wifi_hal; then
+    echo sta > /sys/module/wlan/parameters/fwpath
+fi
