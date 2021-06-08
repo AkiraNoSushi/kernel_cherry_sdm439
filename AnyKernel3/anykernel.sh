@@ -72,6 +72,16 @@ if grep -q "pronto_wlan.ko" $wifi_hal; then
 else
     ui_print "No WiFi HAL patching needed."
 fi
+# Update OMX blobs if VNDK version < 30
+if [ $(file_getprop /vendor/build.prop ro.vendor.build.version.sdk) -lt "30" ]; then
+    ui_print "Updating OMX blobs..."
+    replace_file "/vendor/lib/libOmxVenc.so" "0644" "lib_libOmxVenc.so"
+    replace_file "/vendor/lib/libOmxVdec.so" "0644" "lib_libOmxVdec.so"
+    if [ -d "/vendor/lib64" ]; then
+        replace_file "/vendor/lib64/libOmxVenc.so" "0644" "lib64_libOmxVenc.so"
+        replace_file "/vendor/lib64/libOmxVdec.so" "0644" "lib64_libOmxVdec.so"
+    fi
+fi
 # IORap
 ui_print "Patching system's build.prop..."
 patch_prop /system/build.prop "ro.iorapd.enable" "true"
