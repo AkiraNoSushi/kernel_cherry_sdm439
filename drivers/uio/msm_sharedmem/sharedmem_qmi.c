@@ -19,7 +19,9 @@
 #include <linux/rwsem.h>
 #include <linux/slab.h>
 #include <linux/list.h>
+#ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
+#endif
 #include <soc/qcom/msm_qmi_interface.h>
 #include "sharedmem_qmi.h"
 #include "remote_filesystem_access_v01.h"
@@ -220,6 +222,7 @@ static int sharedmem_qmi_req_cb(struct qmi_handle *handle, void *conn_h,
 	return rc;
 }
 
+#ifdef CONFIG_DEBUG_FS
 #define DEBUG_BUF_SIZE (2048)
 static char *debug_buffer;
 static u32 debug_data_size;
@@ -364,6 +367,7 @@ static void debugfs_exit(void)
 	debugfs_remove_recursive(dir_ent);
 	mutex_destroy(&dbg_buf_lock);
 }
+#endif
 
 static void sharedmem_qmi_svc_recv_msg(struct work_struct *work)
 {
@@ -432,7 +436,9 @@ static void sharedmem_register_qmi(void)
 static void sharedmem_qmi_init_worker(struct work_struct *work)
 {
 	sharedmem_register_qmi();
+#ifdef CONFIG_DEBUG_FS
 	debugfs_init();
+#endif
 }
 
 int sharedmem_qmi_init(void)
@@ -449,5 +455,7 @@ void sharedmem_qmi_exit(void)
 	flush_workqueue(sharedmem_qmi_svc_workqueue);
 	qmi_handle_destroy(sharedmem_qmi_svc_handle);
 	destroy_workqueue(sharedmem_qmi_svc_workqueue);
+#ifdef CONFIG_DEBUG_FS
 	debugfs_exit();
+#endif
 }
