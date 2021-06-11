@@ -1,21 +1,18 @@
 #!/bin/bash
 
 # Setting up build environment...
-apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu aria2 -yq
+apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi libncurses5 -yq
 # We download repo as zip file because it's faster than cloning it with git
-aria2c https://github.com/Reinazhard/aosp-clang/archive/refs/heads/master.zip
-unzip -qq aosp-clang-master.zip
-git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/ --depth=1 --single-branch
-git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/ --depth=1 --single-branch
+wget https://github.com/ThankYouMario/proprietary_vendor_qcom_sdclang/archive/refs/heads/ruby-12.zip
+unzip -qq ruby-12.zip
 
 # Build
 make O=out ARCH=arm64 cherry-sdm439_defconfig
-PATH="$(pwd)/aosp-clang-master/bin:/$(pwd)/aarch64-linux-android-4.9/bin:$(pwd)/arm-linux-androideabi-4.9/bin:${PATH}"
+PATH="$(pwd)/proprietary_vendor_qcom_sdclang-ruby-12/bin:${PATH}"
 make -j$(nproc --all) O=out ARCH=arm64 \
                       CC=clang \
-                      CROSS_COMPILE=aarch64-linux-android- \
-                      CROSS_COMPILE_ARM32=arm-linux-androideabi- \
-                      CLANG_TRIPLE=aarch64-linux-gnu-
+                      CROSS_COMPILE=aarch64-linux-gnu- \
+                      CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
 
 # Build flashable zip
 cp out/arch/arm64/boot/dtbo.img AnyKernel3/
