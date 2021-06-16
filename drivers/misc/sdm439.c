@@ -17,9 +17,14 @@
 #include <linux/module.h>
 #include <linux/of_fdt.h>
 #include <linux/string.h>
+#include <linux/kernel.h>
+#include <linux/moduleparam.h>
 
 int sdm439_current_device = DEVICE_UNKNOWN;
 EXPORT_SYMBOL(sdm439_current_device);
+
+unsigned int sdm439_vndk_version = UINT_MAX;
+core_param(sdm439_vndk_version, sdm439_vndk_version, int, 0644);
 
 static int __init sdm439_init(void) {
 	const char *machine_name = of_flat_dt_get_machine_name();

@@ -25,4 +25,6 @@ extern enum SDM439_devices sdm439_devices;
 
 extern int sdm439_current_device;
 
+extern unsigned int sdm439_vndk_version;
+
 #endif
