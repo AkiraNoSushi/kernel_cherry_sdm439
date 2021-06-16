@@ -9,7 +9,6 @@
  *  - tested with an EXEQ EQ-PCU-02090 game controller.
  *
  * Copyright (c) 2010 Sergei Kolzun <x0r@dv-life.ru>
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 /*
