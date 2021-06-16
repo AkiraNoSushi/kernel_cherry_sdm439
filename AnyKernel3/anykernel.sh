@@ -30,16 +30,22 @@ ramdisk_compression=auto;
 
 ## AnyKernel install
 split_boot;
+
+ui_print "Mounting /vendor..."
+mount -o rw,remount /vendor
+
+# Add VNDK version to cmdline
+patch_cmdline "sdm439_vndk_version" "sdm439_vndk_version=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk)"
+
 flash_boot;
 flash_dtbo;
 
 ui_print " "
 
-ui_print "Mounting /vendor and /system..."
-mount -o rw,remount /vendor
+ui_print "Mounting /system..."
 mount -o rw,remount /system
 
-# Patches
+## Patches
 # Prevent init from overriding kernel tweaks.
 ui_print "Patching system's init..."
 # IMO this is kinda destructive but works
