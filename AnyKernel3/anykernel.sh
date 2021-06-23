@@ -34,8 +34,10 @@ split_boot;
 ui_print "Mounting /vendor..."
 mount -o rw,remount /vendor
 
+vndk_version=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk)
+
 # Add VNDK version to cmdline
-patch_cmdline "sdm439_vndk_version" "sdm439_vndk_version=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk)"
+patch_cmdline "sdm439_vndk_version" "sdm439_vndk_version=$vndk_version"
 
 flash_boot;
 flash_dtbo;
@@ -75,6 +77,10 @@ if grep -q "pronto_wlan.ko" $wifi_hal; then
     # Give WiFi HAL fwpath sysfs privileges
     ui_print "Patching vendor's init..."
     insert_line /vendor/etc/init/hw/init.qcom.rc "chown wifi wifi /sys/module/wlan/parameters/fwpath" after "    chmod 0660 /sys/kernel/dload/dload_mode" $(printf "\n    chown wifi wifi /sys/module/wlan/parameters/fwpath")
+    if ! grep -q "allow qti_init_shell sysfs_wlan_fwpath" /vendor/etc/selinux/vendor_sepolicy.cil; then
+        ui_print "Patching vendor's SELinux policy..."
+        echo "(allow qti_init_shell sysfs_wlan_fwpath_${vndk_version}_0 (file (write lock append map open)))" >> /vendor/etc/selinux/vendor_sepolicy.cil
+    fi
 else
     ui_print "No WiFi HAL patching needed."
 fi
