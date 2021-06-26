@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting up build environment...
-apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi libncurses5 -yq
+apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi libtinfo5 -yq
 # We download repo as zip file because it's faster than cloning it with git
 wget https://github.com/ThankYouMario/proprietary_vendor_qcom_sdclang/archive/refs/heads/ruby-12.zip
 unzip -qq ruby-12.zip
