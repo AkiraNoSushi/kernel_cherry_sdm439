@@ -3793,7 +3793,7 @@ static ssize_t otg_status_show(struct device *dev,
 
 }
 
-static DEVICE_ATTR(otg_status, 0644,
+static DEVICE_ATTR(otg_status, 0444,
 		otg_status_show, NULL);
 
 static int msm_otg_vbus_notifier(struct notifier_block *nb, unsigned long event,
