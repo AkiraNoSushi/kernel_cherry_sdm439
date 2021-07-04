@@ -16,7 +16,7 @@
 
 #include <linux/bitops.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -321,7 +321,7 @@ enum {
  ********************************/
 #define TYPE_C_SNK_STATUS_REG			(TYPEC_BASE + 0x06)
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #define DETECTED_SRC_TYPE_MASK ((sdm439_current_device == XIAOMI_PINE) ? GENMASK(3, 0) : GENMASK(6, 0))
 #else
 #ifdef CONFIG_PROJECT_OLIVES

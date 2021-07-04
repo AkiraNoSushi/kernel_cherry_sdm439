@@ -21,7 +21,7 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -634,14 +634,14 @@ int ktd_hbm_set(enum backlight_hbm_mode hbm_mode)
 	return 0;
 }
 
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 #define LOWEST_BRIGHTNESS          8
 #endif
 
 int ktd3137_brightness_set(int brightness)
 {
 	LOG_DBG("%s brightness = %d\n", __func__, brightness);
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_OLIVES) {
         if ((brightness > 0) && (brightness <= LOWEST_BRIGHTNESS)) {
             brightness = LOWEST_BRIGHTNESS;

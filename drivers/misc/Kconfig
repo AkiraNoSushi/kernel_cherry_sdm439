@@ -849,7 +849,7 @@ config SIMTRAY_STATUS
 	  Say 'y' here to support SIM tray GPIO detection
 
 
-config XIAOMI_SDM439
+config PROJECT_MI439
 	bool "Xiaomi SDM439 device detection"
 	default n
 	help

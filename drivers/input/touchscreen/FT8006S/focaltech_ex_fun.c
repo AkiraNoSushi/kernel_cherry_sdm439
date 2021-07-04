@@ -35,7 +35,7 @@
 *****************************************************************************/
 #include "focaltech_core.h"
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -1239,13 +1239,13 @@ int FT8006S_fts_remove_sysfs(struct fts_ts_data *ts_data)
 static struct proc_dir_entry *focal_proc_create_tp_lock_down;
 #if FOCAL_LOCKDOWN
 
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 extern char tp_lockdown_info[40];
 #endif
 
 static int focal_tp_lock_down_info_show(struct seq_file *m, void *data)
 {
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_OLIVES) {
         FTS_INFO("focal_tp_lock_down_info_show:%s\n", tp_lockdown_info);
         seq_printf(m, "%s\n", tp_lockdown_info);

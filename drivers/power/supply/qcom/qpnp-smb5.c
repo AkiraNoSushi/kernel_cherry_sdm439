@@ -28,7 +28,7 @@
 #include <linux/pmic-voter.h>
 #include <linux/qpnp/qpnp-adc.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -1460,7 +1460,7 @@ static int smb5_batt_get_prop(struct power_supply *psy,
 		val->intval = chg->fcc_stepper_enable;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
         val->intval = (sdm439_current_device == XIAOMI_PINE) ? 4000000 : 5000000;
 #else
 #ifdef CONFIG_PROJECT_PINE
@@ -1997,7 +1997,7 @@ static int smb5_init_hw_jeita(struct smb_charger *chg)
 		dev_err(chg->dev, "%s:Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
 			__func__, rc);
 	}
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_PINE) {
         rc = smblib_write(chg, JEITA_CCCOMP_CFG_HOT_REG, HOT_ICL_1000MA);
         if (rc < 0) {
@@ -2416,7 +2416,7 @@ static int smb5_init_hw(struct smb5 *chip)
 					rc);
 		}
 	}
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_OLIVES) {
         rc = smblib_write(chg, USBIN_9V_AICL_THRESHOLD_REG, 0x5);
         if (rc < 0) {

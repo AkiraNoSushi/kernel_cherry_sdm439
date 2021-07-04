@@ -17,7 +17,7 @@
 #include <linux/slab.h>
 #include <linux/stat.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -109,7 +109,7 @@ static ssize_t power_supply_show_property(struct device *dev,
 		}
 	}
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_OLIVES) {
         if (value.intval == POWER_SUPPLY_TYPE_USB_PD) {
             ret = power_supply_get_property(psy, off, &value);

@@ -28,11 +28,11 @@
 #include "step-chg-jeita.h"
 #include "storm-watch.h"
 #include "schgm-flash.h"
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 #include <linux/jiffies.h>
 #endif
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -1848,7 +1848,7 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 	if (chg->system_temp_level == 0)
 		return vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, false, 0);
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_PINE) {
         if (chg->is_adapter_idn) {
             vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
@@ -2315,7 +2315,7 @@ static int smblib_get_prop_ufp_mode(struct smb_charger *chg)
 	}
 	smblib_dbg(chg, PR_REGISTER, "TYPE_C_STATUS_1 = 0x%02x\n", stat);
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 	if (sdm439_current_device == XIAOMI_OLIVES && (stat &
 	(SNK_RP_STD_DAM_BIT | SNK_RP_1P5_DAM_BIT | SNK_RP_3P0_DAM_BIT))) {
 		smblib_masked_write(chg, TYPE_C_DEBUG_ACCESS_SINK_REG,
@@ -3005,7 +3005,7 @@ irqreturn_t default_irq_handler(int irq, void *data)
 	struct smb_irq_data *irq_data = data;
 	struct smb_charger *chg = irq_data->parent_data;
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_OLIVES) {
         const struct apsd_result *apsd_result;
 
@@ -3378,7 +3378,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 	bool vbus_rising;
 	struct smb_irq_data *data;
 	struct storm_watch *wdata;
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 	static unsigned long detach_time;
 	static unsigned long attach_time;
 	static bool need_confirm;
@@ -3395,7 +3395,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 						chg->chg_freq.freq_removal);
 
 	if (vbus_rising) {
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
         if (sdm439_current_device == XIAOMI_OLIVES) {
             attach_time = jiffies;
             smblib_err(chg, "attach_time = %lu\n", attach_time);
@@ -3436,7 +3436,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 					msecs_to_jiffies(PL_DELAY_MS));
 		schedule_delayed_work(&chg->arb_monitor_work, msecs_to_jiffies(ARB_DELAY_MS));
 	} else {
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
         if (sdm439_current_device == XIAOMI_OLIVES) {
             if (chg->hvdcp_disabled) {
                 rc = smblib_masked_write(chg, USBIN_OPTIONS_1_CFG_REG, HVDCP_EN_BIT, HVDCP_EN_BIT);
@@ -3551,7 +3551,7 @@ irqreturn_t usb_plugin_irq_handler(int irq, void *data)
 	else
 		smblib_usb_plugin_locked(chg);
 
-    #ifdef CONFIG_XIAOMI_SDM439
+    #ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_PINE) {
         schedule_delayed_work(&chg->adapter_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS*10));
     }
@@ -3853,7 +3853,7 @@ irqreturn_t usb_source_change_irq_handler(int irq, void *data)
 	}
 	smblib_dbg(chg, PR_REGISTER, "APSD_STATUS = 0x%02x\n", stat);
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 	if (sdm439_current_device == XIAOMI_OLIVES && chg->system_temp_level > 0) {
 		if (chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP
 			|| chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP_3) {
@@ -4588,7 +4588,7 @@ out:
 	pm_relax(chg->dev);
 }
 
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 static void smblib_hw_suchg_detect_work(struct work_struct *work)
 {
 	int rc;
@@ -4849,7 +4849,7 @@ static void smbchg_cool_limit_work(struct work_struct *work)
 	union power_supply_propval temp = {0,};
 
 	smblib_get_prop_from_bms(chg, POWER_SUPPLY_PROP_TEMP, &temp);
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_PINE) {
         if (temp.intval > COOL_0_TEMPERATURE
             && temp.intval <= COOL_5_TEMPERATURE && icl != COOL_ICL_400MA) {
@@ -5025,7 +5025,7 @@ static void smbchg_cool_limit_work(struct work_struct *work)
 	schedule_delayed_work(&chg->cool_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS));
 }
 
-#if defined(CONFIG_PROJECT_PINE) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_PINE) || defined(CONFIG_PROJECT_MI439)
 static void smblib_adapter_limit_work(struct work_struct *work)
 {
 	int settled_ua = 0;
@@ -5161,7 +5161,7 @@ int smblib_init(struct smb_charger *chg)
 	INIT_DELAYED_WORK(&chg->bb_removal_work, smblib_bb_removal_work);
 	INIT_DELAYED_WORK(&chg->usbov_dbc_work, smblib_usbov_dbc_work);
 	INIT_DELAYED_WORK(&chg->arb_monitor_work, smblib_arb_monitor_work);
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_PINE) {
 	    INIT_DELAYED_WORK(&chg->adapter_limit_work, smblib_adapter_limit_work);
     } else if (sdm439_current_device == XIAOMI_OLIVES) {
@@ -5286,7 +5286,7 @@ int smblib_deinit(struct smb_charger *chg)
 		cancel_delayed_work_sync(&chg->uusb_otg_work);
 		cancel_delayed_work_sync(&chg->bb_removal_work);
 		cancel_delayed_work_sync(&chg->usbov_dbc_work);
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_PINE) {
 		cancel_delayed_work_sync(&chg->adapter_limit_work);
     } else if (sdm439_current_device == XIAOMI_OLIVES) {

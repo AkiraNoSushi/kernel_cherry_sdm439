@@ -30,7 +30,7 @@
 #include <linux/mdss_io_util.h>
 #include <linux/dma-buf.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -2973,7 +2973,7 @@ u32 white_point_num_g;
 u32 white_point_num_b;
 #endif
 
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 char tp_lockdown_info[40] = {0};
 #endif
 
@@ -2990,7 +2990,7 @@ static struct device_node *mdss_dsi_find_panel_of_node(
 	char *wponit_str;
 #endif
 
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 	char *tplock_str;
 #endif
 
@@ -3018,7 +3018,7 @@ static struct device_node *mdss_dsi_find_panel_of_node(
 		}
 #endif
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
         if (sdm439_current_device == XIAOMI_OLIVES) {
             tplock_str = strnstr(panel_cfg, ":tplock=", len);
             if (!tplock_str) {

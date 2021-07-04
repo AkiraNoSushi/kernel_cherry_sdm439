@@ -25,7 +25,7 @@
 #include <linux/string.h>
 #include <linux/mfd/ktd3136.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -37,7 +37,7 @@
 #include "mdss_debug.h"
 
 extern struct ktd3137_chip *bkl_chip;
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 extern bool  is_ilitek_tp;
 extern void ilitek_call_resume_work(void);
 extern void lcd_call_tp_reset(int i);
@@ -388,7 +388,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
 	struct mdss_panel_info *pinfo = NULL;
 	int i, rc = 0;
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 	extern char *saved_command_line;
 	char *rf_panel_name = (char *)strnstr(saved_command_line, ":qcom,", strlen(saved_command_line));
 #endif
@@ -486,7 +486,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 					goto exit;
 				}
 			}
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
             if(sdm439_current_device == XIAOMI_OLIVES) {
                 if (is_focal_tp) {
                     lcd_call_tp_reset(0);
@@ -555,7 +555,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			}
 #endif
 #endif
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
             if(sdm439_current_device == XIAOMI_OLIVES) {
                 rf_panel_name += strlen(":qcom,");
                 pr_info(" %s res=%d\n", rf_panel_name, strncmp(rf_panel_name, "mdss_dsi_nvt36525b_hdplus_video_c3i", strlen("mdss_dsi_nvt36525b_hdplus_video_c3i")));
@@ -588,7 +588,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			}
 #endif
 #endif
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
             if(sdm439_current_device == XIAOMI_OLIVES) {
                 if (is_ilitek_tp) {
                     pr_err("%s:  ILITEK  LCD Call TP Reset start! \n", __func__);
@@ -660,7 +660,7 @@ int mdss_dsi_panel_reset(struct mdss_panel_data *pdata, int enable)
 			usleep_range(100, 110);
 			gpio_free(ctrl_pdata->disp_en_gpio);
 		}
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
         gpio_set_value((ctrl_pdata->rst_gpio), (sdm439_current_device == XIAOMI_PINE) ? 0 : 1);
 #else
 #ifdef CONFIG_PROJECT_PINE

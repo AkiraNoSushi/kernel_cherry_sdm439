@@ -21,7 +21,7 @@
 #include <linux/extcon.h>
 #include <linux/alarmtimer.h>
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -88,7 +88,7 @@ enum print_reason {
 #define SDP_100_MA			100000
 #define SDP_CURRENT_UA			500000
 #define CDP_CURRENT_UA			1000000
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #define DCP_CURRENT_UA			((sdm439_current_device == XIAOMI_PINE) ? 2000000 : 3000000)
 #define HVDCP_CURRENT_UA		((sdm439_current_device == XIAOMI_PINE) ? 2000000 : 3000000)
 #define TYPEC_HIGH_CURRENT_UA		((sdm439_current_device == XIAOMI_PINE) ? 2000000 : 3000000)

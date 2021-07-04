@@ -24,7 +24,7 @@
 #include "nt36xxx.h"
 #include "nt36xxx_mp_ctrlram.h"
 
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
 #include <linux/sdm439.h>
 #endif
 
@@ -2043,13 +2043,13 @@ void nvt_mp_proc_deinit(void)
 #if NVT_LOCKDOWN
 
 
-#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_XIAOMI_SDM439)
+#if defined(CONFIG_PROJECT_OLIVES) || defined(CONFIG_PROJECT_MI439)
 extern char tp_lockdown_info[40];
 #endif
 
 static int nvt_tp_lock_down_info_show(struct seq_file *m, void *data)
 {
-#ifdef CONFIG_XIAOMI_SDM439
+#ifdef CONFIG_PROJECT_MI439
     if (sdm439_current_device == XIAOMI_OLIVES) {
         NVT_LOG("nvt_tp_lock_down_info_show:%s\n", tp_lockdown_info);
 	    seq_printf(m, "%s\n", tp_lockdown_info);
