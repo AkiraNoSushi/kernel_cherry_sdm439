@@ -36,8 +36,13 @@ mount -o rw,remount /vendor
 
 vndk_version=$(file_getprop /vendor/build.prop ro.vendor.build.version.sdk)
 
-# Add VNDK version to cmdline
-patch_cmdline "sdm439_vndk_version" "sdm439_vndk_version=$vndk_version"
+if [ $vndk_version -lt 30 ]; then
+    # Add legacy_omx param if VNDK < 30
+    patch_cmdline "legacy_omx" "legacy_omx"
+else
+    # Remove legacy_omx param if VNDK => 30
+    patch_cmdline "legacy_omx" ""
+fi
 
 flash_boot;
 flash_dtbo;
