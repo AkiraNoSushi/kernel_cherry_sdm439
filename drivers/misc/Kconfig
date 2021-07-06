@@ -848,14 +848,6 @@ config SIMTRAY_STATUS
 	help
 	  Say 'y' here to support SIM tray GPIO detection
 
-
-config PROJECT_MI439
-	bool "Xiaomi SDM439 device detection"
-	default n
-	help
-	  Detects on what Xiaomi SDM439 device is Linux currently running on
-
-
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
