@@ -242,6 +242,12 @@ config ARCH_SDM439
 	  This enables support for the sdm439 chipset. If you do not
 	  wish to build a kernel that runs on this chipset, say 'N' here.
 
+config PROJECT_MI439
+	bool "Enable unified support for all Xiaomi SDM439 devices"
+	default n
+	help
+	  This will make a build that targets all Xiaomi SDM439 devices (olive, olivewood, olivelite, pine).
+
 config ARCH_ROCKCHIP
 	bool "Rockchip Platforms"
 	select ARCH_HAS_RESET_CONTROLLER
