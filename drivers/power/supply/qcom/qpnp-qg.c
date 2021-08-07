@@ -41,7 +41,7 @@
 #include "qg-battery-profile.h"
 #include "qg-defs.h"
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 #define SUNWODA_ID_MAX 82000
 #define SUNWODA_ID_MIN 73500
 #define NVT_ID_MAX 44000
@@ -1796,11 +1796,11 @@ static int qg_psy_get_property(struct power_supply *psy,
 			pval->intval = (int)temp;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-		#ifdef PROJECT_PINE
+		#ifdef CONFIG_PROJECT_PINE
 		pval->intval = 4000000;
 		#endif
 
-		#if  defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+		#ifdef CONFIG_PROJECT_OLIVES
 		pval->intval = 5000000;
 		#endif
 		/*
@@ -1963,7 +1963,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			pr_info("%s:Terminated charging @ msoc=%d\n",
 					__func__, chip->msoc);
 		}
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	} else if ((!chip->charge_done || chip->msoc < recharge_soc)  //recharge_soc = 99%
 #else
 	} else if ((!chip->charge_done || chip->msoc <= recharge_soc)	//recharge_soc =98%
@@ -2555,7 +2555,7 @@ static int qg_load_battery_profile(struct qpnp_qg *chip)
 
 	pr_err("batt_id_ohm=%d\n", chip->batt_id_ohm);
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	if (chip->batt_id_ohm >= SUNWODA_ID_MIN && chip->batt_id_ohm <= SUNWODA_ID_MAX) {
 		match = 1;
 		chip->batt_id = 1;

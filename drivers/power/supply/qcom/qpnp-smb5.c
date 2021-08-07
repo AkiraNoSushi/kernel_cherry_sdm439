@@ -1455,7 +1455,7 @@ static int smb5_batt_get_prop(struct power_supply *psy,
 		val->intval = chg->fcc_stepper_enable;
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN:
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 		val->intval = 4000000;
 #else
 		val->intval = 5000000;
@@ -1988,7 +1988,7 @@ static int smb5_init_hw_jeita(struct smb_charger *chg)
 		dev_err(chg->dev, "%s:Couldn't configure JEITA_FVCOMP_CFG_HOT_REG rc=%d\n",
 			__func__, rc);
 	}
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	rc = smblib_write(chg, JEITA_CCCOMP_CFG_HOT_REG, HOT_ICL_1000MA);
 	if (rc < 0) {
 		dev_err(chg->dev, "%s:Couldn't configure JEITA_FVCOMP_CFG_COLD_REG rc=%d\n",
@@ -2379,7 +2379,7 @@ static int smb5_init_hw(struct smb5 *chip)
 					rc);
 		}
 	}
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	rc = smblib_write(chg, USBIN_9V_AICL_THRESHOLD_REG, 0x5);
 	if (rc < 0) {
 		dev_err(chg->dev, "Couldn't configure USBIN_9V_AICL_THRESHOLD_REG rc=%d\n",

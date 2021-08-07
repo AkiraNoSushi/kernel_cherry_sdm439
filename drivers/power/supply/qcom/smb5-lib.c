@@ -28,7 +28,7 @@
 #include "step-chg-jeita.h"
 #include "storm-watch.h"
 #include "schgm-flash.h"
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 #include <linux/jiffies.h>
 #endif
 
@@ -51,7 +51,7 @@
 	|| typec_mode == POWER_SUPPLY_TYPEC_SOURCE_HIGH)	\
 	&& !chg->typec_legacy)
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 int quiet_ther_ibus[] = {2500000, 2000000, 2000000, 1000000,
 					1000000, 500000};
 
@@ -69,7 +69,7 @@ int hvdcp_ther_ibus_olive[] = {2500000, 2000000, 1500000, 1300000,
 #define ARB_IBUS_UA_THRESHOLD 100000
 #define ARB_DELAY_MS 10000
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 #define COLLAPSE_DETACH_MAX_INTERVAL ((unsigned long)5)
 #define ATTACH_DETACH_MAX_INTERVAL ((unsigned long)310)
 #define DETACH_ATTACH_MAX_INTERVAL ((unsigned long)330)
@@ -1848,7 +1848,7 @@ int smblib_set_prop_system_temp_level(struct smb_charger *chg,
 	if (chg->system_temp_level == 0)
 		return vote(chg->fcc_votable, THERMAL_DAEMON_VOTER, false, 0);
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	if (chg->is_adapter_idn) {
 		vote(chg->usb_icl_votable, THERMAL_DAEMON_VOTER, true,
 				quiet_ther_ibus_idn[chg->system_temp_level]);
@@ -2278,7 +2278,7 @@ static int smblib_get_prop_ufp_mode(struct smb_charger *chg)
 	}
 	smblib_dbg(chg, PR_REGISTER, "TYPE_C_STATUS_1 = 0x%02x\n", stat);
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	if (stat &
 	(SNK_RP_STD_DAM_BIT | SNK_RP_1P5_DAM_BIT | SNK_RP_3P0_DAM_BIT)) {
 		smblib_masked_write(chg, TYPE_C_DEBUG_ACCESS_SINK_REG,
@@ -2294,7 +2294,7 @@ static int smblib_get_prop_ufp_mode(struct smb_charger *chg)
 	case SNK_RP_STD_BIT:
 		return POWER_SUPPLY_TYPEC_SOURCE_DEFAULT;
 	case SNK_RP_1P5_BIT:
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	case SNK_RP_STD_DAM_BIT:
 	case SNK_RP_1P5_DAM_BIT:
 	case SNK_RP_3P0_DAM_BIT:
@@ -2957,7 +2957,7 @@ irqreturn_t default_irq_handler(int irq, void *data)
 {
 	struct smb_irq_data *irq_data = data;
 	struct smb_charger *chg = irq_data->parent_data;
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	const struct apsd_result *apsd_result;
 
 	if (!strcmp(irq_data->name, "usbin-collapse")) {
@@ -3312,7 +3312,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 	bool vbus_rising;
 	struct smb_irq_data *data;
 	struct storm_watch *wdata;
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	static unsigned long detach_time;
 	static unsigned long attach_time;
 	static bool need_confirm;
@@ -3329,7 +3329,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 						chg->chg_freq.freq_removal);
 
 	if (vbus_rising) {
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 		attach_time = jiffies;
 		smblib_err(chg, "attach_time = %lu\n", attach_time);
 		if (need_confirm && attach_time - detach_time < DETACH_ATTACH_MAX_INTERVAL) {
@@ -3355,7 +3355,7 @@ void smblib_usb_plugin_locked(struct smb_charger *chg)
 					msecs_to_jiffies(PL_DELAY_MS));
 		schedule_delayed_work(&chg->arb_monitor_work, msecs_to_jiffies(ARB_DELAY_MS));
 	} else {
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 		if (chg->hvdcp_disabled) {
 			rc = smblib_masked_write(chg, USBIN_OPTIONS_1_CFG_REG, HVDCP_EN_BIT, HVDCP_EN_BIT);
 			if (rc < 0) {
@@ -3447,7 +3447,7 @@ irqreturn_t usb_plugin_irq_handler(int irq, void *data)
 		smblib_usb_plugin_hard_reset_locked(chg);
 	else
 		smblib_usb_plugin_locked(chg);
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	schedule_delayed_work(&chg->adapter_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS*10));
 #endif
 	return IRQ_HANDLED;
@@ -3743,7 +3743,7 @@ irqreturn_t usb_source_change_irq_handler(int irq, void *data)
 	}
 	smblib_dbg(chg, PR_REGISTER, "APSD_STATUS = 0x%02x\n", stat);
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 	if (chg->system_temp_level > 0) {
 		if (chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP
 			|| chg->real_charger_type == POWER_SUPPLY_TYPE_USB_HVDCP_3) {
@@ -4464,7 +4464,7 @@ out:
 	pm_relax(chg->dev);
 }
 
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 static void smblib_hw_suchg_detect_work(struct work_struct *work)
 {
 	int rc;
@@ -4726,7 +4726,7 @@ static void smbchg_cool_limit_work(struct work_struct *work)
 
 	smblib_get_prop_from_bms(chg, POWER_SUPPLY_PROP_TEMP, &temp);
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	if (temp.intval > COOL_0_TEMPERATURE
 		&& temp.intval <= COOL_5_TEMPERATURE && icl != COOL_ICL_400MA) {
 		mutex_lock(&chg->cool_current);
@@ -4814,7 +4814,7 @@ static void smbchg_cool_limit_work(struct work_struct *work)
 	schedule_delayed_work(&chg->cool_limit_work, msecs_to_jiffies(SMBCHG_UPDATE_MS));
 }
 
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 static void smblib_adapter_limit_work(struct work_struct *work)
 {
 	int settled_ua = 0;
@@ -4950,10 +4950,10 @@ int smblib_init(struct smb_charger *chg)
 	INIT_DELAYED_WORK(&chg->bb_removal_work, smblib_bb_removal_work);
 	INIT_DELAYED_WORK(&chg->usbov_dbc_work, smblib_usbov_dbc_work);
 	INIT_DELAYED_WORK(&chg->arb_monitor_work, smblib_arb_monitor_work);
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 	INIT_DELAYED_WORK(&chg->adapter_limit_work, smblib_adapter_limit_work);
 #endif
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 		INIT_DELAYED_WORK(&chg->hw_suchg_detect_work, smblib_hw_suchg_detect_work);
 #endif
 	if (chg->hw_jeita_enabled) {
@@ -5067,10 +5067,10 @@ int smblib_deinit(struct smb_charger *chg)
 		cancel_delayed_work_sync(&chg->uusb_otg_work);
 		cancel_delayed_work_sync(&chg->bb_removal_work);
 		cancel_delayed_work_sync(&chg->usbov_dbc_work);
-#ifdef PROJECT_PINE
+#ifdef CONFIG_PROJECT_PINE
 		cancel_delayed_work_sync(&chg->adapter_limit_work);
 #endif
-#if defined(PROJECT_OLIVE) || defined(PROJECT_OLIVELITE) || defined(PROJECT_OLIVEWOOD)
+#ifdef CONFIG_PROJECT_OLIVES
 		cancel_delayed_work_sync(&chg->hw_suchg_detect_work);
 #endif
 		if (chg->hw_jeita_enabled)

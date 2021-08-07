@@ -955,27 +955,6 @@ KBUILD_CFLAGS   += $(ARCH_CFLAGS)   $(KCFLAGS)
 ifeq ($(strip $(FACTORY_VERSION_MODE)) , true)
 KBUILD_CFLAGS += -DFACTORY_VERSION_ENABLE
 endif
-# =============FACTORY==================================
-
-# =============PROJECT==================================
-# Add macros by TARGET_PRODUCT for different projects
-ifeq ($(strip $(TARGET_PRODUCT)) , peony)
-# Define macros here only for Peony project
-else ifeq ($(strip $(TARGET_PRODUCT)) , pine)
-# Define macros here only for Pine project
-KBUILD_CFLAGS += -DPROJECT_PINE
-else ifeq ($(strip $(TARGET_PRODUCT)) , olive)
-# Define macros here only for Olive project
-KBUILD_CFLAGS += -DPROJECT_OLIVE
-else ifeq ($(strip $(TARGET_PRODUCT)) , olivelite)
-# Define macros here only for Olive project
-KBUILD_CFLAGS += -DPROJECT_OLIVELITE
-else ifeq ($(strip $(TARGET_PRODUCT)) , olivewood)
-# Define macros here only for Olive project
-KBUILD_CFLAGS += -DPROJECT_OLIVEWOOD
-else
-endif
-# =============PROJECT==================================
 
 # Use --build-id when available.
 LDFLAGS_BUILD_ID = $(patsubst -Wl$(comma)%,%,\

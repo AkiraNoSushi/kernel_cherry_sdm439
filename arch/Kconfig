@@ -856,3 +856,11 @@ config VMAP_STACK
 	  that is incorrect if the stack is in vmalloc space.
 
 source "kernel/gcov/Kconfig"
+
+config PROJECT_PINE
+    default n
+    bool "Enable if the target device is pine (Redmi 7A)."
+
+config PROJECT_OLIVES
+    default n
+    bool "Enable if the target device belongs to the olives family (Redmi 8, Redmi 8A and Redmi 8A Dual/Pro)." 

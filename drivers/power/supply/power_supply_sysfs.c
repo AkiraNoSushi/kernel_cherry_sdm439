@@ -105,7 +105,7 @@ static ssize_t power_supply_show_property(struct device *dev,
 		}
 	}
 
-#ifndef PROJECT_PINE
+#ifndef CONFIG_PROJECT_PINE
 	if (value.intval == POWER_SUPPLY_TYPE_USB_PD) {
 		ret = power_supply_get_property(psy, off, &value);
 
