@@ -118,9 +118,9 @@ static struct wcd_mbhc_config mbhc_cfg = {
 	.swap_gnd_mic = NULL,
 	.hs_ext_micbias = false,
 	.key_code[0] = KEY_MEDIA,
-    .key_code[1] = KEY_VOICECOMMAND,
-	.key_code[2] = KEY_VOLUMEUP,
-	.key_code[3] = KEY_VOLUMEDOWN,
+    .key_code[1] = KEY_VOLUMEUP,
+	.key_code[2] = KEY_VOLUMEDOWN,
+	.key_code[3] = KEY_VOICECOMMAND,
 	.key_code[4] = 0,
 	.key_code[5] = 0,
 	.key_code[6] = 0,
@@ -1799,7 +1799,7 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 		return NULL;
 
 #define S(X, Y) ((WCD_MBHC_CAL_PLUG_TYPE_PTR(msm8952_wcd_cal)->X) = (Y))
-	S(v_hs_max, 1700);
+	S(v_hs_max, 1500);
 #undef S
 #define S(X, Y) ((WCD_MBHC_CAL_BTN_DET_PTR(msm8952_wcd_cal)->X) = (Y))
 	S(num_btn, WCD_MBHC_DEF_BUTTONS);
@@ -1822,17 +1822,29 @@ static void *def_msm8952_wcd_mbhc_cal(void)
 	 * 210-290 == Button 2
 	 * 360-680 == Button 3
 	 */
-	 /*modified MBHC keys*/
-	btn_low[0] = 75;
-	btn_high[0] = 75;
-	btn_low[1] = 225;  /*formal 150*/
-	btn_high[1] = 225; /*formal 150*/
-	btn_low[2] = 450;  /*formal 225*/
-	btn_high[2] = 450; /*formal 225*/
-	btn_low[3] = 500;  /*formal 450*/
-	btn_high[3] = 500; /*formal 450*/
-	btn_low[4] = 500;
-	btn_high[4] = 500;
+#if defined(CONFIG_PROJECT_OLIVES)
+	btn_low[0] = 92;
+	btn_high[0] = 92;
+	btn_low[1] = 266;
+	btn_high[1] = 266;
+	btn_low[2] = 488;
+	btn_high[2] = 488;
+	btn_low[3] = 488;
+	btn_high[3] = 488;
+	btn_low[4] = 488;
+	btn_high[4] = 488;
+#else
+	btn_low[0] = 89;
+	btn_high[0] = 89;
+	btn_low[1] = 288;
+	btn_high[1] = 288;
+	btn_low[2] = 488;
+	btn_high[2] = 555;
+	btn_low[3] = 488;
+	btn_high[3] = 555;
+	btn_low[4] = 488;
+	btn_high[4] = 555;
+#endif
 
 	return msm8952_wcd_cal;
 }
