@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=Cherry Kernel V2.3 - by @AkiraNoSushi & @Flopster101
+kernel.string=Cherry Kernel V2.4 - by @AkiraNoSushi & @Flopster101
 do.devicecheck=1
 do.modules=1
 do.systemless=0
@@ -60,10 +60,10 @@ find /system/etc/init/ -type f | while read file; do
 sed -Ei 's;[^#](write /proc/sys/(kernel|vm)/(sched|dirty|perf_cpu|page-cluster|stat|swappiness|vfs));#\1;g' $file
 done
 # Patch WiFI HAL
-ui_print "Detecting WiFI HAL..."
+ui_print "Detecting WiFi HAL..."
 wifi_hal=$(find /vendor/lib64 /vendor/lib -name "libwifi-hal.so" | head -n 1)
 if grep -q "pronto_wlan.ko" $wifi_hal; then
-    ui_print "Patching WiFI HAL..."
+    ui_print "Patching WiFi HAL..."
     func_hex_offset=$(./tools/readelf $wifi_hal -sW | grep "is_wifi_driver_loaded" | awk '{print $2}')
     func_dec_offset=$(printf "%d" "0x"$func_hex_offset)
     hal_arch=$(./tools/readelf -h $wifi_hal | grep "Class" | awk '{print $2}')
