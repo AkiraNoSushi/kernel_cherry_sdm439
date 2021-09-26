@@ -15,7 +15,7 @@
 #include <linux/reboot.h>
 #include <linux/writeback.h>
 #include <linux/dyn_sync_cntrl.h>
-#include <linux/lcd_notify.h>
+#include <linux/fb.h>
 
 // fsync_mutex protects dyn_fsync_active during suspend / late resume transitions
 static DEFINE_MUTEX(fsync_mutex);
@@ -26,7 +26,7 @@ static DEFINE_MUTEX(fsync_mutex);
 bool suspend_active = false;
 bool dyn_fsync_active = DYN_FSYNC_ACTIVE_DEFAULT;
 
-static struct notifier_block lcd_notif;
+static struct notifier_block fb_notif;
 
 extern void sync_filesystems(int wait);
 
@@ -119,35 +119,40 @@ static int dyn_fsync_notify_sys(struct notifier_block *this, unsigned long code,
 	return NOTIFY_DONE;
 }
 
-static int lcd_notifier_callback(struct notifier_block *this,
+static int fb_notifier_callback(struct notifier_block *this,
 								unsigned long event, void *data)
 {
-	switch (event) 
-	{
-		case LCD_EVENT_OFF_START:
-			mutex_lock(&fsync_mutex);
+	struct fb_event *evdata = data;
+	int *blank;
 
-			suspend_active = false;
+	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
+		blank = evdata->data;
+		switch (*blank) {
+			case FB_BLANK_UNBLANK:
+				mutex_lock(&fsync_mutex);
 
-			if (dyn_fsync_active) 
-			{
-				dyn_fsync_force_flush();
-			}
+				suspend_active = false;
 
-			mutex_unlock(&fsync_mutex);
-			break;
+				if (dyn_fsync_active) 
+				{
+					dyn_fsync_force_flush();
+				}
 
-		case LCD_EVENT_ON_END:
-			mutex_lock(&fsync_mutex);
-			suspend_active = true;
-			mutex_unlock(&fsync_mutex);
-			break;
+				mutex_unlock(&fsync_mutex);
+				break;
 
-		default:
-			break;
+			case FB_BLANK_POWERDOWN:
+				mutex_lock(&fsync_mutex);
+				suspend_active = true;
+				mutex_unlock(&fsync_mutex);
+				break;
+
+			default:
+				break;
+		}
 	}
 
-	return 0;
+	return NOTIFY_OK;
 }
 
 // Module structures
@@ -218,10 +223,10 @@ static int dyn_fsync_init(void)
 		kobject_put(dyn_fsync_kobj);
 	}
 
-	lcd_notif.notifier_call = lcd_notifier_callback;
-	if (lcd_register_client(&lcd_notif) != 0) 
+	fb_notif.notifier_call = fb_notifier_callback;
+	if (fb_register_client(&fb_notif) != 0) 
 	{
-		pr_err("%s: Failed to register lcd callback\n", __func__);
+		pr_err("%s: Failed to register fb callback\n", __func__);
 
 		unregister_reboot_notifier(&dyn_fsync_notifier);
 
@@ -250,7 +255,7 @@ static void dyn_fsync_exit(void)
 	if (dyn_fsync_kobj != NULL)
 		kobject_put(dyn_fsync_kobj);
 
-	lcd_unregister_client(&lcd_notif);
+	fb_unregister_client(&fb_notif);
 
 	pr_info("%s dynamic fsync unregistration complete\n", __FUNCTION__);
 }
