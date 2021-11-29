@@ -6,6 +6,9 @@ obj-$(CONFIG_PSTORE) += pstore.o
 
 pstore-objs += inode.o platform.o
 pstore-$(CONFIG_PSTORE_FTRACE)	+= ftrace.o
+ifeq ($(CONFIG_ANDROID),y)
+CFLAGS_trace.o += -DCONFIG_DEBUG_FS
+endif
 
 pstore-$(CONFIG_PSTORE_PMSG)	+= pmsg.o
 
