@@ -108,7 +108,7 @@ config BT_SELFTEST_SMP
 config BT_DEBUGFS
 	bool "Export Bluetooth internals in debugfs"
 	depends on BT && DEBUG_FS
-	default y
+	default n
 	help
 	  Provide extensive information about internal Bluetooth states
 	  in debugfs.
