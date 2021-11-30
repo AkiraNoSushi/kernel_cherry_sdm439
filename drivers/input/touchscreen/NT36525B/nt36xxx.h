@@ -40,7 +40,7 @@
 #include <linux/platform_data/spi-mt65xx.h>
 #endif
 
-#define NVT_DEBUG 1
+#define NVT_DEBUG 0
 
 //---GPIO number---
 #define NVTTOUCH_RST_PIN 980
@@ -88,7 +88,7 @@ extern const uint16_t touch_key_array[TOUCH_KEY_NUM];
 #define MT_PROTOCOL_B 1
 #define NVT_LOCKDOWN 1
 #define WAKEUP_GESTURE 1
-#define TP_SELFTEST 1
+#define TP_SELFTEST 0
 #if WAKEUP_GESTURE
 extern const uint16_t gesture_key_array[];
 #endif
