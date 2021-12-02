@@ -6534,7 +6534,7 @@ static inline bool task_fits_max(struct task_struct *p, int cpu)
 		return true;
 
 	if ((task_boost_policy(p) == SCHED_BOOST_ON_BIG ||
-		schedtune_task_boost(p) > 0) &&
+		uclamp_boosted(p) > 0) &&
 		is_min_capacity_cpu(cpu))
 		return false;
 
@@ -7287,7 +7287,7 @@ static inline bool
 cpu_is_in_target_set(struct task_struct *p, int cpu)
 {
 	struct root_domain *rd = cpu_rq(cpu)->rd;
-	int first_cpu = (schedtune_task_boost(p)) ?
+	int first_cpu = (uclamp_boosted(p)) ?
 		rd->max_cap_orig_cpu : rd->min_cap_orig_cpu;
 	int next_usable_cpu = cpumask_next(first_cpu - 1, &p->cpus_allowed);
 	return cpu >= next_usable_cpu || next_usable_cpu >= nr_cpu_ids;
