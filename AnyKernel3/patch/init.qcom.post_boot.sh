@@ -204,3 +204,8 @@ esac
 misc_link=$(ls -l /dev/block/bootdevice/by-name/misc)
 real_path=${misc_link##*>}
 setprop persist.vendor.mmi.misc_dev_path $real_path
+
+# CABC high
+echo 0300 > /sys/devices/virtual/graphics/fb0/msm_fb_dispparam
+# IE on
+echo 0010 > /sys/devices/virtual/graphics/fb0/msm_fb_dispparam
