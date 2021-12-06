@@ -1504,7 +1504,9 @@ int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
 		 * atomic context to this function, which may allocate memory.
 		 */
 		spin_lock_irqsave(&xhci->lock, flags);
-		if (xhci->xhc_state & XHCI_STATE_DYING)
+		if (xhci->xhc_state & XHCI_STATE_DYING ||
+				xhci_check_args(hcd, urb->dev, urb->ep,
+					true, true, __func__) <= 0)
 			goto dying;
 		ret = xhci_queue_ctrl_tx(xhci, GFP_ATOMIC, urb,
 				slot_id, ep_index);
@@ -1513,7 +1515,9 @@ int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
 		spin_unlock_irqrestore(&xhci->lock, flags);
 	} else if (usb_endpoint_xfer_bulk(&urb->ep->desc)) {
 		spin_lock_irqsave(&xhci->lock, flags);
-		if (xhci->xhc_state & XHCI_STATE_DYING)
+		if (xhci->xhc_state & XHCI_STATE_DYING ||
+				xhci_check_args(hcd, urb->dev, urb->ep,
+					true, true, __func__) <= 0)
 			goto dying;
 		if (xhci->devs[slot_id]->eps[ep_index].ep_state &
 				EP_GETTING_STREAMS) {
@@ -1535,7 +1539,9 @@ int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
 		spin_unlock_irqrestore(&xhci->lock, flags);
 	} else if (usb_endpoint_xfer_int(&urb->ep->desc)) {
 		spin_lock_irqsave(&xhci->lock, flags);
-		if (xhci->xhc_state & XHCI_STATE_DYING)
+		if (xhci->xhc_state & XHCI_STATE_DYING ||
+				xhci_check_args(hcd, urb->dev, urb->ep,
+					true, true, __func__) <= 0)
 			goto dying;
 		ret = xhci_queue_intr_tx(xhci, GFP_ATOMIC, urb,
 				slot_id, ep_index);
@@ -1544,7 +1550,9 @@ int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flags)
 		spin_unlock_irqrestore(&xhci->lock, flags);
 	} else {
 		spin_lock_irqsave(&xhci->lock, flags);
-		if (xhci->xhc_state & XHCI_STATE_DYING)
+		if (xhci->xhc_state & XHCI_STATE_DYING ||
+				xhci_check_args(hcd, urb->dev, urb->ep,
+					true, true, __func__) <= 0)
 			goto dying;
 		ret = xhci_queue_isoc_tx_prepare(xhci, GFP_ATOMIC, urb,
 				slot_id, ep_index);
@@ -4465,18 +4473,18 @@ static u16 xhci_calculate_u1_timeout(struct xhci_hcd *xhci,
 {
 	unsigned long long timeout_ns;
 
-	if (xhci->quirks & XHCI_INTEL_HOST)
-		timeout_ns = xhci_calculate_intel_u1_timeout(udev, desc);
-	else
-		timeout_ns = udev->u1_params.sel;
-
 	/* Prevent U1 if service interval is shorter than U1 exit latency */
 	if (usb_endpoint_xfer_int(desc) || usb_endpoint_xfer_isoc(desc)) {
-		if (xhci_service_interval_to_ns(desc) <= timeout_ns) {
+		if (xhci_service_interval_to_ns(desc) <= udev->u1_params.mel) {
 			dev_dbg(&udev->dev, "Disable U1, ESIT shorter than exit latency\n");
 			return USB3_LPM_DISABLED;
 		}
 	}
+
+	if (xhci->quirks & XHCI_INTEL_HOST)
+		timeout_ns = xhci_calculate_intel_u1_timeout(udev, desc);
+	else
+		timeout_ns = udev->u1_params.sel;
 
 	/* The U1 timeout is encoded in 1us intervals.
 	 * Don't return a timeout of zero, because that's USB3_LPM_DISABLED.
@@ -4529,18 +4537,18 @@ static u16 xhci_calculate_u2_timeout(struct xhci_hcd *xhci,
 {
 	unsigned long long timeout_ns;
 
-	if (xhci->quirks & XHCI_INTEL_HOST)
-		timeout_ns = xhci_calculate_intel_u2_timeout(udev, desc);
-	else
-		timeout_ns = udev->u2_params.sel;
-
 	/* Prevent U2 if service interval is shorter than U2 exit latency */
 	if (usb_endpoint_xfer_int(desc) || usb_endpoint_xfer_isoc(desc)) {
-		if (xhci_service_interval_to_ns(desc) <= timeout_ns) {
+		if (xhci_service_interval_to_ns(desc) <= udev->u2_params.mel) {
 			dev_dbg(&udev->dev, "Disable U2, ESIT shorter than exit latency\n");
 			return USB3_LPM_DISABLED;
 		}
 	}
+
+	if (xhci->quirks & XHCI_INTEL_HOST)
+		timeout_ns = xhci_calculate_intel_u2_timeout(udev, desc);
+	else
+		timeout_ns = udev->u2_params.sel;
 
 	/* The U2 timeout is encoded in 256us intervals */
 	timeout_ns = DIV_ROUND_UP_ULL(timeout_ns, 256 * 1000);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2020, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2011-2021, The Linux Foundation. All rights reserved.
  * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -219,6 +219,7 @@ enum {
 };
 
 static bool is_wakeup_source_allowed;
+static unsigned int ipc_router_wakeup_ms = CONFIG_IPC_ROUTER_WAKEUP_MS;
 
 void msm_ipc_router_set_ws_allowed(bool flag)
 {
@@ -3388,8 +3389,11 @@ int msm_ipc_router_read(struct msm_ipc_port *port_ptr,
 		return -ETOOSMALL;
 	}
 	list_del(&pkt->list);
-	if (list_empty(&port_ptr->port_rx_q))
+	if (list_empty(&port_ptr->port_rx_q)) {
 		__pm_relax(port_ptr->port_rx_ws);
+		/* keep the system wakeup for configured duration */
+		__pm_wakeup_event(port_ptr->port_rx_ws, ipc_router_wakeup_ms);
+	}
 	*read_pkt = pkt;
 	mutex_unlock(&port_ptr->port_rx_q_lock_lhc3);
 	if (pkt->hdr.control_flag & CONTROL_FLAG_CONFIRM_RX)

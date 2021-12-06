@@ -604,7 +604,7 @@ static u8 encode_bMaxPower(enum usb_device_speed speed,
 {
 	unsigned val;
 
-	if (c->MaxPower)
+	if (c->MaxPower || (c->bmAttributes & USB_CONFIG_ATT_SELFPOWER))
 		val = c->MaxPower;
 	else
 		val = CONFIG_USB_GADGET_VBUS_DRAW;
@@ -1027,7 +1027,11 @@ static int set_config(struct usb_composite_dev *cdev,
 	}
 
 	/* when we return, be sure our power usage is valid */
-	power = c->MaxPower ? c->MaxPower : CONFIG_USB_GADGET_VBUS_DRAW;
+	if (c->MaxPower || (c->bmAttributes & USB_CONFIG_ATT_SELFPOWER))
+		power = c->MaxPower;
+	else
+		power = CONFIG_USB_GADGET_VBUS_DRAW;
+
 	if (gadget->speed < USB_SPEED_SUPER)
 		power = min(power, 500U);
 	else
@@ -1851,8 +1855,10 @@ composite_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 				value = min(w_length, (u16) value);
 			break;
 		case USB_DT_STRING:
+			spin_lock(&cdev->lock);
 			value = get_string(cdev, req->buf,
 					w_index, w_value & 0xff);
+			spin_unlock(&cdev->lock);
 			if (value >= 0)
 				value = min(w_length, (u16) value);
 			break;
@@ -2547,7 +2553,7 @@ void composite_resume(struct usb_gadget *gadget)
 	 * suspend/resume callbacks?
 	 */
 	INFO(cdev, "USB Resume end\n");
-	place_marker("M - USB device is resumed");
+	update_marker("M - USB device is resumed");
 	if (cdev->driver->resume)
 		cdev->driver->resume(cdev);
 
