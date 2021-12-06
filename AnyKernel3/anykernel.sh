@@ -67,6 +67,8 @@ ui_print "Patching system's build.prop..."
 patch_prop /system/build.prop "ro.iorapd.enable" "true"
 patch_prop /system/build.prop "iorapd.perfetto.enable" "true"
 patch_prop /system/build.prop "iorapd.readahead.enable" "true"
+patch_prop /system/build.prop "persist.device_config.runtime_native_boot.iorap_readahead_enable" "true"
+patch_prop /system/build.prop "persist.device_config.runtime_native_boot.iorap_perfetto_enable" "true"
 # Prevent init from overriding ZRAM algorithm
 ui_print "Patching vendor's init..."
 remove_line "/vendor/etc/init/hw/init.qcom.rc" "comp_algorithm" "global"
