@@ -54,8 +54,8 @@
 #include <linux/poll.h>
 #include <linux/debugfs.h>
 #include <linux/rbtree.h>
-#include <linux/sched/signal.h>
-#include <linux/sched/mm.h>
+#include <linux/signal.h>
+#include <linux/mm.h>
 #include <linux/seq_file.h>
 #include <linux/string.h>
 #include <linux/uaccess.h>
@@ -67,7 +67,7 @@
 #include <linux/task_work.h>
 #include <linux/sizes.h>
 
-#include <uapi/linux/sched/types.h>
+#include <uapi/linux/types.h>
 #include <uapi/linux/android/binder.h>
 
 #include <asm/cacheflush.h>
@@ -5660,7 +5660,7 @@ static void binder_vma_close(struct vm_area_struct *vma)
 	binder_alloc_vma_close(&proc->alloc);
 }
 
-static vm_fault_t binder_vm_fault(struct vm_fault *vmf)
+static int binder_vm_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 {
 	return VM_FAULT_SIGBUS;
 }
