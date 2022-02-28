@@ -88,7 +88,7 @@ static int lowmem_minfree[6] = {
 };
 
 static int lowmem_minfree_size = 4;
-static int lmk_fast_run = 1;
+static int lmk_fast_run = 0;
 
 static unsigned long lowmem_deathpending_timeout;
 
