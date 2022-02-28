@@ -23,7 +23,7 @@ jobs:
            ln -fs /usr/share/zoneinfo/UTC /etc/localtime
            apt-get install tzdata -y
            dpkg-reconfigure --frontend noninteractive tzdata
-           apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget ssh-client -yq
+           apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget ssh-client patch -yq
            # Fix GitHub SSH key checking
            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - save_cache:
