@@ -24,6 +24,9 @@
 #define CREATE_TRACE_POINTS
 #include "trace/events/msm_cam.h"
 
+#if defined(CONFIG_PROJECT_MI439) || defined(CONFIG_PROJECT_OLIVES)|| defined(CONFIG_PROJECT_PINE)
+#include <linux/sdm439.h>
+#endif
 
 #define MAX_ISP_V4l2_EVENTS 100
 #define MAX_ISP_REG_LIST 100
@@ -212,7 +215,15 @@ void msm_isp_get_timestamp(struct msm_isp_timestamp *time_stamp,
 		time_stamp->buf_time.tv_sec    = time_stamp->vt_time.tv_sec;
 		time_stamp->buf_time.tv_usec   = time_stamp->vt_time.tv_usec;
 	} else {
+#if defined(CONFIG_PROJECT_MI439) || defined(CONFIG_PROJECT_OLIVES)|| defined(CONFIG_PROJECT_PINE)
+		if (prebuilt_camera_hal) {
+			ktime_get_ts(&ts);
+		} else {
+			get_monotonic_boottime(&ts);
+		}
+#else
 		get_monotonic_boottime(&ts);
+#endif
 		time_stamp->buf_time.tv_sec    = ts.tv_sec;
 		time_stamp->buf_time.tv_usec   = ts.tv_nsec/1000;
 	}
