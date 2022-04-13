@@ -49,6 +49,14 @@ if grep -q "pronto_wlan.ko" $wifi_hal; then
     abort "Unsupported WiFi HAL. Aborting..."
 fi
 
+ui_print "Detecting camera HAL..."
+
+if [[ ! -z "$(find /vendor/lib64 /vendor/lib -name '*lib2d*')" ]]; then
+    patch_cmdline "prebuilt_camera_hal" "prebuilt_camera_hal"
+else
+    patch_cmdline "prebuilt_camera_hal" ""
+fi
+
 flash_boot;
 flash_dtbo;
 
