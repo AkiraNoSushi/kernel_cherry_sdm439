@@ -92,6 +92,9 @@ const char *machine_name;
 int sdm439_current_device = DEVICE_UNKNOWN;
 EXPORT_SYMBOL(sdm439_current_device);
 
+bool prebuilt_camera_hal = false;
+EXPORT_SYMBOL(prebuilt_camera_hal);
+
 /*
  * Standard memory resources
  */
@@ -207,6 +210,14 @@ const char * __init __weak arch_read_machine_name(void)
 {
 	return of_flat_dt_get_machine_name();
 }
+
+static int __init prebuilt_camera_hal_param(char *__unused)
+{
+	prebuilt_camera_hal = true;
+	return 1;
+}
+
+__setup("prebuilt_camera_hal", prebuilt_camera_hal_param);
 
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
