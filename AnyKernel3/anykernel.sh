@@ -14,6 +14,8 @@ device.name1=pine
 device.name2=olive
 device.name3=olivelite
 device.name4=olivewood
+device.name5=mi439
+device.name6=olives
 supported.versions=11,12
 supported.patchlevels=
 '; } # end properties
