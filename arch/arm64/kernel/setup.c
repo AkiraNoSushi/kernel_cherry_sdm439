@@ -92,9 +92,6 @@ const char *machine_name;
 int sdm439_current_device = DEVICE_UNKNOWN;
 EXPORT_SYMBOL(sdm439_current_device);
 
-bool legacy_omx = false;
-EXPORT_SYMBOL(legacy_omx);
-
 /*
  * Standard memory resources
  */
@@ -210,14 +207,6 @@ const char * __init __weak arch_read_machine_name(void)
 {
 	return of_flat_dt_get_machine_name();
 }
-
-static int __init legacy_omx_param(char *__unused)
-{
-	legacy_omx = true;
-	return 1;
-}
-
-__setup("legacy_omx", legacy_omx_param);
 
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
