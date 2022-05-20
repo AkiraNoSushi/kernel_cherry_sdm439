@@ -11,9 +11,14 @@
 #include <linux/ratelimit.h>
 #include <linux/nls.h>
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0)
+#include <linux/magic.h>
+#else
+#define EXFAT_SUPER_MAGIC       0x2011BAB0UL
+#endif
+
 #define EXFAT_VERSION		"5.14.1"
 
-#define EXFAT_SUPER_MAGIC       0x2011BAB0UL
 #define EXFAT_ROOT_INO		1
 
 #define EXFAT_CLUSTERS_UNTRACKED (~0u)
@@ -394,6 +399,12 @@ static inline int exfat_sector_to_cluster(struct exfat_sb_info *sbi,
 {
 	return ((sec - sbi->data_start_sector) >> sbi->sect_per_clus_bits) +
 		EXFAT_RESERVED_CLUSTERS;
+}
+
+static inline bool is_valid_cluster(struct exfat_sb_info *sbi,
+		unsigned int clus)
+{
+	return clus >= EXFAT_FIRST_CLUSTER && clus < sbi->num_clusters;
 }
 
 /* super.c */
