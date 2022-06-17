@@ -72,13 +72,6 @@ ui_print "Patching system's init..."
 find /system/etc/init/ -type f | while read file; do 
 sed -Ei 's;[^#](write /proc/sys/(kernel|vm)/(sched|dirty|perf_cpu|page-cluster|stat|swappiness|vfs));#\1;g' $file
 done
-# IORap
-ui_print "Patching system's build.prop..."
-patch_prop /system/build.prop "ro.iorapd.enable" "true"
-patch_prop /system/build.prop "iorapd.perfetto.enable" "true"
-patch_prop /system/build.prop "iorapd.readahead.enable" "true"
-patch_prop /system/build.prop "persist.device_config.runtime_native_boot.iorap_readahead_enable" "true"
-patch_prop /system/build.prop "persist.device_config.runtime_native_boot.iorap_perfetto_enable" "true"
 # Prevent init from overriding ZRAM algorithm
 ui_print "Patching vendor's init..."
 remove_line "/vendor/etc/init/hw/init.qcom.rc" "comp_algorithm" "global"
