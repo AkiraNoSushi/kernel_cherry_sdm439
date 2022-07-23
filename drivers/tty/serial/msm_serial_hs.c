@@ -668,6 +668,7 @@ DEFINE_SIMPLE_ATTRIBUTE(loopback_enable_fops, msm_serial_loopback_enable_get,
  * test scripts.
  * writing 0 disables the internal loopback mode. Default is disabled.
  */
+#ifdef CONFIG_DEBUG_FS
 static void msm_serial_debugfs_init(struct msm_hs_port *msm_uport,
 					   int id)
 {
@@ -684,6 +685,7 @@ static void msm_serial_debugfs_init(struct msm_hs_port *msm_uport,
 		MSM_HS_ERR("%s(): Cannot create loopback.%d debug entry",
 							__func__, id);
 }
+#endif
 
 static int msm_hs_remove(struct platform_device *pdev)
 {
