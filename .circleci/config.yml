@@ -5,6 +5,7 @@ jobs:
       - image: kernelci/build-base:latest
    environment:
       CIRCLE_COMPARE_URL: << pipeline.project.git_url >>/compare/<< pipeline.git.base_revision >>..<<pipeline.git.revision>>
+   resource_class: large
    steps:
       - restore_cache:
           keys:
