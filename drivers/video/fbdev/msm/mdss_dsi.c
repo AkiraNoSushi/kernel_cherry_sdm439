@@ -826,6 +826,7 @@ struct buf_data {
 	struct mutex dbg_mutex; /* mutex to synchronize read/write/flush */
 };
 
+#ifdef CONFIG_DEBUG_FS
 struct mdss_dsi_debugfs_info {
 	struct dentry *root;
 	struct mdss_dsi_ctrl_pdata ctrl_pdata;
@@ -833,6 +834,7 @@ struct mdss_dsi_debugfs_info {
 	struct buf_data off_cmd;
 	u32 override_flag;
 };
+#endif
 
 static int mdss_dsi_cmd_state_open(struct inode *inode, struct file *file)
 {
@@ -1112,6 +1114,7 @@ static const struct file_operations mdss_dsi_cmd_fop = {
 	.flush = mdss_dsi_cmd_flush,
 };
 
+#ifdef CONFIG_DEBUG_FS
 struct dentry *dsi_debugfs_create_dcs_cmd(const char *name, umode_t mode,
 				struct dentry *parent, struct buf_data *cmd,
 				struct dsi_panel_cmds ctrl_cmds)
@@ -1339,6 +1342,7 @@ static void mdss_dsi_validate_debugfs_info(
 		mdss_dsi_debugfsinfo_to_dsictrl_info(ctrl_pdata);
 	}
 }
+#endif
 
 static int mdss_dsi_off(struct mdss_panel_data *pdata, int power_state)
 {
@@ -1561,8 +1565,10 @@ int mdss_dsi_on(struct mdss_panel_data *pdata)
 	tp->end = tp->start + SZ_4K;
 	tp->size = SZ_4K;
 
+#ifdef CONFIG_DEBUG_FS
 	if (ctrl_pdata->debugfs_info)
 		mdss_dsi_validate_debugfs_info(ctrl_pdata);
+#endif
 
 	cur_power_state = pdata->panel_info.panel_power_state;
 	pr_debug("%s+: ctrl=%pK ndx=%d cur_power_state=%d\n", __func__,
