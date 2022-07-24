@@ -49,7 +49,7 @@ jobs:
               mkdir -p clang
               tar -xf "$1.tar.gz" -C clang/
            }
-           latest_clang=$(curl "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/refs/heads/master/?format=TEXT" | base64 --decode | grep -Eoh "clang-r[a-z0-9]*?" | tail -n1)
+           latest_clang=$(curl "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/README.md" | grep -Eo 'Android Linux Kernel<\/strong><\/a><\/p><ul><li>Currently (clang-r[a-z0-9]*?)' | grep -Eo '(clang-r[a-z0-9]*?)')
            if [ -d "clang" ]; then 
             if [ ! "$latest_clang" == "clang-"$(cat clang/AndroidVersion.txt | grep -Eoh "based on r[a-z0-9]+" | grep -Eoh "r[a-z0-9]+") ]; then
               download_clang $latest_clang
