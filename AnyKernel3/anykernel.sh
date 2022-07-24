@@ -30,6 +30,12 @@ ramdisk_compression=auto;
 # import patching functions/variables - see for reference
 . tools/ak3-core.sh;
 
+# R/W dynamic partitions fix
+if [ -d "/dev/block/mapper" ]; then
+    blockdev --setrw /dev/block/mapper/system
+    blockdev --setrw /dev/block/mapper/vendor
+fi
+
 ## AnyKernel install
 split_boot;
 
