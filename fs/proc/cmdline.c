@@ -24,7 +24,7 @@ static const struct file_operations cmdline_proc_fops = {
 	.release	= single_release,
 };
 
-static void patch_flag(char *cmd, const char *flag, const char *val)
+static void patch_flag_set_val(char *cmd, const char *flag, const char *val)
 {
 	size_t flag_len, val_len;
 	char *start, *end;
@@ -40,12 +40,41 @@ static void patch_flag(char *cmd, const char *flag, const char *val)
 	memcpy(start + flag_len, val, val_len);
 }
 
+static void patch_flag_remove_flag(char *cmd, const char *flag)
+{
+	char *offset_addr = cmd;
+	offset_addr = strstr(cmd, flag);
+	if (offset_addr) {
+		size_t i, len, offset;
+
+		len = strlen(cmd);
+		offset = offset_addr - cmd;
+
+		for (i = 1; i < (len - offset); i++) {
+			if (cmd[offset + i] == ' ')
+				break;
+		}
+
+		memmove(offset_addr, &cmd[offset + i + 1], len - i - offset);
+	} else {
+		printk("%s: Unable to find flag \"%s\"\n", __func__, flag);
+	}
+}
+
 static void patch_safetynet_flags(char *cmd)
 {
-	patch_flag(cmd, "androidboot.flash.locked=", "1");
-	patch_flag(cmd, "androidboot.verifiedbootstate=", "green");
-	patch_flag(cmd, "androidboot.veritymode=", "enforcing");
-	patch_flag(cmd, "androidboot.vbmeta.device_state=", "locked");
+	patch_flag_set_val(cmd, "androidboot.flash.locked=", "1");
+	patch_flag_set_val(cmd, "androidboot.verifiedbootstate=", "green");
+	patch_flag_set_val(cmd, "androidboot.veritymode=", "enforcing");
+	patch_flag_set_val(cmd, "androidboot.vbmeta.device_state=", "locked");
+}
+
+static void patch_sar_flags(char *cmd)
+{
+	patch_flag_remove_flag(cmd, "root=PARTUUID=");
+	patch_flag_remove_flag(cmd, "rootwait");
+	/* This flag is skip_initramfs, Omit the last 2 characters to avoid getting patched by Magisk */
+	patch_flag_remove_flag(cmd, "skip_initram");
 }
 
 static int __init proc_cmdline_init(void)
@@ -57,6 +86,8 @@ static int __init proc_cmdline_init(void)
 	 * pass SafetyNet checks.
 	 */
 	patch_safetynet_flags(new_command_line);
+
+	patch_sar_flags(new_command_line);
 
 	proc_create("cmdline", 0, NULL, &cmdline_proc_fops);
 	return 0;
