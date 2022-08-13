@@ -95,6 +95,9 @@ EXPORT_SYMBOL(sdm439_current_device);
 bool prebuilt_camera_hal = false;
 EXPORT_SYMBOL(prebuilt_camera_hal);
 
+bool plain_partitions = false;
+EXPORT_SYMBOL(plain_partitions);
+
 /*
  * Standard memory resources
  */
@@ -218,6 +221,14 @@ static int __init prebuilt_camera_hal_param(char *__unused)
 }
 
 __setup("prebuilt_camera_hal", prebuilt_camera_hal_param);
+
+static int __init plain_partitions_param(char *__unused)
+{
+	plain_partitions = true;
+	return 1;
+}
+
+__setup("plain_partitions", plain_partitions_param);
 
 static void __init setup_machine_fdt(phys_addr_t dt_phys)
 {
