@@ -2,6 +2,7 @@
 #include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+#include <linux/sdm439.h>
 #include <asm/setup.h>
 
 static char new_command_line[COMMAND_LINE_SIZE];
@@ -87,7 +88,9 @@ static int __init proc_cmdline_init(void)
 	 */
 	patch_safetynet_flags(new_command_line);
 
-	patch_sar_flags(new_command_line);
+	if (!plain_partitions) {
+		patch_sar_flags(new_command_line);
+	}
 
 	proc_create("cmdline", 0, NULL, &cmdline_proc_fops);
 	return 0;
