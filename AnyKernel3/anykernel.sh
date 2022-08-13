@@ -30,14 +30,17 @@ ramdisk_compression=auto;
 # import patching functions/variables - see for reference
 . tools/ak3-core.sh;
 
-# R/W dynamic partitions fix
+## AnyKernel install
+split_boot;
+
+# Retrofit dynamic partitions
 if [ -d "/dev/block/mapper" ]; then
     blockdev --setrw /dev/block/mapper/system
     blockdev --setrw /dev/block/mapper/vendor
+    patch_cmdline "plain_partitions" ""
+else
+    patch_cmdline "plain_partitions" "plain_partitions"
 fi
-
-## AnyKernel install
-split_boot;
 
 ui_print "Mounting /vendor..."
 mount -o rw,remount /vendor
