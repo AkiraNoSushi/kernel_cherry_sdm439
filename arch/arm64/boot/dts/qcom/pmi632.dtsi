@@ -320,7 +320,6 @@
 			dpdm-supply = <&qusb_phy>;
 			qcom,auto-recharge-soc = <99>;
 			qcom,chg-vadc = <&pmi632_vadc>;
-			qcom,flash-disable-soc = <10>;
 			//qcom,sw-jeita-enable;
 			qcom,hw-jeita-enable;
 			qcom,step-charging-enable;
