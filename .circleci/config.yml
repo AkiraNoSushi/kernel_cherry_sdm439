@@ -24,7 +24,7 @@ jobs:
            ln -fs /usr/share/zoneinfo/UTC /etc/localtime
            apt-get install tzdata -y
            dpkg-reconfigure --frontend noninteractive tzdata
-           apt-get install unzip p7zip-full curl python2 binutils-aarch64-linux-gnu wget ssh-client patch -yq
+           apt-get install p7zip-full curl python2 ssh-client patch libtinfo5 -yq
            # Fix GitHub SSH key checking
            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - save_cache:
@@ -37,32 +37,20 @@ jobs:
             git clone --depth 1 --single-branch "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
       - restore_cache:
           keys:
-            - v1-toolchains-clang-
+            - v2-toolchains-clang-
       - restore_cache:
           keys:
             - v1-toolchains-binutils-
       - run:
-          name: Fetching AOSP toolchains
+          name: Fetching toolchains
           command: |
-           download_clang() {
-              wget "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/$1.tar.gz"
-              mkdir -p clang
-              tar -xf "$1.tar.gz" -C clang/
-           }
-           latest_clang=$(curl "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/master/README.md" | grep -Eo 'Android Linux Kernel<\/strong><\/a><\/p><ul><li>Currently (clang-r[a-z0-9]*?)' | grep -Eo '(clang-r[a-z0-9]*?)')
-           if [ -d "clang" ]; then 
-            if [ ! "$latest_clang" == "clang-"$(cat clang/AndroidVersion.txt | grep -Eoh "based on r[a-z0-9]+" | grep -Eoh "r[a-z0-9]+") ]; then
-              download_clang $latest_clang
-            fi
-           else
-            download_clang $latest_clang
-           fi
+           git -C "SDClang" pull --rebase || git clone https://github.com/ZyCromerZ/SDClang.git --depth=1 --single-branch --branch="14"
            git -C "android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9" pull --rebase || git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 --depth=1 --single-branch --branch="lineage-19.0"
            git -C "android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9" pull --rebase || git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 --depth=1 --single-branch --branch="lineage-19.0"
       - save_cache:
-          key: v1-toolchains-clang-{{ checksum "~/project/clang/AndroidVersion.txt" }}
+          key: v2-toolchains-clang-{{ checksum "~/project/SDClang/.git/refs/heads/14" }}
           paths:
-            - ~/project/clang
+            - ~/project/SDClang
       - save_cache:
           key: v1-toolchains-binutils-{{ checksum "~/project/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/.git/refs/heads/lineage-19.0" }}-{{ checksum "~/project/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9/.git/refs/heads/lineage-19.0" }}
           paths:
@@ -84,7 +72,7 @@ jobs:
           command: |
            export ARCH=arm64 && export SUBARCH=arm64 && export CCACHE_DIR=~/project/ccache
            make O=out ARCH=arm64 cherry-mi439_defconfig
-           export PATH="$(pwd)/clang/bin:$(pwd)/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin:$(pwd)/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9/bin:${PATH}"
+           export PATH="$(pwd)/SDClang/bin:$(pwd)/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9/bin:$(pwd)/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9/bin:${PATH}"
            make -j$(nproc --all) O=out \
                                  ARCH=arm64 \
                                  CC="ccache clang" \
