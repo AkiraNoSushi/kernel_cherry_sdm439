@@ -16,6 +16,4 @@ extern int sdm439_current_device;
 
 extern bool prebuilt_camera_hal;
 
-extern bool plain_partitions;
-
 #endif
