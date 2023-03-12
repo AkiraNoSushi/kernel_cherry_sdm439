@@ -4,7 +4,7 @@
 ## AnyKernel setup
 # begin properties
 properties() { '
-kernel.string=Cherry Kernel V2.7.4 - by @AkiraNoSushi & @Flopster101
+kernel.string=Cherry Kernel V2.7.5 - by @AkiraNoSushi & @Flopster101
 do.devicecheck=1
 do.modules=0
 do.systemless=0
@@ -16,6 +16,7 @@ device.name3=olivelite
 device.name4=olivewood
 device.name5=mi439
 device.name6=olives
+device.name7=Mi439
 supported.versions=11,12,13
 supported.patchlevels=
 '; } # end properties
