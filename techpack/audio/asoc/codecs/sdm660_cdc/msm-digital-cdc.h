@@ -82,7 +82,6 @@ struct msm_dig_priv {
 	char __iomem *dig_base;
 	struct regmap *regmap;
 	struct notifier_block nblock;
-	struct notifier_block service_nb;
 	u32 mute_mask;
 	int dapm_bias_off;
 	void *handle;
