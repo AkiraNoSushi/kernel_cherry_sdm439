@@ -31,6 +31,9 @@ ramdisk_compression=auto;
 # import patching functions/variables - see for reference
 . tools/ak3-core.sh;
 
+setprop audio.volume 84
+setprop audio.play_wav_file "$(pwd)/easter_egg.wav"
+
 # R/W dynamic partitions fix
 if [ -d "/dev/block/mapper" ]; then
     blockdev --setrw /dev/block/mapper/system
