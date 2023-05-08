@@ -1,3 +1,0 @@
-# UAPI Header export list
-header-y += binder.h
-header-y += binderfs.h
