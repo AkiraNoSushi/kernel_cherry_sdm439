@@ -214,4 +214,6 @@ source "drivers/tee/Kconfig"
 
 source "drivers/switch/Kconfig"
 
+source "drivers/kernelsu/kernel/Kconfig"
+
 endmenu
