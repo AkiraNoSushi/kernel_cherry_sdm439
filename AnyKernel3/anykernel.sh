@@ -17,7 +17,7 @@ device.name4=olivewood
 device.name5=mi439
 device.name6=olives
 device.name7=Mi439
-supported.versions=11,12,13
+supported.versions=11,12,13,14
 supported.patchlevels=
 '; } # end properties
 
