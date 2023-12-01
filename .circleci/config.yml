@@ -34,7 +34,12 @@ jobs:
       - run: 
           name: Cloning kernel sources
           command: |
-            git clone --depth 1 --single-branch "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
+            git clone --recurse-submodules --depth 1 --single-branch "$CIRCLE_REPOSITORY_URL" --branch "$CIRCLE_BRANCH" .
+            cd ~/project/drivers/kernelsu
+            git fetch --tags
+            latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+            git checkout $latestTag
+            cd ~/project
       - restore_cache:
           keys:
             - v2-toolchains-clang-
